@@ -31,7 +31,7 @@ const libraryItems = [
   { label: "Saved Albums", icon: Music, href: "/library/albums" },
 ];
 
-export function Sidebar() {
+export function GuestSidebar() {
   const pathname = usePathname();
   const { state } = usePlayer();
 
