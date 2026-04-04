@@ -31,12 +31,11 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-          queryParams: {
-            prompt: "consent",
-            access_type: "offline",
-          },
+        redirectTo: `${location.origin}/auth/callback?next=/`,
+        queryParams: {
+          prompt: 'select_account', 
         },
+      },
       });
       if (error) throw error;
     } catch (error: unknown) {

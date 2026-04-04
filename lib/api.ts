@@ -1,6 +1,3 @@
-// API client for Echo music platform
-// Handles all data fetching and mutations
-
 interface ApiResponse<T> {
   data: T;
   error?: string;
@@ -9,7 +6,6 @@ interface ApiResponse<T> {
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
-// Helper to make API calls
 async function apiCall<T>(
   endpoint: string,
   options: RequestInit = {}

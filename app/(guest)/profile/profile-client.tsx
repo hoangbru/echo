@@ -4,6 +4,8 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Edit2, Heart, Music } from "lucide-react";
 import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/dist/client/components/navigation";
 
 interface UserProfile {
   id: string;
@@ -24,6 +26,8 @@ export default function ProfileClient({
 }: {
   initialProfile: UserProfile;
 }) {
+  const router = useRouter();
+  const supabase = createClient();
   const [profile, setProfile] = useState<UserProfile>(initialProfile);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -44,6 +48,12 @@ export default function ProfileClient({
   const handleCancelEdit = () => {
     setIsEditing(false);
     setEditForm({ fullName: profile.fullName, bio: profile.bio });
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.refresh();
+    router.push("/auth/login");
   };
 
   return (
@@ -233,11 +243,13 @@ export default function ProfileClient({
         >
           Download Your Data
         </Button>
-        <a href="/auth/signout" className="block w-full">
-          <Button variant="destructive" className="w-full">
-            Log Out
-          </Button>
-        </a>
+        <Button
+          variant="destructive"
+          className="w-full"
+          onClick={handleSignOut}
+        >
+          Log Out
+        </Button>
       </div>
     </div>
   );
