@@ -36,13 +36,26 @@ export default function ProfileClient({
     bio: profile.bio,
   });
 
-  const handleSaveProfile = () => {
+  const handleSaveProfile = async () => {
     setProfile({
       ...profile,
       fullName: editForm.fullName,
       bio: editForm.bio,
     });
     setIsEditing(false);
+
+    const { error } = await supabase
+      .from("User")
+      .update({
+        fullName: editForm.fullName,
+        bio: editForm.bio,
+      })
+      .eq("id", profile.id);
+
+    if (error) {
+      console.error("Lỗi khi lưu profile:", error);
+      // Nếu có dùng Toast (sonner/react-hot-toast), bạn có thể show thông báo lỗi ở đây
+    }
   };
 
   const handleCancelEdit = () => {
@@ -74,13 +87,21 @@ export default function ProfileClient({
 
         {/* Profile Info */}
         <div className="flex gap-6 items-end -mt-16 relative z-10">
-          <div className="h-32 w-32 rounded-full border-4 border-background overflow-hidden flex-shrink-0 relative">
-            <Image
-              src={profile.avatarUrl}
-              alt={profile.fullName}
-              fill
-              className="object-cover"
-            />
+          <div className="h-32 w-32 rounded-full border-4 border-background overflow-hidden flex-shrink-0 relative shadow-xl">
+            {profile.avatarUrl ? (
+              <Image
+                src={profile.avatarUrl}
+                alt={profile.fullName}
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <div className="flex w-full h-full items-center justify-center bg-gradient-to-br from-pink-500/20 to-purple-500/20 backdrop-blur-sm text-pink-500">
+                <span className="text-5xl font-black uppercase drop-shadow-md">
+                  {(profile.username || profile.fullName || "U")[0]}
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="flex-1 pb-4">

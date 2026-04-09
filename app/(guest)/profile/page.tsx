@@ -1,33 +1,39 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import ProfileClient from "./profile-client";
+import { getUserProfileById } from "@/lib/services/user.service";
 
 export default async function ProfilePage() {
-  const supabase = await createClient();
+  const supabase = createClient();
 
   const {
     data: { user },
-    error,
+    error: authError,
   } = await supabase.auth.getUser();
 
-  if (error || !user) {
+  if (authError || !user) {
     redirect("/auth/login");
   }
-  
+
+  const dbUser = await getUserProfileById(user.id);
+
+  if (!dbUser) {
+    console.log("Không tìm thấy dbUser, đang chuyển hướng...");
+    return <div>Không thể tải thông tin người dùng. Vui lòng thử lại.</div>;
+  }
   const profileData = {
-    id: user.id,
-    email: user.email,
-    fullName: user.user_metadata?.full_name || "Người dùng ẩn danh",
+    id: dbUser.id,
+    email: dbUser.email,
+    fullName: dbUser.fullName || "Người dùng ẩn danh",
     avatarUrl:
-      user.user_metadata?.avatar_url ||
-      "https://placehold.co/150x150?text=No+Avatar",
-    username: "musiclover",
-    bio: "Passionate about discovering new music and artists",
-    followers: 1250,
-    following: 432,
-    totalLikes: 156,
-    totalPlaylists: 8,
-    isPremium: true,
+      dbUser.avatar,
+    username: dbUser.username || "Chưa có username",
+    bio: dbUser.bio || "Chưa có tiểu sử.",
+    followers: 0,
+    following: 0,
+    totalLikes: 0,
+    totalPlaylists: 0,
+    isPremium: dbUser.isPremium || false,
   };
 
   return <ProfileClient initialProfile={profileData} />;
