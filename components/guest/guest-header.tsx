@@ -7,6 +7,7 @@ import {
   Settings,
   Crown,
   User as UserProfileIcon,
+  Mic2,
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -159,6 +160,15 @@ export function GuestHeader({ profile }: { profile: DBProfile | null }) {
                 >
                   <Settings className="h-4 w-4" />
                   <span className="text-sm font-medium">Cài đặt hệ thống</span>
+                </Link>
+
+                <Link
+                  href="/become-artist"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="w-full px-3 py-2.5 rounded-lg text-left flex items-center gap-3 text-gray-300 hover:bg-white/5 hover:text-white transition-colors"
+                >
+                  <Mic2 className="h-4 w-4" />
+                  <span className="text-sm font-medium">Trở thành nghệ sĩ</span>
                 </Link>
               </div>
 

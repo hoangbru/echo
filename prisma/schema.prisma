@@ -34,7 +34,7 @@ enum RepeatMode {
 // ==================== Auth & Users ====================
 
 model User {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   email     String   @unique
   username  String   @unique
   fullName  String?
@@ -76,7 +76,7 @@ model User {
 // ==================== Artists ====================
 
 model ArtistProfile {
-  id          String  @id @default(cuid())
+  id          String  @id @default(uuid())
   userId      String  @unique
   user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   
@@ -106,7 +106,7 @@ model ArtistProfile {
 }
 
 model ArtistRequest {
-  id        String                @id @default(cuid())
+  id        String                @id @default(uuid())
   userId    String
   user      User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   
@@ -128,7 +128,7 @@ model ArtistRequest {
 // ==================== Music Content ====================
 
 model Genre {
-  id    String  @id @default(cuid())
+  id    String  @id @default(uuid())
   name  String  @unique
   description String?
   color String? @db.VarChar(7)
@@ -143,7 +143,7 @@ model Genre {
 }
 
 model Album {
-  id          String  @id @default(cuid())
+  id          String  @id @default(uuid())
   title       String
   artistId    String
   artist      ArtistProfile @relation(fields: [artistId], references: [id], onDelete: Cascade)
@@ -178,7 +178,7 @@ model Album {
 }
 
 model Track {
-  id          String  @id @default(cuid())
+  id          String  @id @default(uuid())
   title       String
   artistId    String
   artist      ArtistProfile @relation(fields: [artistId], references: [id], onDelete: Cascade)
@@ -234,7 +234,7 @@ model Track {
 // ==================== Playlists ====================
 
 model Playlist {
-  id          String  @id @default(cuid())
+  id          String  @id @default(uuid())
   name        String
   description String?
   
@@ -261,7 +261,7 @@ model Playlist {
 }
 
 model PlaylistItem {
-  id          String  @id @default(cuid())
+  id          String  @id @default(uuid())
   playlistId  String
   playlist    Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
   
@@ -277,7 +277,7 @@ model PlaylistItem {
 }
 
 model PlaylistCollaborator {
-  id          String  @id @default(cuid())
+  id          String  @id @default(uuid())
   playlistId  String
   playlist    Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
   
@@ -295,7 +295,7 @@ model PlaylistCollaborator {
 // ==================== User Interactions ====================
 
 model Favorite {
-  id          String  @id @default(cuid())
+  id          String  @id @default(uuid())
   userId      String
   user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   
@@ -310,7 +310,7 @@ model Favorite {
 }
 
 model TrackLike {
-  id          String  @id @default(cuid())
+  id          String  @id @default(uuid())
   userId      String
   user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   
@@ -325,7 +325,7 @@ model TrackLike {
 }
 
 model AlbumLike {
-  id          String  @id @default(cuid())
+  id          String  @id @default(uuid())
   userId      String
   user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   
@@ -340,7 +340,7 @@ model AlbumLike {
 }
 
 model Follow {
-  id          String  @id @default(cuid())
+  id          String  @id @default(uuid())
   followerId  String
   follower    User    @relation("followers", fields: [followerId], references: [id], onDelete: Cascade)
   
@@ -357,7 +357,7 @@ model Follow {
 // ==================== Streaming & Analytics ====================
 
 model StreamHistory {
-  id          String  @id @default(cuid())
+  id          String  @id @default(uuid())
   userId      String
   user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   
@@ -376,7 +376,7 @@ model StreamHistory {
 }
 
 model TrackRecommendation {
-  id          String  @id @default(cuid())
+  id          String  @id @default(uuid())
   trackId     String
   track       Track   @relation("recommendedTrack", fields: [trackId], references: [id], onDelete: Cascade)
   
@@ -397,7 +397,7 @@ model TrackRecommendation {
 // ==================== Social & Content ====================
 
 model Comment {
-  id          String  @id @default(cuid())
+  id          String  @id @default(uuid())
   content     String  @db.Text
   
   userId      String
@@ -415,7 +415,7 @@ model Comment {
 }
 
 model Review {
-  id          String  @id @default(cuid())
+  id          String  @id @default(uuid())
   content     String  @db.Text
   rating      Int     // 1-5 stars
   
@@ -441,7 +441,7 @@ model Review {
 // ==================== Notifications ====================
 
 model NotificationSettings {
-  id          String  @id @default(cuid())
+  id          String  @id @default(uuid())
   userId      String  @unique
   user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   
@@ -458,7 +458,7 @@ model NotificationSettings {
 // ==================== Admin & Content Management ====================
 
 model AdminAuditLog {
-  id          String  @id @default(cuid())
+  id          String  @id @default(uuid())
   adminId     String
   
   action      String  // e.g., "DELETE_TRACK", "APPROVE_ARTIST", "SUSPEND_USER"
@@ -477,7 +477,7 @@ model AdminAuditLog {
 }
 
 model ContentReport {
-  id          String  @id @default(cuid())
+  id          String  @id @default(uuid())
   reporterId  String
   
   reportType  String  // "TRACK", "ALBUM", "USER", "COMMENT"
