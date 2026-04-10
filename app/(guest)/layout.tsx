@@ -1,6 +1,6 @@
-import { GuestSidebar } from "@/components/guest-sidebar";
-import { GuestHeader } from "@/components/guest-header";
-import { PlayerBar } from "@/components/player-bar";
+import { GuestSidebar } from "@/components/guest/guest-sidebar";
+import { GuestHeader } from "@/components/guest/guest-header";
+import { PlayerBar } from "@/components/guest/player-bar";
 import { PlayerProvider } from "@/lib/contexts/player-context";
 import { createClient } from "@/lib/supabase/server";
 import { getUserProfileById } from "@/lib/services/user.service";
