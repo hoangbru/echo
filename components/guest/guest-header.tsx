@@ -22,6 +22,7 @@ interface DBProfile {
   fullName?: string;
   username?: string;
   isPremium?: boolean;
+  isArtist?: boolean;
 }
 
 export function GuestHeader({ profile }: { profile: DBProfile | null }) {
@@ -131,6 +132,18 @@ export function GuestHeader({ profile }: { profile: DBProfile | null }) {
               </div>
 
               <div className="px-2 space-y-1">
+                {profile.isArtist && (
+                  <Link
+                    href="/artist/dashboard"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="w-full px-3 py-2.5 mb-2 rounded-lg text-left flex items-center gap-3 bg-pink-500/10 text-pink-500 hover:bg-pink-500/20 hover:text-pink-400 transition-colors border border-pink-500/20"
+                  >
+                    <Mic2 className="h-4 w-4" />
+                    <span className="text-sm font-bold">
+                      Khu vực Nghệ sĩ (Studio)
+                    </span>
+                  </Link>
+                )}
                 <Link
                   href="/profile"
                   onClick={() => setIsMenuOpen(false)}

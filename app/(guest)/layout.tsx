@@ -21,6 +21,24 @@ export default async function GuestLayout({
     dbProfile = await getUserProfileById(user.id);
   }
 
+  let isArtist = false;
+  if (user) {
+    const { data: artistProfile } = await supabase
+      .from("ArtistProfile")
+      .select("id")
+      .eq("userId", user.id)
+      .eq("isVerified", true)
+      .single();
+
+    if (artistProfile) {
+      isArtist = true;
+    }
+  }
+  const profileData = {
+    ...dbProfile,
+    isArtist: isArtist, 
+  };
+
   return (
     <PlayerProvider>
       <div className="flex h-screen bg-background flex-col lg:flex-row">
@@ -29,7 +47,7 @@ export default async function GuestLayout({
         </div>
 
         <main className="flex-1 flex flex-col min-w-0">
-          <GuestHeader profile={dbProfile} />
+          <GuestHeader profile={profileData} />
           <div className="flex-1 overflow-y-auto pb-32">{children}</div>
         </main>
       </div>
