@@ -142,7 +142,7 @@ export default function ArtistUploadPage() {
       if (audioErr) throw audioErr;
 
       // 2. Upload Ảnh Bìa
-      uploadedCoverPath = `artist_${artistProfile.id}/cover_${Date.now()}`;
+      uploadedCoverPath = `tracks/artist_${artistProfile.id}/cover_${Date.now()}`;
       const { error: coverErr } = await supabase.storage
         .from("covers")
         .upload(uploadedCoverPath, coverFile);
