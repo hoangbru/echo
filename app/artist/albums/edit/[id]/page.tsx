@@ -367,7 +367,7 @@ export default function EditAlbumPage() {
               onClick={() => router.back()}
               className="h-14 px-6 text-gray-400"
             >
-              Hủy
+              Huỷ
             </Button>
           </div>
         </div>

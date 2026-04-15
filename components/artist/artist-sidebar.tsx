@@ -15,7 +15,7 @@ import { usePathname } from "next/navigation";
 const menuItems = [
   { icon: LayoutDashboard, label: "Tổng quan", href: "/artist/dashboard" },
   { icon: Music, label: "Bài hát của tôi", href: "/artist/tracks" },
-  { icon: Upload, label: "Tải nhạc lên", href: "/artist/upload" },
+  { icon: Upload, label: "Tải nhạc lên", href: "/artist/tracks/new" },
   { icon: Library, label: "Album / EP", href: "/artist/albums" },
   { icon: BarChart3, label: "Thống kê", href: "/artist/analytics" },
 ];

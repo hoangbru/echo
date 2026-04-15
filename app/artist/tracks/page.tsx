@@ -129,7 +129,7 @@ export default function ArtistTracksPage() {
             Quản lý kho nhạc và trạng thái phát hành.
           </p>
         </div>
-        <Link href="/artist/upload">
+        <Link href="/artist/tracks/new">
           <Button className="bg-pink-500 hover:bg-pink-600 text-white font-bold px-6 shadow-[0_0_20px_rgba(236,72,153,0.3)]">
             <Plus className="w-4 h-4 mr-2" /> Tải nhạc mới
           </Button>
@@ -195,7 +195,7 @@ export default function ArtistTracksPage() {
                 <TrackItem
                   key={track.id}
                   track={track}
-                  onEdit={(t) => router.push(`/artist/edit/${t.id}`)}
+                  onEdit={(t) => router.push(`/artist/tracks/edit/${t.id}`)}
                   onDelete={handleDelete}
                 />
               ))

@@ -132,7 +132,7 @@ export function TrackItem({
                   disabled={isDeleting}
                   className="hover:bg-white/5"
                 >
-                  Hủy
+                  Huỷ
                 </Button>
                 <Button
                   variant="destructive"

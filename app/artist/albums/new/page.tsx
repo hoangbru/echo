@@ -292,7 +292,7 @@ export default function NewAlbumPage() {
               onClick={() => router.back()}
               className="h-14 px-6 text-gray-400"
             >
-              Hủy
+              Huỷ
             </Button>
           </div>
         </div>

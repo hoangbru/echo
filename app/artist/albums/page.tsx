@@ -191,7 +191,7 @@ export default function ArtistAlbumsPage() {
               onClick={() => setAlbumToDelete(null)}
               disabled={isDeleting}
             >
-              Hủy
+              Huỷ
             </Button>
             <Button
               variant="destructive"

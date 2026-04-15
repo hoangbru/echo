@@ -138,7 +138,7 @@ export function RequestCard({
                       onClick={() => setIsRejecting(false)}
                       className="text-gray-400 hover:text-white h-9 text-xs"
                     >
-                      Hủy
+                      Huỷ
                     </Button>
                   </div>
                 </div>

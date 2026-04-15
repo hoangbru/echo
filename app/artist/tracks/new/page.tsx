@@ -2,38 +2,37 @@
 
 import { useState, useRef, useEffect } from "react";
 import {
-  UploadCloud,
-  Music,
-  Image as ImageIcon,
-  X,
   Loader2,
   CheckCircle,
   AlertCircle,
   Info,
-  Calendar,
+  ChevronLeft,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+
+// Import các component vừa tách
+import { AlbumSelector } from "./album-selector";
+import { FileUploader } from "./file-uploader";
 
 export default function ArtistUploadPage() {
   const router = useRouter();
   const supabase = createClient();
 
-  // ================= STATE CHO CÁC TRƯỜNG TRONG DB =================
+  // States DB
   const [title, setTitle] = useState("");
-  const [isrc, setIsrc] = useState(""); // Mã ISRC mới thêm
-  const [albumId, setAlbumId] = useState(""); // Album ID
+  const [isrc, setIsrc] = useState("");
+  const [albumId, setAlbumId] = useState("");
   const [genreId, setGenreId] = useState("");
   const [lyrics, setLyrics] = useState("");
   const [isExplicit, setIsExplicit] = useState(false);
   const [isPublished, setIsPublished] = useState(true);
-  const [releaseDate, setReleasedDate] = useState(
+  const [releaseDate, setReleaseDate] = useState(
     new Date().toISOString().split("T")[0],
   );
 
-  // States cho File & Dữ liệu hỗ trợ
+  // States File & Dữ liệu
   const [musicFile, setMusicFile] = useState<File | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
@@ -41,7 +40,7 @@ export default function ArtistUploadPage() {
   const [genres, setGenres] = useState<any[]>([]);
   const [albums, setAlbums] = useState<any[]>([]);
 
-  // States hệ thống
+  // States Hệ thống
   const [isUploading, setIsUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<
     "idle" | "success" | "error"
@@ -49,10 +48,10 @@ export default function ArtistUploadPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [countdown, setCountdown] = useState(3);
 
-  const musicInputRef = useRef<HTMLInputElement>(null);
-  const coverInputRef = useRef<HTMLInputElement>(null);
+  const musicInputRef = useRef<HTMLInputElement>(null!);
+  const coverInputRef = useRef<HTMLInputElement>(null!);
 
-  // Load Thể loại & Album của nghệ sĩ này
+  // Load Dữ liệu
   useEffect(() => {
     const fetchData = async () => {
       const {
@@ -60,30 +59,46 @@ export default function ArtistUploadPage() {
       } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Lấy Thể loại
       const { data: genreData } = await supabase
         .from("Genre")
         .select("id, name");
       if (genreData) setGenres(genreData);
 
-      // Lấy Album của nghệ sĩ này (để điền vào dropdown Album)
       const { data: artistProfile } = await supabase
         .from("ArtistProfile")
         .select("id")
         .eq("userId", user.id)
         .single();
       if (artistProfile) {
+        // Đã bổ sung lấy coverImage và isPublished
         const { data: albumData } = await supabase
           .from("Album")
-          .select("id, title")
-          .eq("artistId", artistProfile.id);
+          .select("id, title, coverImage, isPublished")
+          .eq("artistId", artistProfile.id)
+          .order("createdAt", { ascending: false });
         if (albumData) setAlbums(albumData);
       }
     };
     fetchData();
   }, [supabase]);
 
-  // Luồng tự động điều hướng sau 3s khi thành công
+  // Tìm thông tin của Album đang được chọn
+  const selectedAlbum = albums.find((a) => a.id === albumId);
+
+  // TỰ ĐỘNG ĐỒNG BỘ TRẠNG THÁI THEO ALBUM
+  useEffect(() => {
+    if (selectedAlbum) {
+      setIsPublished(selectedAlbum.isPublished);
+      // Đồng bộ ngày phát hành từ album (cắt lấy phần yyyy-mm-dd)
+      if (selectedAlbum.releaseDate) {
+        setReleaseDate(
+          new Date(selectedAlbum.releaseDate).toISOString().split("T")[0],
+        );
+      }
+    }
+  }, [albumId, selectedAlbum]);
+
+  // Điều hướng thành công
   useEffect(() => {
     if (uploadStatus === "success" && countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
@@ -110,10 +125,22 @@ export default function ArtistUploadPage() {
     }
   };
 
+  const handleClearCover = () => {
+    setCoverFile(null);
+    setCoverPreview(null);
+    if (coverInputRef.current) {
+      coverInputRef.current.value = "";
+    }
+  };
+
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !musicFile || !coverFile) {
-      setErrorMessage("Vui lòng điền tiêu đề và chọn đầy đủ file!");
+
+    // ĐỔI LOGIC VALIDATE: Bắt buộc có ảnh bìa CHỈ KHI không chọn Album
+    if (!title || !musicFile || (!coverFile && !selectedAlbum)) {
+      setErrorMessage(
+        "Vui lòng điền tiêu đề, chọn file nhạc và ảnh bìa (nếu phát hành Single)!",
+      );
       setUploadStatus("error");
       return;
     }
@@ -131,38 +158,45 @@ export default function ArtistUploadPage() {
         .select("id")
         .eq("userId", user?.id!)
         .single();
-
       if (!artistProfile) throw new Error("Lỗi xác thực nghệ sĩ.");
 
-      // 1. Upload File Âm Thanh
-      uploadedAudioPath = `artist_${artistProfile.id}/audio_${Date.now()}`;
+      // 1. UPLOAD NHẠC (Giữ nguyên)
+      const safeName = musicFile.name.replace(/[^a-zA-Z0-9.\-_]/g, "");
+      uploadedAudioPath = `artist_${artistProfile.id}/audio_${Date.now()}_${safeName}`;
       const { error: audioErr } = await supabase.storage
         .from("tracks")
         .upload(uploadedAudioPath, musicFile);
       if (audioErr) throw audioErr;
-
-      // 2. Upload Ảnh Bìa
-      uploadedCoverPath = `tracks/artist_${artistProfile.id}/cover_${Date.now()}`;
-      const { error: coverErr } = await supabase.storage
-        .from("covers")
-        .upload(uploadedCoverPath, coverFile);
-      if (coverErr) throw coverErr;
-
       const audioUrl = supabase.storage
         .from("tracks")
         .getPublicUrl(uploadedAudioPath).data.publicUrl;
-      const imageUrl = supabase.storage
-        .from("covers")
-        .getPublicUrl(uploadedCoverPath).data.publicUrl;
 
-      // 3. Insert Record vào bảng Track (Full các trường trong ảnh DB bạn gửi)
+      // 2. XỬ LÝ ẢNH BÌA THÔNG MINH
+      let trackImageUrl = "";
+
+      if (coverFile) {
+        // Trường hợp A: Nghệ sĩ cố tình chọn ảnh bìa riêng -> Up file mới
+        uploadedCoverPath = `tracks/artist_${artistProfile.id}/cover_${Date.now()}`;
+        const { error: coverErr } = await supabase.storage
+          .from("covers")
+          .upload(uploadedCoverPath, coverFile);
+        if (coverErr) throw coverErr;
+        trackImageUrl = supabase.storage
+          .from("covers")
+          .getPublicUrl(uploadedCoverPath).data.publicUrl;
+      } else if (selectedAlbum) {
+        // Trường hợp B: Không chọn ảnh riêng, nhưng có thuộc Album -> Tái sử dụng URL của Album!
+        trackImageUrl = selectedAlbum.coverImage;
+      }
+
+      // 3. LƯU DATABASE
       const { error: dbError } = await supabase.from("Track").insert({
         title,
         artistId: artistProfile.id,
         albumId: albumId || null,
         duration,
         audioUrl,
-        imageUrl, // Nhớ thêm cột này vào bảng Track như đã bàn
+        imageUrl: trackImageUrl, // Dùng biến thông minh vừa tạo
         lyrics: lyrics || null,
         isExplicit,
         genreId: genreId || null,
@@ -174,15 +208,13 @@ export default function ArtistUploadPage() {
       if (dbError) throw dbError;
       setUploadStatus("success");
     } catch (err: any) {
-      // ROLLBACK: Xóa file nếu DB bị lỗi
-      if (uploadedAudioPath) await supabase.storage.from('tracks').remove([uploadedAudioPath]);
-      if (uploadedCoverPath) await supabase.storage.from('covers').remove([uploadedCoverPath]);
-      
-      // LOG LỖI RA CONSOLE ĐỂ DEV ĐỌC (Người dùng không thấy)
-      console.error("Chi tiết lỗi hệ thống:", err);
-
-      // HIỂN THỊ LỖI THÂN THIỆN CHO NGƯỜI DÙNG
-      setErrorMessage("Đã có lỗi xảy ra trong quá trình phát hành. Vui lòng kiểm tra lại kết nối mạng hoặc thử lại sau ít phút!");
+      if (uploadedAudioPath)
+        await supabase.storage.from("tracks").remove([uploadedAudioPath]);
+      if (uploadedCoverPath)
+        await supabase.storage.from("covers").remove([uploadedCoverPath]);
+      setErrorMessage(
+        "Đã có lỗi xảy ra trong quá trình phát hành. Vui lòng thử lại!",
+      );
       setUploadStatus("error");
     } finally {
       setIsUploading(false);
@@ -198,21 +230,20 @@ export default function ArtistUploadPage() {
         <h1 className="text-2xl font-bold text-white mb-2">
           Tải lên thành công!
         </h1>
-        <p className="text-gray-400">
-          Hệ thống sẽ chuyển bạn đến danh sách bài hát trong {countdown}s...
-        </p>
-        <Button
-          onClick={() => router.push("/artist/tracks")}
-          className="mt-6 bg-pink-500"
-        >
-          Chuyển ngay
-        </Button>
+        <p className="text-gray-400">Chuyển hướng trong {countdown}s...</p>
       </div>
     );
   }
 
   return (
     <div className="max-w-5xl mx-auto py-10 px-6">
+      <Button
+        variant="ghost"
+        onClick={() => router.back()}
+        className="mb-6 text-gray-400 hover:text-white pl-0"
+      >
+        <ChevronLeft className="w-4 h-4 mr-1" /> Quay lại
+      </Button>
       <h1 className="text-3xl font-black text-white mb-8">Phát hành bài hát</h1>
 
       {uploadStatus === "error" && (
@@ -225,67 +256,23 @@ export default function ArtistUploadPage() {
         onSubmit={handleUpload}
         className="grid grid-cols-1 lg:grid-cols-3 gap-8"
       >
-        {/* CỘT TRÁI: FILES */}
-        <div className="lg:col-span-1 space-y-6">
-          <div className="bg-[#18181b] p-6 rounded-2xl border border-white/10">
-            <label className="text-sm font-bold text-gray-300 block mb-4">
-              Ảnh bìa (Artwork)
-            </label>
-            <div
-              onClick={() => coverInputRef.current?.click()}
-              className="relative aspect-square rounded-xl border-2 border-dashed border-white/10 overflow-hidden cursor-pointer hover:border-pink-500/50 transition-all flex flex-col items-center justify-center bg-[#09090b]"
-            >
-              {coverPreview ? (
-                <Image
-                  src={coverPreview}
-                  alt="Preview"
-                  fill
-                  className="object-cover"
-                />
-              ) : (
-                <ImageIcon className="w-10 h-10 text-gray-600" />
-              )}
-            </div>
-            <input
-              type="file"
-              ref={coverInputRef}
-              className="hidden"
-              accept="image/*"
-              onChange={handleCoverChange}
-            />
-          </div>
-
-          <div className="bg-[#18181b] p-6 rounded-2xl border border-white/10">
-            <label className="text-sm font-bold text-gray-300 block mb-4">
-              File âm thanh
-            </label>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => musicInputRef.current?.click()}
-              className="w-full h-14 border-pink-500/30 text-pink-500 hover:bg-pink-500/10"
-            >
-              <Music className="w-4 h-4 mr-2" />{" "}
-              {musicFile ? "Đã chọn 1 file" : "Chọn file nhạc"}
-            </Button>
-            <input
-              type="file"
-              ref={musicInputRef}
-              className="hidden"
-              accept="audio/*"
-              onChange={handleMusicChange}
-            />
-            {musicFile && (
-              <p className="text-[10px] text-gray-500 mt-2 truncate">
-                {musicFile.name}
-              </p>
-            )}
-          </div>
+        {/* CỘT TRÁI: Dùng component FileUploader */}
+        <div className="lg:col-span-1">
+          <FileUploader
+            coverPreview={coverPreview}
+            musicFile={musicFile}
+            coverInputRef={coverInputRef}
+            musicInputRef={musicInputRef}
+            onCoverChange={handleCoverChange}
+            onMusicChange={handleMusicChange}
+            albumCoverUrl={selectedAlbum?.coverImage}
+            onClearCover={handleClearCover}
+          />
         </div>
 
         {/* CỘT PHẢI: METADATA */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-[#18181b] p-8 rounded-2xl border border-white/10 space-y-5">
+          <div className="bg-[#18181b] p-8 rounded-2xl border border-white/10 space-y-6">
             <div>
               <label className="block text-xs font-bold text-gray-400 uppercase mb-2">
                 Tiêu đề bài hát *
@@ -299,41 +286,29 @@ export default function ArtistUploadPage() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase mb-2">
-                  Thể loại
-                </label>
-                <select
-                  value={genreId}
-                  onChange={(e) => setGenreId(e.target.value)}
-                  className="w-full bg-[#09090b] border border-white/10 rounded-xl p-3 text-white outline-none"
-                >
-                  <option value="">Chọn thể loại</option>
-                  {genres.map((g) => (
-                    <option key={g.id} value={g.id}>
-                      {g.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase mb-2">
-                  Album (Nếu có)
-                </label>
-                <select
-                  value={albumId}
-                  onChange={(e) => setAlbumId(e.target.value)}
-                  className="w-full bg-[#09090b] border border-white/10 rounded-xl p-3 text-white outline-none"
-                >
-                  <option value="">Single (Không thuộc album)</option>
-                  {albums.map((a) => (
-                    <option key={a.id} value={a.id}>
-                      {a.title}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            {/* DÙNG COMPONENT ALBUM SELECTOR MỚI */}
+            <AlbumSelector
+              albums={albums}
+              selectedAlbumId={albumId}
+              onSelect={setAlbumId}
+            />
+
+            <div>
+              <label className="block text-xs font-bold text-gray-400 uppercase mb-2">
+                Thể loại
+              </label>
+              <select
+                value={genreId}
+                onChange={(e) => setGenreId(e.target.value)}
+                className="w-full bg-[#09090b] border border-white/10 rounded-xl p-3 text-white outline-none"
+              >
+                <option value="">Chọn thể loại</option>
+                {genres.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="pt-4 border-t border-white/5 space-y-4">
@@ -362,16 +337,26 @@ export default function ArtistUploadPage() {
                     <input
                       type="date"
                       value={releaseDate}
-                      onChange={(e) => setReleasedDate(e.target.value)}
-                      className="w-full bg-[#09090b] border border-white/10 rounded-xl p-3 text-white outline-none"
+                      onChange={(e) => setReleaseDate(e.target.value)}
+                      disabled={!!selectedAlbum} // Khóa khi có album
+                      className={`w-full bg-[#09090b] border border-white/10 rounded-xl p-3 text-white outline-none transition-all ${
+                        selectedAlbum
+                          ? "opacity-50 cursor-not-allowed"
+                          : "focus:border-pink-500"
+                      }`}
                     />
+                    {selectedAlbum && (
+                      <span className="text-[10px] text-pink-500 mt-1 block">
+                        *Đã khóa theo ngày phát hành của Album
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-gray-400 uppercase mb-2">
-                  Lời bài hát (Lyrics)
+                  Lời bài hát
                 </label>
                 <textarea
                   rows={4}
@@ -393,35 +378,56 @@ export default function ArtistUploadPage() {
                     Nội dung nhạy cảm (18+)
                   </span>
                 </label>
-                <label className="flex items-center gap-2 cursor-pointer group">
+
+                {/* LOGIC KHÓA CHECKBOX CÔNG KHAI KHI CÓ ALBUM */}
+                <label
+                  className={`flex items-center gap-2 group ${selectedAlbum ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                >
                   <input
                     type="checkbox"
                     checked={isPublished}
                     onChange={(e) => setIsPublished(e.target.checked)}
+                    disabled={!!selectedAlbum} // Khóa nếu có chọn Album
                     className="w-4 h-4 accent-pink-500"
                   />
-                  <span className="text-sm text-gray-400 group-hover:text-white transition-colors">
-                    Công khai ngay lập tức
-                  </span>
+                  <div className="flex flex-col">
+                    <span className="text-sm text-gray-400 group-hover:text-white transition-colors">
+                      Công khai ngay lập tức
+                    </span>
+                    {selectedAlbum && (
+                      <span className="text-[10px] text-pink-500 mt-0.5">
+                        *Được đồng bộ theo trạng thái của Album
+                      </span>
+                    )}
+                  </div>
                 </label>
               </div>
             </div>
           </div>
-
-          <Button
-            type="submit"
-            disabled={isUploading}
-            className="w-full h-16 bg-pink-500 hover:bg-pink-600 text-white text-lg font-black shadow-[0_0_20px_rgba(236,72,153,0.3)]"
-          >
-            {isUploading ? (
-              <>
-                <Loader2 className="w-6 h-6 mr-2 animate-spin" /> Đang tải
-                lên...
-              </>
-            ) : (
-              "Bắt Đầu Phát Hành"
-            )}
-          </Button>
+          <div className="pt-4 border-t border-white/5 flex gap-4">
+            <Button
+              type="submit"
+              disabled={isUploading}
+              className="flex-1 h-14 bg-pink-500 hover:bg-pink-600 font-bold text-lg shadow-[0_0_15px_rgba(236,72,153,0.3)]"
+            >
+              {isUploading ? (
+                <>
+                  <Loader2 className="w-6 h-6 mr-2 animate-spin" /> Đang tải
+                  lên...
+                </>
+              ) : (
+                "Bắt Đầu Phát Hành"
+              )}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => router.push("/artist/tracks")}
+              className="h-14 px-6 text-gray-400"
+            >
+              Huỷ
+            </Button>
+          </div>
         </div>
       </form>
     </div>
