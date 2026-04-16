@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+
 import { ArtistShell } from "@/components/artist/artist-shell";
+
+import { ArtistService } from "@/lib/services";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function ArtistLayout({
   children,
@@ -14,21 +17,11 @@ export default async function ArtistLayout({
   } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
 
-  const { data: artistProfile } = await supabase
-    .from("ArtistProfile")
-    .select("*, User:userId(fullName, avatar, email)")
-    .eq("userId", user.id)
-    .single();
+  const artistProfile = await ArtistService.getCurrentArtistProfile();
 
   if (!artistProfile || !artistProfile.isVerified) {
     redirect("/403");
   }
 
-  const profileData = {
-    fullName: artistProfile.User.fullName,
-    avatar: artistProfile.profileImage || artistProfile.User.avatar,
-    email: artistProfile.User.email,
-  };
-
-  return <ArtistShell profile={profileData}>{children}</ArtistShell>;
+  return <ArtistShell profile={artistProfile}>{children}</ArtistShell>;
 }

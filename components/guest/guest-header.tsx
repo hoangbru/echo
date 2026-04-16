@@ -15,17 +15,14 @@ import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { User } from "@/types/user.type";
 
-interface DBProfile {
-  id: string;
-  avatar?: string;
-  fullName?: string;
-  username?: string;
-  isPremium?: boolean;
-  isArtist?: boolean;
+interface GuestHeaderProps {
+  profile: User | null;
+  isArtist: boolean;
 }
 
-export function GuestHeader({ profile }: { profile: DBProfile | null }) {
+export function GuestHeader({ profile, isArtist }: GuestHeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -132,7 +129,7 @@ export function GuestHeader({ profile }: { profile: DBProfile | null }) {
               </div>
 
               <div className="px-2 space-y-1">
-                {profile.isArtist && (
+                {isArtist && (
                   <Link
                     href="/artist/dashboard"
                     onClick={() => setIsMenuOpen(false)}

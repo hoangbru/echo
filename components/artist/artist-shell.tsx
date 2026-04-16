@@ -3,14 +3,17 @@
 import { useState } from "react";
 import { ArtistSidebar } from "./artist-sidebar";
 import { ArtistHeader } from "./artist-header";
+import { Artist } from "@/types/artist.type";
+
+type ArtistShellProps = {
+  children: React.ReactNode;
+  profile: Artist;
+};
 
 export function ArtistShell({
   children,
   profile,
-}: {
-  children: React.ReactNode;
-  profile: any;
-}) {
+}: ArtistShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (

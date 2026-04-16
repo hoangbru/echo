@@ -3,7 +3,8 @@ import { GuestHeader } from "@/components/guest/guest-header";
 import { PlayerBar } from "@/components/guest/player-bar";
 import { PlayerProvider } from "@/lib/contexts/player-context";
 import { createClient } from "@/lib/supabase/server";
-import { getUserProfileById } from "@/lib/services/user.service";
+import { UserService } from "@/lib/services/user.service";
+import { ArtistService } from "@/lib/services/artist.service";
 
 export default async function GuestLayout({
   children,
@@ -18,26 +19,17 @@ export default async function GuestLayout({
 
   let dbProfile = null;
   if (user) {
-    dbProfile = await getUserProfileById(user.id);
+    dbProfile = await UserService.getUserProfileById(user.id);
   }
 
   let isArtist = false;
   if (user) {
-    const { data: artistProfile } = await supabase
-      .from("ArtistProfile")
-      .select("id")
-      .eq("userId", user.id)
-      .eq("isVerified", true)
-      .single();
+    const artistProfile = await ArtistService.getCurrentArtistProfile();
 
     if (artistProfile) {
       isArtist = true;
     }
   }
-  const profileData = {
-    ...dbProfile,
-    isArtist: isArtist, 
-  };
 
   return (
     <PlayerProvider>
@@ -47,7 +39,7 @@ export default async function GuestLayout({
         </div>
 
         <main className="flex-1 flex flex-col min-w-0">
-          <GuestHeader profile={profileData} />
+          <GuestHeader profile={dbProfile} isArtist={isArtist} />
           <div className="flex-1 overflow-y-auto pb-32">{children}</div>
         </main>
       </div>

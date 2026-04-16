@@ -14,65 +14,56 @@ body {
 
 @layer base {
   :root {
+    /* Pure Black (#000000) */
     --background: 0 0% 0%;
+    /* Pure White (#FFFFFF) */
     --foreground: 0 0% 100%;
+
+    /* Card/Surface (#0D0D0D) */
     --card: 0 0% 5%;
     --card-foreground: 0 0% 100%;
+
+    /* Sidebar BG (#141414) */
     --popover: 0 0% 8%;
     --popover-foreground: 0 0% 100%;
+
+    /* Neon Pink (#FF1A8C) */
     --primary: 330 100% 55%;
     --primary-foreground: 0 0% 100%;
+
+    /* Secondary (#333333) */
     --secondary: 0 0% 20%;
     --secondary-foreground: 0 0% 100%;
+
+    /* Muted (#B3B3B3 text, #4D4D4D bg) */
     --muted: 0 0% 30%;
     --muted-foreground: 0 0% 70%;
+
+    /* Accent is same as Primary for Echo */
     --accent: 330 100% 55%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 84.2% 60.2%;
+
+    /* Destructive (#EF4444) */
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
+
+    /* Border & Input (#262626 & #1F1F1F) */
     --border: 0 0% 15%;
     --input: 0 0% 12%;
+
+    /* Ring/Focus outline */
     --ring: 330 100% 55%;
+
+    /* Charts */
     --chart-1: 330 100% 55%;
     --chart-2: 0 0% 100%;
     --chart-3: 0 0% 50%;
-    --chart-4: 220 70% 50%;
-    --chart-5: 160 60% 45%;
+    --chart-4: 217 91% 60%;
+    --chart-5: 142 71% 45%;
+
     --radius: 0.5rem;
-    --sidebar-background: 0 0% 8%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 330 100% 55%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 330 100% 55%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 15%;
-    --sidebar-ring: 330 100% 55%;
-  }
-  .dark {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
-    --card: 0 0% 5%;
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 8%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 330 100% 55%;;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 20%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 30%;
-    --muted-foreground: 0 0% 70%;
-    --accent: 330 100% 55%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 15%;
-    --input: 0 0% 12%;
-    --ring: 330 100% 55%;
-    --chart-1: 330 100% 55%;
-    --chart-2: 0 0% 100%;
-    --chart-3: 0 0% 50%;
-    --chart-4: 220 70% 50%;
-    --chart-5: 160 60% 45%;
+
+    /* Sidebar Specifics */
     --sidebar-background: 0 0% 8%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: 330 100% 55%;

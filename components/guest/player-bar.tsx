@@ -61,7 +61,7 @@ export function PlayerBar() {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card lg:static">
+    <div className="sticky bottom-0 left-0 right-0 z-40 border-t border-border bg-card lg:static">
       {/* Progress Bar */}
       <div className="px-4 sm:px-6 pt-2 pb-1">
         <Slider

@@ -1,17 +1,18 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import Image from 'next/image'
-import { VerifiedBadge } from './verified-badge'
+import Link from "next/link";
+import Image from "next/image";
+import { VerifiedBadge } from "./verified-badge";
+import { Artist } from "@/types/artist.type";
 
 interface ArtistCardProps {
   artist: {
-    id: string
-    user: { username: string }
-    profileImage?: string
-    totalFollowers: number
-    isVerified: boolean
-  }
+    id: string;
+    stageName: string;
+    profileImage: string | null;
+    totalFollowers: number;
+    isVerified: boolean;
+  };
 }
 
 export function ArtistCard({ artist }: ArtistCardProps) {
@@ -23,7 +24,7 @@ export function ArtistCard({ artist }: ArtistCardProps) {
           {artist.profileImage ? (
             <Image
               src={artist.profileImage}
-              alt={artist.user.username}
+              alt={artist.stageName || "Artist Image"}
               fill
               className="object-cover"
             />
@@ -36,7 +37,7 @@ export function ArtistCard({ artist }: ArtistCardProps) {
 
         {/* Artist Info */}
         <div className="flex items-center justify-center gap-1 mb-1">
-          <p className="font-semibold text-sm truncate">{artist.user.username}</p>
+          <p className="font-semibold text-sm truncate">{artist.stageName}</p>
           {artist.isVerified && <VerifiedBadge />}
         </div>
 
@@ -45,5 +46,5 @@ export function ArtistCard({ artist }: ArtistCardProps) {
         </p>
       </div>
     </Link>
-  )
+  );
 }
