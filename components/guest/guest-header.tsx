@@ -27,6 +27,7 @@ export function GuestHeader({ profile, isArtist }: GuestHeaderProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const supabase = createClient();
+  console.log("Is Artist:", isArtist);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

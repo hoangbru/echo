@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Play, Heart } from "lucide-react";
 import { usePlayer, Track } from "@/lib/contexts/player-context";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 interface TrackCardProps {
   track: Track; // Ép kiểu chuẩn từ Context thay vì tự định nghĩa lỏng lẻo

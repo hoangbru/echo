@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "../supabase/server";
 
 export const TrackService = {
   async getTrendingTracks(limit: number = 10) {
@@ -20,7 +20,7 @@ export const TrackService = {
       .limit(limit);
 
     if (error) {
-      console.error("Đã xảy ra lỗi, vui lòng thử lại sau!");
+      console.error("Đã có lỗi xảy ra, vui lòng thử lại sau!");
       return [];
     }
 
@@ -57,7 +57,7 @@ export const TrackService = {
       .limit(limit);
 
     if (error) {
-      console.error("Đã xảy ra lỗi, vui lòng thử lại sau!");
+      console.error("Đã có lỗi xảy ra, vui lòng thử lại sau!");
       return [];
     }
 

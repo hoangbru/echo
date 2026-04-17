@@ -1,5 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
-import { create } from "domain";
+import { createClient } from "../supabase/server";
 
 const supabase = createClient();
 
@@ -14,7 +13,7 @@ export const ArtistService = {
       .limit(limit);
 
     if (error) {
-      console.error("Đã xảy ra lỗi, vui lòng thử lại sau!");
+      console.error("Đã có lỗi xảy ra, vui lòng thử lại sau!");
       return [];
     }
 
@@ -36,7 +35,7 @@ export const ArtistService = {
       .single();
 
     if (error) {
-      console.error("Đã xảy ra lỗi, vui lòng thử lại sau!");
+      console.error("Đã có lỗi xảy ra, vui lòng thử lại sau!");
       return null;
     }
 
@@ -59,20 +58,15 @@ export const ArtistService = {
     };
   },
 
-  async getCurrentArtistProfile() {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return null;
-
+  async getCurrentArtistProfile(userId: string) {
     const { data, error } = await supabase
       .from("artist")
       .select("*")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .single();
 
     if (error) {
-      console.error("Đã xảy ra lỗi, vui lòng thử lại sau!");
+      console.error("Đã có lỗi xảy ra, vui lòng thử lại sau!");
       return null;
     }
 
@@ -93,45 +87,5 @@ export const ArtistService = {
       updatedAt: data.updated_at || null,
       verifiedAt: data.verified_at || null,
     };
-  },
-};
-
-export const ArtistStudioService = {
-  async getMyStudioTracks(
-    userId: string,
-    page: number = 0,
-    limit: number = 10,
-  ) {
-    const from = page * limit;
-    const to = from + limit - 1;
-
-    const { data, error, count } = await supabase
-      .from("track")
-      .select(
-        `
-        id, title, duration, audio_url, image_url, created_at,
-        artists!inner ( user_id ) 
-      `,
-        { count: "exact" },
-      ) // Đếm tổng số bài để làm phân trang
-      .eq("artists.user_id", userId) // Lọc thẳng qua bảng joined!
-      .order("created_at", { ascending: false })
-      .range(from, to);
-
-    if (error) {
-      console.error("Lỗi lấy bài hát Studio");
-      return { tracks: [], total: 0 };
-    }
-
-    const formattedTracks = data.map((t: any) => ({
-      id: t.id,
-      title: t.title,
-      duration: t.duration || 0,
-      audioUrl: t.audio_url,
-      imageUrl: t.image_url,
-      createdAt: t.created_at,
-    }));
-
-    return { tracks: formattedTracks, total: count || 0 };
   },
 };

@@ -1,5 +1,4 @@
-import { ArtistService } from "./artist.service";
-import { TrackService } from "./track.service";
-import { UserService } from "./user.service";
-
-export { TrackService, ArtistService, UserService };
+export * from "./artist.service";
+export * from "./user.service";
+export * from "./track.service";
+export * from "./artist-studio.service";

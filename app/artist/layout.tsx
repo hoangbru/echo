@@ -17,7 +17,7 @@ export default async function ArtistLayout({
   } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
 
-  const artistProfile = await ArtistService.getCurrentArtistProfile();
+  const artistProfile = await ArtistService.getCurrentArtistProfile(user.id);
 
   if (!artistProfile || !artistProfile.isVerified) {
     redirect("/403");

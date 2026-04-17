@@ -1,5 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
-import { User } from "@/types/user.type";
+import { createClient } from "../supabase/server";
 
 const supabase = createClient();
 
@@ -12,7 +11,7 @@ export const UserService = {
       .maybeSingle();
 
     if (error) {
-      console.error("Đã xảy ra lỗi, vui lòng thử lại sau!");
+      console.error("Đã có lỗi xảy ra, vui lòng thử lại sau!");
       return null;
     }
 

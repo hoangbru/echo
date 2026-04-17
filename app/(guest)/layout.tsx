@@ -24,7 +24,8 @@ export default async function GuestLayout({
 
   let isArtist = false;
   if (user) {
-    const artistProfile = await ArtistService.getCurrentArtistProfile();
+    const artistProfile = await ArtistService.getCurrentArtistProfile(user.id);
+    console.log("Artist Profile:", artistProfile);
 
     if (artistProfile) {
       isArtist = true;

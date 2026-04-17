@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { formatDuration } from "@/lib/format";
+import { formatDuration } from "@/lib/utils/format";
 
 export default function EditTrackPage() {
   const router = useRouter();

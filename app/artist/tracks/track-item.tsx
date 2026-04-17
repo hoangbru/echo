@@ -1,18 +1,10 @@
 "use client";
 
-import {
-  Edit2,
-  Trash2,
-  Play,
-  Pause,
-  Globe,
-  Lock,
-  MoreVertical,
-  Loader2,
-} from "lucide-react";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import Image from "next/image";
+import { Edit2, Trash2, Play, Pause, Globe, Lock, Loader2 } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -23,14 +15,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
+import { Track } from "@/types/track.type";
+
 export function TrackItem({
   track,
   onEdit,
   onDelete,
 }: {
-  track: any;
-  onEdit: (t: any) => void;
-  onDelete: (track: any) => Promise<void>;
+  track: Track;
+  onEdit: (t: Track) => void;
+  onDelete: (track: Track) => Promise<void>;
 }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -67,12 +61,14 @@ export function TrackItem({
           </div>
           <div className="min-w-0">
             <p className="text-white font-medium truncate">{track.title}</p>
-            <p className="text-xs text-gray-500">{track.isrc || "No ISRC"}</p>
+            <p className="text-xs text-gray-500">
+              {track.isrc || "No ISRC"}
+            </p>
           </div>
         </div>
       </td>
       <td className="py-4 px-4 text-sm text-gray-400">
-        {track.Genre?.name || "N/A"}
+        {track.genre?.name || "N/A"}
       </td>
       <td className="py-4 px-4 text-sm text-gray-400">
         {new Date(track.releaseDate).toLocaleDateString("vi-VN")}

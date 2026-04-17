@@ -55,7 +55,7 @@ export function ArtistHeader({ onOpenSidebar, profile }: ArtistHeaderProps) {
         </button>
         {/* Tiêu đề có thể thay đổi tùy trang nếu muốn, ở đây để chung */}
         <h1 className="text-xl font-bold text-white hidden sm:block">
-          Khu Vực Sáng Tạo
+          My Studio
         </h1>
       </div>
 
