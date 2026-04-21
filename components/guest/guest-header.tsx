@@ -27,7 +27,6 @@ export function GuestHeader({ profile, isArtist }: GuestHeaderProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const supabase = createClient();
-  console.log("Is Artist:", isArtist);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -81,7 +80,7 @@ export function GuestHeader({ profile, isArtist }: GuestHeaderProps) {
             <input
               type="search"
               placeholder="Tìm kiếm bài hát, nghệ sĩ..."
-              className="w-full rounded-full bg-[#18181b] border border-white/10 px-4 py-2.5 pl-11 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/50 transition-all"
+              className="w-full rounded-full bg-card border border-white/10 px-4 py-2.5 pl-11 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/50 transition-all"
             />
           </div>
         </div>
@@ -97,29 +96,29 @@ export function GuestHeader({ profile, isArtist }: GuestHeaderProps) {
               {profile.avatar ? (
                 <Image
                   src={profile.avatar}
-                  alt={profile.fullName || "Profile"}
+                  alt={profile.full_name || "Profile"}
                   fill
                   className="object-cover"
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-pink-500 to-purple-600 text-white font-bold uppercase text-lg">
-                  {(profile.fullName || profile.username || "U")[0]}
+                  {(profile.full_name || profile.username || "U")[0]}
                 </div>
               )}
             </div>
           </button>
 
           {isMenuOpen && (
-            <div className="absolute top-full right-0 mt-3 w-64 bg-[#18181b] border border-white/10 rounded-2xl shadow-[0_15px_40px_rgba(0,0,0,0.6)] py-2 z-50 origin-top-right animate-in fade-in zoom-in-95 duration-200">
+            <div className="absolute top-full right-0 mt-3 w-64 bg-card border border-white/10 rounded-2xl shadow-[0_15px_40px_rgba(0,0,0,0.6)] py-2 z-50 origin-top-right animate-in fade-in zoom-in-95 duration-200">
               <div className="px-4 py-3 border-b border-white/5 mb-2 flex items-center gap-3">
                 <div className="h-12 w-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center text-white font-bold uppercase text-xl flex-shrink-0">
-                  {(profile.fullName || profile.username || "U")[0]}
+                  {(profile.full_name || profile.username || "U")[0]}
                 </div>
                 <div className="overflow-hidden">
                   <p className="text-sm font-bold text-white truncate">
-                    {profile.fullName || profile.username}
+                    {profile.full_name || profile.username}
                   </p>
-                  {profile.isPremium ? (
+                  {profile.is_premium ? (
                     <span className="text-xs font-semibold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400">
                       Premium Member
                     </span>
@@ -151,7 +150,7 @@ export function GuestHeader({ profile, isArtist }: GuestHeaderProps) {
                   <span className="text-sm font-medium">Hồ sơ của tôi</span>
                 </Link>
 
-                {!profile.isPremium && (
+                {!profile.is_premium && (
                   <Link
                     href="/premium"
                     onClick={() => setIsMenuOpen(false)}

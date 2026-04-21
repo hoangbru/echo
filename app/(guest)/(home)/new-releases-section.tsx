@@ -2,11 +2,13 @@ import { ScrollSlider } from "@/components/scroll-slider";
 import { TrackCard } from "@/components/track-card";
 
 import { TrackService } from "@/lib/services";
+import { createClient } from "@/lib/supabase/server";
 
 type Props = {};
 
 const NewReleasesSection = async (props: Props) => {
-  const newReleases = await TrackService.getNewReleases();
+  const supabase = createClient();
+  const newReleases = await TrackService.getNewReleases(supabase);
   return (
     <section>
       <h2 className="text-2xl md:text-3xl font-bold mb-6 text-foreground">

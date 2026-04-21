@@ -44,7 +44,7 @@ export function RequestCard({
   };
 
   return (
-    <div className="bg-[#18181b] rounded-xl border border-white/10 p-6 shadow-lg hover:border-white/20 transition-colors">
+    <div className="bg-card rounded-xl border border-white/10 p-6 shadow-lg hover:border-white/20 transition-colors">
       <div className="flex flex-col sm:flex-row items-start gap-6">
         {/* Avatar */}
         <div className="relative w-16 h-16 rounded-full overflow-hidden flex-shrink-0 border-2 border-white/10">

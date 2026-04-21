@@ -138,7 +138,7 @@ export default function BecomeArtistPage() {
         </p>
       </div>
 
-      <div className="bg-[#18181b] border border-white/10 rounded-xl p-8 max-w-2xl mx-auto">
+      <div className="bg-card border border-white/10 rounded-xl p-8 max-w-2xl mx-auto">
         {error && (
           <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-md text-red-500 text-sm mb-6">
             {error}

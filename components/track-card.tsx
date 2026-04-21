@@ -4,12 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Play, Heart } from "lucide-react";
-import { usePlayer, Track } from "@/lib/contexts/player-context";
+import { usePlayer } from "@/lib/contexts/player-context";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/utils";
+import { Track } from "@/types";
 
 interface TrackCardProps {
-  track: Track; // Ép kiểu chuẩn từ Context thay vì tự định nghĩa lỏng lẻo
+  track: Track;
   onPlayTrack?: (track: Track) => void;
 }
 
@@ -20,7 +21,7 @@ export function TrackCard({ track, onPlayTrack }: TrackCardProps) {
 
   const handlePlay = (e: React.MouseEvent) => {
     e.preventDefault();
-    play(track); // Không cần as any nữa
+    play(track);
     onPlayTrack?.(track);
   };
 
@@ -40,9 +41,9 @@ export function TrackCard({ track, onPlayTrack }: TrackCardProps) {
       >
         {/* Album Cover */}
         <div className="relative mb-4 aspect-square rounded-lg overflow-hidden bg-muted">
-          {track.coverImage ? (
+          {track.image_url ? (
             <Image
-              src={track.coverImage}
+              src={track.image_url}
               alt={track.title}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -78,7 +79,7 @@ export function TrackCard({ track, onPlayTrack }: TrackCardProps) {
             {track.title}
           </p>
           <p className="text-xs text-muted-foreground truncate hover:text-primary transition mt-1">
-            {track.artist}
+            {track.artist_id}
           </p>
         </div>
 

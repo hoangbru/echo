@@ -102,7 +102,7 @@ export default function ArtistAlbumsPage() {
           <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
         </div>
       ) : albums.length === 0 ? (
-        <div className="text-center py-20 bg-[#18181b] rounded-2xl border border-white/5">
+        <div className="text-center py-20 bg-card rounded-2xl border border-white/5">
           <p className="text-gray-500">
             Bạn chưa có Album nào. Hãy tạo mới ngay!
           </p>
@@ -112,7 +112,7 @@ export default function ArtistAlbumsPage() {
           {albums.map((album) => (
             <div
               key={album.id}
-              className="group bg-[#18181b] border border-white/5 rounded-2xl p-4 hover:bg-white/10 transition-all"
+              className="group bg-card border border-white/5 rounded-2xl p-4 hover:bg-white/10 transition-all"
             >
               <div className="relative aspect-square rounded-xl overflow-hidden mb-4 shadow-lg border border-white/10">
                 <Image
@@ -173,7 +173,7 @@ export default function ArtistAlbumsPage() {
         open={!!albumToDelete}
         onOpenChange={(open) => !open && setAlbumToDelete(null)}
       >
-        <DialogContent className="bg-[#18181b] border-white/10 text-white">
+        <DialogContent className="bg-card border-white/10 text-white">
           <DialogHeader>
             <DialogTitle>Xóa Album này?</DialogTitle>
             <DialogDescription className="text-gray-400">

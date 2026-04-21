@@ -19,13 +19,12 @@ export default async function GuestLayout({
 
   let dbProfile = null;
   if (user) {
-    dbProfile = await UserService.getUserProfileById(user.id);
+    dbProfile = await UserService.getUserProfileById(supabase, user.id);
   }
 
   let isArtist = false;
   if (user) {
-    const artistProfile = await ArtistService.getCurrentArtistProfile(user.id);
-    console.log("Artist Profile:", artistProfile);
+    const artistProfile = await ArtistService.getCurrentArtistProfile(supabase, user.id);
 
     if (artistProfile) {
       isArtist = true;

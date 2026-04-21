@@ -31,7 +31,7 @@ export function ArtistSidebar({
 
   return (
     <aside
-      className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-[#18181b] border-r border-white/10 transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
+      className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-card border-r border-white/10 transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
     >
       <div className="flex flex-col h-full p-6">
         <div className="flex items-center gap-2 mb-10 px-2">

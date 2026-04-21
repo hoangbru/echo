@@ -11,7 +11,7 @@ const MOCK_TRACKS = [
     genre: 'Electronic',
     streams: 15234,
     likes: 342,
-    imageUrl: 'https://images.unsplash.com/photo-1614613535308-eb5fbd8d2c17?w=400&h=400&fit=crop',
+    image_url: 'https://images.unsplash.com/photo-1614613535308-eb5fbd8d2c17?w=400&h=400&fit=crop',
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
   },
   {
@@ -23,7 +23,7 @@ const MOCK_TRACKS = [
     genre: 'Electronic',
     streams: 8932,
     likes: 215,
-    imageUrl: 'https://images.unsplash.com/photo-1511379938547-c1f69b13d835?w=400&h=400&fit=crop',
+    image_url: 'https://images.unsplash.com/photo-1511379938547-c1f69b13d835?w=400&h=400&fit=crop',
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
   },
 ];

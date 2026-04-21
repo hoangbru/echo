@@ -2,11 +2,13 @@ import { ArtistCard } from "@/components/artist-card";
 import { ScrollSlider } from "@/components/scroll-slider";
 
 import { ArtistService } from "@/lib/services";
+import { createClient } from "@/lib/supabase/server";
 
 type Props = {};
 
 const FeaturedArtistsSection = async (props: Props) => {
-  const featuredArtists = await ArtistService.getFeaturedArtists();
+  const supabase = createClient();
+  const featuredArtists = await ArtistService.getFeaturedArtists(supabase);
 
   return (
     <section>

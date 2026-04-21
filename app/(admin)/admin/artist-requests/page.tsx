@@ -106,7 +106,7 @@ export default function ArtistRequestsPage() {
           <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
         </div>
       ) : requests.length === 0 ? (
-        <div className="text-center py-20 bg-[#18181b] border border-white/10 rounded-xl">
+        <div className="text-center py-20 bg-card border border-white/10 rounded-xl">
           <p className="text-gray-400">Không có đơn đăng ký nào.</p>
         </div>
       ) : (
@@ -131,7 +131,7 @@ export default function ArtistRequestsPage() {
                 <button
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="p-2 rounded-lg bg-[#18181b] border border-white/10 text-white disabled:opacity-50 hover:bg-white/5 transition"
+                  className="p-2 rounded-lg bg-card border border-white/10 text-white disabled:opacity-50 hover:bg-white/5 transition"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
@@ -140,7 +140,7 @@ export default function ArtistRequestsPage() {
                     setCurrentPage((p) => Math.min(totalPages, p + 1))
                   }
                   disabled={currentPage === totalPages}
-                  className="p-2 rounded-lg bg-[#18181b] border border-white/10 text-white disabled:opacity-50 hover:bg-white/5 transition"
+                  className="p-2 rounded-lg bg-card border border-white/10 text-white disabled:opacity-50 hover:bg-white/5 transition"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>

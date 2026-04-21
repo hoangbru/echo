@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import Image from "next/image";
 import {
   Globe,
@@ -6,18 +7,12 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { useRef } from "react";
 
-interface Album {
-  id: string;
-  title: string;
-  coverImage: string;
-  isPublished: boolean;
-}
+import { AlbumCard } from "@/types";
 
 interface AlbumSelectorProps {
-  albums: Album[];
-  selectedAlbumId: string;
+  albums: AlbumCard[];
+  selectedAlbumId: string | undefined;
   onSelect: (id: string) => void;
 }
 
@@ -28,10 +23,9 @@ export function AlbumSelector({
 }: AlbumSelectorProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Hàm xử lý cuộn khi bấm nút
   const scroll = (direction: "left" | "right") => {
     if (scrollContainerRef.current) {
-      const scrollAmount = 250; // Khoảng cách trượt mỗi lần bấm (tương đương ~1.5 cái card)
+      const scrollAmount = 250;
       scrollContainerRef.current.scrollBy({
         left: direction === "left" ? -scrollAmount : scrollAmount,
         behavior: "smooth",
@@ -51,26 +45,22 @@ export function AlbumSelector({
         Chọn Album (Nếu có)
       </label>
 
-      {/* Thêm class group để bắt sự kiện hover cho 2 nút bấm */}
       <div className="relative group">
-        {/* Nút trượt sang TRÁI (Bình thường ẩn, di chuột vào khu vực album mới hiện) */}
         <button
           type="button"
           onClick={(e) => {
-            e.preventDefault(); // Tránh submit form nếu nằm trong thẻ <form>
+            e.preventDefault();
             scroll("left");
           }}
-          className="absolute left-0 top-1/2 -translate-y-[60%] -ml-4 z-10 bg-[#18181b]/90 backdrop-blur text-white p-2 rounded-full border border-white/10 opacity-0 group-hover:opacity-100 transition-all hover:bg-pink-500 hover:border-pink-500 hover:scale-110 shadow-xl"
+          className="absolute left-0 top-1/2 -translate-y-[60%] -ml-4 z-10 bg-card/90 backdrop-blur text-white p-2 rounded-full border border-white/10 opacity-0 group-hover:opacity-100 transition-all hover:bg-pink-500 hover:border-pink-500 hover:scale-110 shadow-xl"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
 
-        {/* CONTAINER CHỨA ALBUM */}
         <div
           ref={scrollContainerRef}
           className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory hide-scrollbar"
         >
-          {/* Nút Huỷ chọn (Single) */}
           <div
             onClick={() => onSelect("")}
             className={`shrink-0 w-32 p-3 rounded-xl border-2 cursor-pointer transition-all snap-start flex flex-col items-center justify-center text-center ${
@@ -85,7 +75,6 @@ export function AlbumSelector({
             <p className="text-xs font-medium text-white">Phát hành đơn</p>
           </div>
 
-          {/* Danh sách Album */}
           {albums.map((album) => {
             const isSelected = selectedAlbumId === album.id;
             return (
@@ -100,13 +89,13 @@ export function AlbumSelector({
               >
                 <div className="relative aspect-square w-full rounded-lg overflow-hidden mb-2">
                   <Image
-                    src={album.coverImage || "/default-cover.jpg"}
+                    src={album.cover_image || "/default-cover.jpg"}
                     alt={album.title}
                     fill
                     className="object-cover"
                   />
                   <div className="absolute top-1 right-1 bg-black/60 rounded-full p-1 backdrop-blur-sm">
-                    {album.isPublished ? (
+                    {album.is_published ? (
                       <Globe className="w-3 h-3 text-green-400" />
                     ) : (
                       <Lock className="w-3 h-3 text-yellow-400" />
@@ -120,9 +109,8 @@ export function AlbumSelector({
                   {album.title}
                 </p>
 
-                {/* Dấu tích xanh khi được chọn */}
                 {isSelected && (
-                  <div className="absolute -top-2 -right-2 bg-[#18181b] rounded-full shadow-lg">
+                  <div className="absolute -top-2 -right-2 bg-card rounded-full shadow-lg">
                     <CheckCircle2 className="w-6 h-6 text-pink-500 fill-pink-500/20" />
                   </div>
                 )}
@@ -131,14 +119,13 @@ export function AlbumSelector({
           })}
         </div>
 
-        {/* Nút trượt sang PHẢI */}
         <button
           type="button"
           onClick={(e) => {
             e.preventDefault();
             scroll("right");
           }}
-          className="absolute right-0 top-1/2 -translate-y-[60%] -mr-4 z-10 bg-[#18181b]/90 backdrop-blur text-white p-2 rounded-full border border-white/10 opacity-0 group-hover:opacity-100 transition-all hover:bg-pink-500 hover:border-pink-500 hover:scale-110 shadow-xl"
+          className="absolute right-0 top-1/2 -translate-y-[60%] -mr-4 z-10 bg-card/90 backdrop-blur text-white p-2 rounded-full border border-white/10 opacity-0 group-hover:opacity-100 transition-all hover:bg-pink-500 hover:border-pink-500 hover:scale-110 shadow-xl"
         >
           <ChevronRight className="w-5 h-5" />
         </button>

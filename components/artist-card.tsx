@@ -42,7 +42,7 @@ export function ArtistCard({ artist }: ArtistCardProps) {
         </div>
 
         <p className="text-xs text-neutral-400">
-          {artist.totalFollowers.toLocaleString()} followers
+          {artist.totalFollowers?.toLocaleString() || 0} followers
         </p>
       </div>
     </Link>

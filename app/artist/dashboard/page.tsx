@@ -81,7 +81,7 @@ export default function ArtistDashboardPage() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-black text-white tracking-tight">
-          Tổng Quan Trình Diễn
+          Tổng Quan
         </h1>
         <p className="text-gray-400 mt-2">
           Theo dõi lượt nghe và sự phát triển của bạn trong 30 ngày qua.
@@ -93,7 +93,7 @@ export default function ArtistDashboardPage() {
         {STATS.map((stat, index) => (
           <div
             key={index}
-            className="bg-[#18181b] border border-white/10 rounded-2xl p-6 shadow-lg hover:border-pink-500/30 transition-all group"
+            className="bg-card border border-white/10 rounded-2xl p-6 shadow-lg hover:border-pink-500/30 transition-all group"
           >
             <div className="flex justify-between items-start mb-4">
               <div className="w-12 h-12 rounded-xl bg-pink-500/10 flex items-center justify-center group-hover:bg-pink-500/20 transition-colors">
@@ -125,7 +125,7 @@ export default function ArtistDashboardPage() {
       {/* Khu vực Biểu đồ & Top Tracks */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Biểu đồ (Cột lớn chiếm 2/3) */}
-        <div className="lg:col-span-2 bg-[#18181b] border border-white/10 rounded-2xl p-6 shadow-lg flex flex-col">
+        <div className="lg:col-span-2 bg-card border border-white/10 rounded-2xl p-6 shadow-lg flex flex-col">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-lg font-bold text-white">
               Lượt Nghe Theo Thời Gian
@@ -172,7 +172,7 @@ export default function ArtistDashboardPage() {
         </div>
 
         {/* Danh sách Bài Hát Hàng Đầu (Cột nhỏ chiếm 1/3) */}
-        <div className="bg-[#18181b] border border-white/10 rounded-2xl p-6 shadow-lg">
+        <div className="bg-card border border-white/10 rounded-2xl p-6 shadow-lg">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-lg font-bold text-white">
               Bài Hát Phổ Biến Nhất

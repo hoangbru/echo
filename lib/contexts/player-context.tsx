@@ -1,6 +1,7 @@
 "use client";
 
-import React, {
+import { Track } from "@/types";
+import {
   createContext,
   useContext,
   useReducer,
@@ -11,20 +12,6 @@ import React, {
 } from "react";
 
 export type RepeatMode = "off" | "all" | "one";
-
-export interface Track {
-  id: string;
-  title: string;
-  artist: string;
-  artistId: string;
-  album?: string;
-  albumId?: string;
-  duration: number;
-  audioUrl: string;
-  coverImage?: string;
-  rating?: number;
-  isExplicit?: boolean;
-}
 
 export interface PlayerState {
   currentTrack: Track | null;
@@ -322,7 +309,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       */}
       <audio
         ref={audioRef}
-        src={state.currentTrack?.audioUrl || ""}
+        src={state.currentTrack?.audio_url || ""}
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleEnded}
         onPlay={() => {

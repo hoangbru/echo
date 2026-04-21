@@ -10,7 +10,7 @@ interface FileUploaderProps {
   musicInputRef: RefObject<HTMLInputElement>;
   onCoverChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onMusicChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  albumCoverUrl?: string;
+  albumCoverUrl?: string | null;
   onClearCover: () => void;
 }
 
@@ -28,7 +28,7 @@ export function FileUploader({
 
   return (
     <div className="space-y-6">
-      <div className="bg-[#18181b] p-6 rounded-2xl border border-white/10">
+      <div className="bg-card p-6 rounded-2xl border border-white/10">
         <label className="text-sm font-bold text-gray-300 block mb-4">
           Ảnh bìa (Artwork){" "}
           {albumCoverUrl && !coverPreview ? (
@@ -100,7 +100,7 @@ export function FileUploader({
         )}
       </div>
 
-      <div className="bg-[#18181b] p-6 rounded-2xl border border-white/10">
+      <div className="bg-card p-6 rounded-2xl border border-white/10">
         <label className="text-sm font-bold text-gray-300 block mb-4">
           File âm thanh
         </label>

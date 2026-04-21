@@ -35,7 +35,7 @@ export function AdminHeader({ onOpenSidebar, adminProfile }: AdminHeaderProps) {
   };
 
   return (
-    <header className="bg-[#18181b] border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-20">
+    <header className="bg-card border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-20">
       <div className="flex items-center gap-4">
         <button
           onClick={onOpenSidebar}

@@ -1,10 +1,7 @@
-import { createClient } from "../supabase/server";
-
-const supabase = createClient();
+import { ArtistDB } from "@/types/artist.type";
 
 export const ArtistService = {
-  async getFeaturedArtists(limit: number = 6) {
-    const supabase = createClient();
+  async getFeaturedArtists(supabase: any, limit: number = 6) {
 
     const { data, error } = await supabase
       .from("artist")
@@ -17,16 +14,10 @@ export const ArtistService = {
       return [];
     }
 
-    return data.map((a: any) => ({
-      id: a.id,
-      stageName: a.stage_name,
-      profileImage: a.profile_image,
-      totalFollowers: 0,
-      isVerified: a.is_verified || false,
-    }));
+    return data;
   },
 
-  async getPublicArtistProfile(artistId: string) {
+  async getPublicArtistProfile(supabase: any, artistId: string) {
     const { data, error } = await supabase
       .from("artists")
       .select("*")
@@ -39,26 +30,10 @@ export const ArtistService = {
       return null;
     }
 
-    return {
-      id: data.id,
-      userId: data.user_id,
-      bio: data.bio || "",
-      profileImage: data.profile_image || null,
-      bannerImage: data.banner_image || null,
-      isVerified: data.is_verified || false,
-      socialLinks: data.social_links || null,
-      stageName: data.stage_name || null,
-      totalAlbums: data.total_albums || 0,
-      totalFollowers: data.total_followers || 0,
-      totalStreams: data.total_streams || 0,
-      totalTracks: data.total_tracks || 0,
-      createdAt: data.created_at || null,
-      updatedAt: data.updated_at || null,
-      verifiedAt: data.verified_at || null,
-    };
+    return data;
   },
 
-  async getCurrentArtistProfile(userId: string) {
+  async getCurrentArtistProfile(supabase: any, userId: string): Promise<ArtistDB | null> {
     const { data, error } = await supabase
       .from("artist")
       .select("*")
@@ -66,26 +41,9 @@ export const ArtistService = {
       .single();
 
     if (error) {
-      console.error("Đã có lỗi xảy ra, vui lòng thử lại sau!");
-      return null;
+      throw new Error("Đã có lỗi xảy ra, vui lòng thử lại sau!");
     }
 
-    return {
-      id: data.id,
-      userId: data.user_id,
-      bio: data.bio || "",
-      profileImage: data.profile_image || null,
-      bannerImage: data.banner_image || null,
-      isVerified: data.is_verified || false,
-      socialLinks: data.social_links || null,
-      stageName: data.stage_name || null,
-      totalAlbums: data.total_albums || 0,
-      totalFollowers: data.total_followers || 0,
-      totalStreams: data.total_streams || 0,
-      totalTracks: data.total_tracks || 0,
-      createdAt: data.created_at || null,
-      updatedAt: data.updated_at || null,
-      verifiedAt: data.verified_at || null,
-    };
+    return data;
   },
 };

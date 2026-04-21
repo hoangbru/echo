@@ -4,11 +4,13 @@ import { ScrollSlider } from "@/components/scroll-slider";
 import { TrackCard } from "@/components/track-card";
 
 import { TrackService } from "@/lib/services";
+import { createClient } from "@/lib/supabase/server";
 
 type Props = {};
 
 const TrendingTracksSection = async (props: Props) => {
-  const trendingTracks = await TrackService.getTrendingTracks();
+  const supabase = createClient();
+  const trendingTracks = await TrackService.getTrendingTracks(supabase);
 
   return (
     <section>

@@ -3,11 +3,13 @@ import { Sparkles } from "lucide-react";
 
 import { PlayAllButton } from "@/components/play-all-button";
 import { TrackService } from "@/lib/services";
+import { createClient } from "@/lib/supabase/server";
 
 type Props = {};
 
 const HeroSection = async(props: Props) => {
-  const trendingTracks = await TrackService.getTrendingTracks();
+  const supabase = createClient();
+  const trendingTracks = await TrackService.getTrendingTracks(supabase);
 
   return (
     <div className="relative bg-gradient-to-b from-primary/20 to-background p-8 md:p-12 mb-8">

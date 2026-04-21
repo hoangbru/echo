@@ -244,7 +244,7 @@ export default function EditAlbumPage() {
           </label>
           <div
             onClick={() => fileInputRef.current?.click()}
-            className="aspect-square rounded-2xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center bg-[#18181b] cursor-pointer hover:border-pink-500/50 transition-all relative overflow-hidden group"
+            className="aspect-square rounded-2xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center bg-card cursor-pointer hover:border-pink-500/50 transition-all relative overflow-hidden group"
           >
             {coverPreview ? (
               <>
@@ -276,7 +276,7 @@ export default function EditAlbumPage() {
         </div>
 
         {/* Cột phải: Thông tin */}
-        <div className="col-span-1 md:col-span-2 space-y-5 bg-[#18181b] p-6 rounded-2xl border border-white/10 shadow-xl">
+        <div className="col-span-1 md:col-span-2 space-y-5 bg-card p-6 rounded-2xl border border-white/10 shadow-xl">
           <div>
             <label className="block text-xs font-bold text-gray-400 uppercase mb-2">
               Tên Album *
