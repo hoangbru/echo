@@ -1,38 +1,33 @@
 "use client";
 
-import { Filter, Search } from "lucide-react";
 import { useState, useEffect } from "react";
+import { Filter, Search } from "lucide-react";
+
+import { useDebounce } from "@/hooks/use-debounce";
+import { useQueryString } from "@/hooks/use-query-string";
 
 export interface TrackToolbarProps {
-  search: string;
-  setSearch: (value: string) => void;
-  status: string;
-  setStatus: (value: string) => void;
-  setCurrentPage: (page: number) => void;
+  currentSearch: string;
+  currentStatus: string;
 }
 
 export default function TrackToolbar({
-  search,
-  setSearch,
-  status,
-  setStatus,
-  setCurrentPage,
+  currentSearch,
+  currentStatus,
 }: TrackToolbarProps) {
-  const [localSearch, setLocalSearch] = useState(search);
+  const [localSearch, setLocalSearch] = useState(currentSearch);
+  const { updateURL } = useQueryString();
+  const debouncedSearch = useDebounce(localSearch, 500);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (localSearch !== search) {
-        setSearch(localSearch);
-      }
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [localSearch, search, setSearch]);
+    if (debouncedSearch !== currentSearch) {
+      updateURL("search", debouncedSearch);
+    }
+  }, [debouncedSearch, currentSearch, updateURL]);
 
   useEffect(() => {
-    setLocalSearch(search);
-  }, [search]);
+    setLocalSearch(currentSearch);
+  }, [currentSearch]);
 
   return (
     <div className="flex flex-col md:flex-row gap-4 items-center bg-card p-4 rounded-xl border border-border shadow-sm">
@@ -50,9 +45,9 @@ export default function TrackToolbar({
       <div className="flex items-center gap-2 w-full md:w-auto">
         <Filter className="w-4 h-4 text-muted-foreground ml-2 hidden md:block" />
         <select
-          value={status}
+          value={currentStatus}
           onChange={(e) => {
-            setStatus(e.target.value);
+            updateURL("status", e.target.value);
           }}
           className="w-full md:w-auto bg-input border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none cursor-pointer"
         >

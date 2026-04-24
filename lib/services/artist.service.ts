@@ -1,8 +1,5 @@
-import { ArtistDB } from "@/types/artist.type";
-
 export const ArtistService = {
   async getFeaturedArtists(supabase: any, limit: number = 6) {
-
     const { data, error } = await supabase
       .from("artist")
       .select(`id, stage_name, profile_image, is_verified`)
@@ -33,17 +30,11 @@ export const ArtistService = {
     return data;
   },
 
-  async getCurrentArtistProfile(supabase: any, userId: string): Promise<ArtistDB | null> {
-    const { data, error } = await supabase
+  async getCurrentArtistProfile(supabase: any, userId: string) {
+    return await supabase
       .from("artist")
       .select("*")
       .eq("user_id", userId)
-      .single();
-
-    if (error) {
-      throw new Error("Đã có lỗi xảy ra, vui lòng thử lại sau!");
-    }
-
-    return data;
+      .maybeSingle();
   },
 };

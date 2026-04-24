@@ -4,67 +4,30 @@ import { getFilePath } from "../utils/file";
 
 export const TrackService = {
   async getTrendingTracks(supabase: any, limit: number = 10) {
-    const { data, error } = await supabase
+    return await supabase
       .from("track")
-      .select(
-        `
-        id, title, duration, audio_url, image_url,
-        artist:artist (
-          id,
-          user:user ( username )
-        ),
-        album:album ( id, title )
-      `,
-      )
+      .select(`*`)
       .eq("is_published", true)
+      .order("total_streams", { ascending: false })
       .limit(limit);
-
-    if (error) {
-      console.error("Đã có lỗi xảy ra, vui lòng thử lại sau!");
-      return [];
-    }
-
-    return data;
   },
 
   async getNewReleases(supabase: any, limit: number = 10) {
-    const { data, error } = await supabase
+    return await supabase
       .from("track")
-      .select(
-        `
-        id, title, duration, audio_url, image_url, created_at,
-        artist:artist (
-          id,
-          user:user ( username )
-        ),
-        album:album ( id, title )
-      `,
-      )
+      .select(`*`)
       .eq("is_published", true)
       .order("created_at", { ascending: false })
       .limit(limit);
-
-    if (error) {
-      console.error("Đã có lỗi xảy ra, vui lòng thử lại sau!");
-      return [];
-    }
-
-    return data;
   },
 
   async getTrackById(supabase: any, trackId: string) {
-    const { data, error } = await supabase
+    return await supabase
       .from("track")
       .select("*")
+      .eq("is_published", true)
       .eq("id", trackId)
       .single();
-
-    if (error) {
-      console.error("Đã có lỗi xảy ra, vui lòng thử lại sau!", error);
-      return null;
-    }
-
-    return data;
   },
 
   async createTrack({

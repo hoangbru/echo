@@ -1,7 +1,7 @@
 "use client";
 
-import { Fragment, useEffect, useState, useTransition } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Fragment, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -14,6 +14,7 @@ import { ITEMS_PER_PAGE } from "@/constants/pagination";
 import { createClient } from "@/lib/supabase/client";
 import { Track } from "@/types";
 import { TrackService } from "@/lib/services";
+import { useQueryString } from "@/hooks/use-query-string";
 
 interface TrackTableProps {
   initialTracks: Track[];
@@ -31,11 +32,9 @@ export default function TrackTable({
   currentStatus,
 }: TrackTableProps) {
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const supabase = createClient();
 
-  const [isPending, startTransition] = useTransition();
+  const { updateURL, isPending, startTransition } = useQueryString();
   const [tracks, setTracks] = useState<Track[]>(initialTracks);
   const [trackToDelete, setTrackToDelete] = useState<Track | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -45,19 +44,6 @@ export default function TrackTable({
   useEffect(() => {
     setTracks(initialTracks);
   }, [initialTracks]);
-
-  const updateURL = (key: string, value: string) => {
-    const params = new URLSearchParams(searchParams);
-
-    if (value) params.set(key, value);
-    else params.delete(key);
-
-    if (key !== "page") params.set("page", "1");
-
-    startTransition(() => {
-      router.push(`${pathname}?${params.toString()}`);
-    });
-  };
 
   const handleDeleteClick = (track: Track) => {
     setTrackToDelete(track);
@@ -100,11 +86,8 @@ export default function TrackTable({
   return (
     <Fragment>
       <TrackToolbar
-        search={currentSearch}
-        setSearch={(val) => updateURL("search", val)}
-        status={currentStatus}
-        setStatus={(val) => updateURL("status", val)}
-        setCurrentPage={(val) => updateURL("page", val.toString())}
+        currentSearch={currentSearch}
+        currentStatus={currentStatus}
       />
 
       <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-xl">

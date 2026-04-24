@@ -15,3 +15,10 @@ export enum UserRole {
   ARTIST = "ARTIST",
   ADMIN = "ADMIN",
 }
+
+export enum AlbumType {
+  SINGLE = "SINGLE",
+  EP = "EP",
+  ALBUM = "ALBUM",
+  COMPILATION = "COMPILATION",
+}

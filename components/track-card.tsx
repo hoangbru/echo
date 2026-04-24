@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, MouseEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Play, Heart } from "lucide-react";
@@ -19,13 +19,13 @@ export function TrackCard({ track, onPlayTrack }: TrackCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
 
-  const handlePlay = (e: React.MouseEvent) => {
+  const handlePlay = (e: MouseEvent) => {
     e.preventDefault();
     play(track);
     onPlayTrack?.(track);
   };
 
-  const handleAddToFavorites = (e: React.MouseEvent) => {
+  const handleAddToFavorites = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     // Tương lai: Gọi API lưu Database tại đây

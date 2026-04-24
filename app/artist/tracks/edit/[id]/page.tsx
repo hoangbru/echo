@@ -29,7 +29,7 @@ export default async function EditTrackPage({
 
   const { data: genres } = await GenreService.getGenres(supabase);
   const track = await TrackService.getTrackById(supabase, resolvedParams.id);
-  const currentArtist = await ArtistService.getCurrentArtistProfile(
+  const {data: currentArtist} = await ArtistService.getCurrentArtistProfile(
     supabase,
     user.id,
   );

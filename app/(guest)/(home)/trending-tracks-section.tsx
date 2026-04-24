@@ -5,12 +5,18 @@ import { TrackCard } from "@/components/track-card";
 
 import { TrackService } from "@/lib/services";
 import { createClient } from "@/lib/supabase/server";
+import { Track } from "@/types";
 
 type Props = {};
 
 const TrendingTracksSection = async (props: Props) => {
   const supabase = createClient();
-  const trendingTracks = await TrackService.getTrendingTracks(supabase);
+  const { data: trendingTracks, error } =
+    await TrackService.getTrendingTracks(supabase);
+
+  if (error) {
+    return "Không thể tải danh sách bài hát, vui lòng thử lại sau!";
+  }
 
   return (
     <section>
@@ -22,7 +28,7 @@ const TrendingTracksSection = async (props: Props) => {
       </div>
       {trendingTracks.length > 0 ? (
         <ScrollSlider>
-          {trendingTracks.map((track) => (
+          {trendingTracks.map((track: Track) => (
             <div key={track.id} className="min-w-[200px] max-w-[240px]">
               <TrackCard track={track} />
             </div>

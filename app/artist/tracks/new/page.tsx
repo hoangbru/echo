@@ -18,11 +18,11 @@ export default async function ArtistUploadPage() {
   if (!user) redirect("/auth/login");
 
   const { data: genres } = await GenreService.getGenres(supabase);
-  const currentArtist = await ArtistService.getCurrentArtistProfile(
+  const { data: currentArtist } = await ArtistService.getCurrentArtistProfile(
     supabase,
     user.id,
   );
-  if (!currentArtist) redirect("/artist/setup");
+  if (!currentArtist) redirect("/auth/login");
 
   let albums: AlbumCard[] = [];
   if (currentArtist) {

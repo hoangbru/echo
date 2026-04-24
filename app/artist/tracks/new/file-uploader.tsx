@@ -59,7 +59,7 @@ export function FileUploader({
                 <button
                   type="button"
                   onClick={(e) => {
-                    e.stopPropagation(); // Ngăn chặn việc click nhầm vào vùng chọn file
+                    e.stopPropagation();
                     onClearCover();
                   }}
                   className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full z-10 transition-transform hover:scale-110 shadow-lg"
@@ -67,7 +67,6 @@ export function FileUploader({
                   <X className="w-4 h-4" />
                 </button>
               )}
-              {/* Lớp phủ mờ khi di chuột vào để user biết là có thể đổi ảnh khác */}
               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center">
                 <UploadCloud className="w-8 h-8 text-white mb-2" />
                 <span className="text-xs text-white">

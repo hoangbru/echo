@@ -1,0 +1,33 @@
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "@/lib/axios";
+import { toast } from "sonner";
+import { GenreFormValues } from "@/lib/validations/genre.schema";
+
+export function useGenres(search: string = "") {
+  return useQuery({
+    queryKey: ["genres", search],
+    queryFn: async () => {
+      const res = await apiClient.get("/genres", { params: { search } });
+      return res as { data: any[] };
+    },
+    staleTime: 1000 * 60 * 60,
+  });
+}
+
+export function useCreateGenre() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: GenreFormValues) => {
+      const res = await apiClient.post("/genres", data);
+      return res;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["genres"] });
+      toast.success("Đã thêm thể loại mới!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Có lỗi xảy ra khi thêm thể loại.");
+    },
+  });
+}

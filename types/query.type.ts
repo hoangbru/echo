@@ -3,3 +3,7 @@ export type QueryParams = {
   page?: number;
   limit?: number;
 };
+
+export type SearchParams = {
+  [key: string]: string | string[] | undefined;
+};

@@ -2,17 +2,14 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import TrackTable from "./track-table";
+import TrackTable from "./_components/track-table";
 import { Button } from "@/components/ui/button";
 import { PageHeading } from "@/components/page-heading";
 
 import { createClient } from "@/lib/supabase/server";
 import { ArtistService, ArtistStudioService } from "@/lib/services";
 import { ITEMS_PER_PAGE } from "@/constants/pagination";
-
-type SearchParams = {
-  [key: string]: string | string[] | undefined;
-};
+import { SearchParams } from "@/types";
 
 export default async function ArtistTracksPage({
   searchParams,
@@ -25,7 +22,10 @@ export default async function ArtistTracksPage({
   } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
 
-  const currentArtist = await ArtistService.getCurrentArtistProfile(supabase, user.id);
+  const { data: currentArtist } = await ArtistService.getCurrentArtistProfile(
+    supabase,
+    user.id,
+  );
 
   const resolvedParams = await searchParams;
 
@@ -40,12 +40,16 @@ export default async function ArtistTracksPage({
   let totalCount = 0;
 
   if (currentArtist) {
-    const result = await ArtistStudioService.getMyTracks(supabase, currentArtist.id, {
-      search,
-      limit: ITEMS_PER_PAGE,
-      status,
-      page,
-    });
+    const result = await ArtistStudioService.getMyTracks(
+      supabase,
+      currentArtist.id,
+      {
+        search,
+        limit: ITEMS_PER_PAGE,
+        status,
+        page,
+      },
+    );
     tracks = result.data || [];
     totalCount = result.totalCount || 0;
   }

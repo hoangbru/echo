@@ -18,16 +18,30 @@ export default async function GuestLayout({
   } = await supabase.auth.getUser();
 
   let dbProfile = null;
-  if (user) {
-    dbProfile = await UserService.getUserProfileById(supabase, user.id);
-  }
-
   let isArtist = false;
-  if (user) {
-    const artistProfile = await ArtistService.getCurrentArtistProfile(supabase, user.id);
 
-    if (artistProfile) {
+  if (user) {
+    const [profileResult, artistResult] = await Promise.all([
+      UserService.getUserProfileById(supabase, user.id),
+      ArtistService.getCurrentArtistProfile(supabase, user.id),
+    ]);
+    if (profileResult.data) {
+
+      dbProfile = profileResult.data;
+    } else if (profileResult.error) {
+      console.error(
+        "Đã có lỗi xảy ra, vui lòng thử lại sau!",
+        profileResult.error,
+      );
+    }
+
+    if (artistResult.data) {
       isArtist = true;
+    } else if (artistResult.error) {
+      console.error(
+        "Đã có lỗi xảy ra, vui lòng thử lại sau!",
+        artistResult.error,
+      );
     }
   }
 

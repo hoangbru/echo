@@ -16,6 +16,9 @@ export interface Track {
   release_date: string;
   album_id: string | null;
   artist_id: string;
+  artist: {
+    stage_name: string;
+  };
   duration: number;
   genre_id: string | null;
   genre: {
