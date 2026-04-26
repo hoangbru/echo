@@ -5,10 +5,10 @@ import { AlertCircle, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import { AlbumCard } from "./album-card";
-import { AlbumCardSkeleton } from "./album-card-skeleton"; // <-- Import Skeleton
+import { AlbumCardSkeleton } from "./album-card-skeleton";
 import { ConfirmModal } from "@/components/modals/confirm-modal";
 import { AlbumToolbar } from "./album-toolbar";
-import { useAlbums, useAlbumsArtist, useDeleteAlbum } from "@/hooks/use-albums";
+import { useAlbums, useDeleteAlbum } from "@/hooks/use-albums";
 
 interface AlbumGridProps {
   search: string;
@@ -28,7 +28,7 @@ export default function AlbumGrid({
     isLoading,
     isError,
     refetch,
-  } = useAlbumsArtist({ search, status, genre, page });
+  } = useAlbums({ search, status, genre, page, view: "studio" });
   const deleteMutation = useDeleteAlbum();
 
   const albums = response?.data || [];
@@ -103,8 +103,8 @@ export default function AlbumGrid({
             Bạn có chắc muốn xóa Album{" "}
             <span className="text-white font-bold">
               "{albumToDelete?.title}"
-            </span>
-            ? Các bài hát bên trong sẽ không bị xóa mà chỉ bị gỡ khỏi Album này.
+            </span>{" "}
+            không? Hành động này sẽ xóa vĩnh viễn toàn bộ bài hát bên trong.
           </>
         }
         confirmText="Xác nhận xóa"

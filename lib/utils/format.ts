@@ -41,3 +41,17 @@ export const formatDuration = (seconds: number | null) => {
   const s = seconds % 60;
   return `${m}:${s.toString().padStart(2, "0")}`;
 };
+
+export const keysToCamel = (obj: any): any => {
+  if (typeof obj !== "object" || obj === null) return obj;
+
+  if (Array.isArray(obj)) return obj.map(keysToCamel);
+
+  const newObj: any = {};
+  for (const key in obj) {
+    const camelKey = key.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+
+    newObj[camelKey] = keysToCamel(obj[key]);
+  }
+  return newObj;
+};

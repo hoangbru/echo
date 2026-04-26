@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 
-import AlbumGrid from "./_components/album-grid";
 import { PageHeading } from "@/components/page-heading";
 import { Button } from "@/components/ui/button";
 
 import { SearchParams } from "@/types";
+import AlbumGrid from "@/components/artist/album/album-grid";
 
 export default async function ArtistAlbumsPage({
   searchParams,

@@ -10,7 +10,7 @@ export type Json =
   | boolean
   | null
   | { [key: string]: Json | undefined }
-  | Json[];
+  | Json[]
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
@@ -753,66 +753,84 @@ export type Database = {
           album_id: string | null
           artist_id: string
           audio_url: string
+          bitrate: number | null
+          composer: string | null
           created_at: string
+          disc_number: number | null
           duration: number
+          file_size: number | null
           genre_id: string | null
           id: string
-          image_url: string
+          image_url: string | null
           is_explicit: boolean
           is_published: boolean
           isrc: string | null
+          language: string | null
+          lyricist: string | null
           lyrics: string | null
-          preview_url: string | null
-          rating: number | null
-          release_date: string
+          producer: string | null
+          slug: string | null
           title: string
           title_search: string | null
           total_downloads: number
           total_streams: number
+          track_number: number | null
           updated_at: string
         }
         Insert: {
           album_id?: string | null
           artist_id: string
           audio_url: string
+          bitrate?: number | null
+          composer?: string | null
           created_at?: string
+          disc_number?: number | null
           duration: number
+          file_size?: number | null
           genre_id?: string | null
           id?: string
-          image_url: string
+          image_url?: string | null
           is_explicit?: boolean
           is_published?: boolean
           isrc?: string | null
+          language?: string | null
+          lyricist?: string | null
           lyrics?: string | null
-          preview_url?: string | null
-          rating?: number | null
-          release_date?: string
+          producer?: string | null
+          slug?: string | null
           title: string
           title_search?: string | null
           total_downloads?: number
           total_streams?: number
+          track_number?: number | null
           updated_at?: string
         }
         Update: {
           album_id?: string | null
           artist_id?: string
           audio_url?: string
+          bitrate?: number | null
+          composer?: string | null
           created_at?: string
+          disc_number?: number | null
           duration?: number
+          file_size?: number | null
           genre_id?: string | null
           id?: string
-          image_url?: string
+          image_url?: string | null
           is_explicit?: boolean
           is_published?: boolean
           isrc?: string | null
+          language?: string | null
+          lyricist?: string | null
           lyrics?: string | null
-          preview_url?: string | null
-          rating?: number | null
-          release_date?: string
+          producer?: string | null
+          slug?: string | null
           title?: string
           title_search?: string | null
           total_downloads?: number
           total_streams?: number
+          track_number?: number | null
           updated_at?: string
         }
         Relationships: [
@@ -835,6 +853,45 @@ export type Database = {
             columns: ["genre_id"]
             isOneToOne: false
             referencedRelation: "genre"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      track_artists: {
+        Row: {
+          artist_id: string | null
+          created_at: string | null
+          id: string
+          is_main: boolean | null
+          track_id: string | null
+        }
+        Insert: {
+          artist_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_main?: boolean | null
+          track_id?: string | null
+        }
+        Update: {
+          artist_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_main?: boolean | null
+          track_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "track_artists_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "artist"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "track_artists_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "track"
             referencedColumns: ["id"]
           },
         ]

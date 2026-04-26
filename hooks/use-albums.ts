@@ -7,6 +7,7 @@ export function useAlbums(params: {
   status: string;
   genre: string;
   page: number;
+  view: string;
 }) {
   return useQuery({
     queryKey: ["albums", params],
@@ -17,7 +18,7 @@ export function useAlbums(params: {
   });
 }
 
-export function useGetAlbum(id: string) {
+export function useAlbumDetail(id: string) {
   return useQuery({
     queryKey: ["album", id],
     queryFn: async () => {
@@ -28,27 +29,12 @@ export function useGetAlbum(id: string) {
   });
 }
 
-export function useAlbumsArtist(params: {
-  search: string;
-  status: string;
-  genre: string;
-  page: number;
-}) {
-  return useQuery({
-    queryKey: ["albums/artist", params],
-    queryFn: async () => {
-      const res = await apiClient.get("/albums/artist", { params });
-      return res as { data: any[]; meta?: any };
-    },
-  });
-}
-
 export function useCreateAlbum() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (formData: FormData) => {
-      const res = await apiClient.post("/albums/artist", formData, {
+      const res = await apiClient.post("/albums", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -56,7 +42,7 @@ export function useCreateAlbum() {
       return res;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["albums/artist"] });
+      queryClient.invalidateQueries({ queryKey: ["albums"] });
     },
     onError: (error: any) => {
       toast.error(error.message || "Có lỗi xảy ra khi tạo Album.");
@@ -69,13 +55,13 @@ export function useUpdateAlbum(id: string) {
 
   return useMutation({
     mutationFn: async (formData: FormData) => {
-      const res = await apiClient.patch(`/albums/artist/${id}`, formData, {
+      const res = await apiClient.patch(`/albums/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       return res;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["albums/artist"] });
+      queryClient.invalidateQueries({ queryKey: ["albums"] });
       queryClient.invalidateQueries({ queryKey: ["album", id] });
     },
     onError: (error: any) => {
@@ -88,12 +74,12 @@ export function useDeleteAlbum() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (albumId: string) => {
-      const res = await apiClient.delete(`/albums/artist?id=${albumId}`);
+    mutationFn: async (id: string) => {
+      const res = await apiClient.delete(`/albums/${id}`);
       return res;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["albums/artist"] });
+      queryClient.invalidateQueries({ queryKey: ["albums"] });
       toast.success("Đã xóa Album thành công!");
     },
     onError: (error: any) => {

@@ -1,25 +1,30 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
-import { Edit2, Trash2, Play, Pause, Globe, Lock } from "lucide-react";
-
+import { useRouter } from "next/navigation";
+import { Edit2, Globe, Lock, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Track } from "@/types/track.type";
+import { TrackDetail } from "@/types";
 
-export function TrackItem({
-  track,
-  onEdit,
-  onDelete,
-}: {
-  track: Track;
-  onEdit: (t: Track) => void;
-  onDelete: (track: Track) => void;
-}) {
-  const [isPlaying, setIsPlaying] = useState(false);
+interface TrackItemProps {
+  track: TrackDetail;
+  albumId: string;
+  onDelete: (track: TrackDetail) => void;
+}
+
+export function TrackItem({ track, albumId, onDelete }: TrackItemProps) {
+  const router = useRouter();
+
+  const artistsText =
+    track.trackArtists?.map((ta: any) => ta.artist.stageName).join(", ") ||
+    "Unknown Artist";
 
   return (
     <tr className="group border-b border-white/5 hover:bg-white/5 transition-colors">
+      <td className="py-3 px-4 w-12 text-center text-gray-500 font-bold text-sm">
+        {track.trackNumber}
+      </td>
+
       <td className="py-4 px-4">
         <div className="flex items-center gap-4">
           <div className="relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 group/cover">
@@ -29,16 +34,6 @@ export function TrackItem({
               fill
               className="object-cover"
             />
-            <button
-              className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover/cover:opacity-100 transition-opacity"
-              onClick={() => setIsPlaying(!isPlaying)}
-            >
-              {isPlaying ? (
-                <Pause className="w-5 h-5 text-white fill-white" />
-              ) : (
-                <Play className="w-5 h-5 text-white fill-white" />
-              )}
-            </button>
           </div>
           <div className="min-w-0">
             <p className="text-white font-medium truncate">{track.title}</p>
@@ -49,7 +44,7 @@ export function TrackItem({
       <td className="py-4 px-4 text-sm text-gray-400">
         {track.genreName || "N/A"}
       </td>
-      
+
       <td className="py-4 px-4">
         <div
           className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase border ${
@@ -71,7 +66,9 @@ export function TrackItem({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => onEdit(track)}
+            onClick={() =>
+              router.push(`/artist/albums/${albumId}/tracks/edit/${track.id}`)
+            }
             className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/10"
           >
             <Edit2 className="w-4 h-4" />

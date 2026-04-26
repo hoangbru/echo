@@ -18,16 +18,19 @@ export function useCreateGenre() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: GenreFormValues) => {
-      const res = await apiClient.post("/genres", data);
+    mutationFn: async (formData: FormData) => {
+      const res = await apiClient.post("/genres", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       return res;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["genres"] });
-      toast.success("Đã thêm thể loại mới!");
     },
     onError: (error: any) => {
-      toast.error(error.message || "Có lỗi xảy ra khi thêm thể loại.");
+      toast.error(error.message || "Có lỗi xảy ra khi tạo thể loại.");
     },
   });
 }

@@ -6,9 +6,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
 
-import { AlbumFormMedia } from "../_components/album-form-media";
-import { AlbumFormMetadata } from "../_components/album-form-metadata";
 import { SuccessModal } from "@/components/modals/success-modal";
+import { AlbumFormMedia } from "@/components/artist/album/album-form-media";
+import { AlbumFormMetadata } from "@/components/artist/album/album-form-metadata";
 
 import {
   albumFormSchema,

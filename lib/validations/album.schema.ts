@@ -15,7 +15,7 @@ export const albumFormSchema = z.object({
     .optional()
     .or(z.literal("")),
 
-  genreId: z.string().optional().or(z.literal("")),
+  genreId: z.string().nullable().optional(),
   releaseDate: z.string().optional().or(z.literal("")),
   isPublished: z.boolean().default(false),
   isExplicit: z.boolean().default(false),

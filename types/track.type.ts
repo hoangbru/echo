@@ -4,30 +4,37 @@ import { TrackFormValues } from "@/lib/validations/track.schema";
 export interface Track {
   id: string;
   title: string;
-  title_search: string | null;
-  image_url: string;
-  is_explicit: boolean;
-  is_published: boolean;
-  audio_url: string;
-  isrc: string | null;
-  lyrics: string | null;
-  preview_url: string | null;
-  rating: number | null;
-  release_date: string;
-  album_id: string | null;
-  artist_id: string;
-  artist: {
-    stage_name: string;
-  };
+  slug: string | null;
+  isrc: string | null; // International Standard Recording Code
+
+  artistId: string;
+  albumId: string | null;
+  genreId: string | null;
+  genreName: string | null;
+
+  audioUrl: string;
+  imageUrl: string | null;
   duration: number;
-  genre_id: string | null;
-  genre: {
-    name: string;
-  };
-  created_at: string;
-  updated_at: string;
-  total_downloads: number;
-  total_streams: number;
+  lyrics: string | null;
+  isExplicit: boolean;
+  language: string | null;
+
+  bitrate: number | null;
+  fileSize: number | null;
+  trackNumber: number | null;
+  discNumber: number | null;
+
+  composer: string | null;
+  lyricist: string | null;
+  producer: string | null;
+
+  isPublished: boolean;
+  totalStreams: number;
+  totalDownloads: number;
+  titleSearch: string | null;
+
+  createdAt: Date | string;
+  updatedAt: Date | string;
 }
 
 export type TrackDB = Database["public"]["Tables"]["track"]["Row"];
@@ -49,4 +56,27 @@ export interface UpdateTrackParams {
   oldCoverUrl: string | null;
   clearCustomCover: boolean;
   albumCoverUrl?: string | null;
+}
+
+export interface TrackDetail extends Track {
+  artist?: {
+    id: string;
+    stageName: string;
+    avatar: string | null;
+  };
+  album?: {
+    id: string;
+    title: string;
+    coverImage: string | null;
+  };
+  trackArtists?: TrackArtists[];
+}
+
+export interface TrackArtists {
+  artist: {
+    id: string;
+    stageName: string;
+    profileImage: string | null;
+  };
+  isMain: boolean;
 }

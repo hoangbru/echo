@@ -6,22 +6,22 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { AlertCircle, Loader2 } from "lucide-react";
 
-import { AlbumFormMedia } from "../../_components/album-form-media";
-import { AlbumFormMetadata } from "../../_components/album-form-metadata";
+import { SuccessModal } from "@/components/modals/success-modal";
+import { AlbumFormMedia } from "@/components/artist/album/album-form-media";
+import { AlbumFormMetadata } from "@/components/artist/album/album-form-metadata";
 
 import {
   albumFormSchema,
   AlbumFormValues,
 } from "@/lib/validations/album.schema";
-import { useGetAlbum, useUpdateAlbum } from "@/hooks/use-albums";
+import { useAlbumDetail, useUpdateAlbum } from "@/hooks/use-albums";
 import { useGenres } from "@/hooks/use-genres";
-import { SuccessModal } from "@/components/modals/success-modal";
 
 export default function FormAlbumEdit({ albumId }: { albumId: string }) {
   const router = useRouter();
 
   const { data: genresRes } = useGenres();
-  const { data: albumRes, isLoading: isLoadingAlbum } = useGetAlbum(albumId);
+  const { data: albumRes, isLoading: isLoadingAlbum } = useAlbumDetail(albumId);
   const {
     mutate: updateAlbum,
     isPending,

@@ -2,16 +2,23 @@ import { z } from "zod";
 
 export const trackFormSchema = z.object({
   title: z
-    .string()
-    .min(1, "Tiêu đề không được để trống")
-    .max(100, "Tiêu đề quá dài"),
-  album_id: z.string().optional(),
-  genre_id: z.string().optional(),
-  isrc: z.string().optional(),
-  release_date: z.string().optional(),
-  lyrics: z.string().optional(),
-  is_explicit: z.boolean().default(false),
-  is_published: z.boolean().default(true),
+    .string({ required_error: "Tên bài hát không được để trống" })
+    .min(1)
+    .max(150),
+  albumId: z.string({ required_error: "Bài hát phải thuộc về một Album" }),
+  genreId: z.string().nullable().optional(),
+  duration: z.number().default(0),
+  trackNumber: z.coerce.number().min(1).default(1),
+  discNumber: z.coerce.number().min(1).default(1),
+  isPublished: z.boolean().default(true),
+  isExplicit: z.boolean().default(false),
+
+  isrc: z.string().max(20).optional().or(z.literal("")),
+  composer: z.string().max(100).optional().or(z.literal("")),
+  producer: z.string().max(100).optional().or(z.literal("")),
+  language: z.string().default("vi"),
+
+  featArtistIds: z.array(z.string()).default([]),
 });
 
 export type TrackFormValues = z.infer<typeof trackFormSchema>;
