@@ -34,6 +34,10 @@ export interface Album {
   createdAt: string;
   updatedAt: string;
   tracks?: Track[];
+  artist?: {
+    id: string;
+    stageName: string;
+  };
 }
 
 export type AlbumDB = Database["public"]["Tables"]["album"]["Row"];

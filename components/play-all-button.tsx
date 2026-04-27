@@ -2,20 +2,20 @@
 
 import { Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { usePlayer } from "@/lib/contexts/player-context";
 import { Track } from "@/types";
+import { usePlayer } from "@/hooks/use-player";
 
 interface PlayAllButtonProps {
   tracks: Track[];
 }
 
 export function PlayAllButton({ tracks }: PlayAllButtonProps) {
-  const { play } = usePlayer();
+  const { playTrack } = usePlayer();
 
   const handlePlayAll = () => {
-    if (tracks && tracks.length > 0) {
-      play(tracks[0], tracks);
-    }
+    // if (tracks && tracks.length > 0) {
+    //   playTrack(tracks[0], tracks);
+    // }
   };
 
   return (

@@ -89,7 +89,7 @@ export default function TrackGrid({ albumId }: TrackGridProps) {
             ) : tracks.length === 0 ? (
               <tr>
                 <td
-                  colSpan={4}
+                  colSpan={5}
                   className="py-20 text-center text-muted-foreground"
                 >
                   Chưa có bài hát nào phù hợp.

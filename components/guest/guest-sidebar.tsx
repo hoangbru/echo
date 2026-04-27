@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils/utils";
 import { Button } from "@/components/ui/button";
-import { usePlayer } from "@/lib/contexts/player-context";
+import { usePlayer } from "@/hooks/use-player";
 
 const navItems = [
   { label: "Home", icon: Home, href: "/" },
@@ -33,7 +33,7 @@ const libraryItems = [
 
 export function GuestSidebar() {
   const pathname = usePathname();
-  const { state } = usePlayer();
+  const { currentTrack } = usePlayer();
 
   return (
     <aside className="w-full lg:w-64 bg-background border-r border-border flex flex-col h-full lg:h-screen lg:sticky lg:top-0 overflow-y-auto">
@@ -114,16 +114,16 @@ export function GuestSidebar() {
       </nav>
 
       {/* Now Playing Info */}
-      {state.currentTrack && (
+      {currentTrack && (
         <div className="border-t border-border p-4 bg-card">
           <div className="text-xs text-muted-foreground mb-2">Now Playing</div>
-          <Link href={`/track/${state.currentTrack.id}`}>
+          <Link href={`/track/${currentTrack.id}`}>
             <div className="bg-secondary rounded p-2 hover:bg-accent transition">
               <p className="text-sm font-semibold truncate text-foreground">
-                {state.currentTrack.title}
+                {currentTrack.title}
               </p>
               <p className="text-xs text-muted-foreground truncate">
-                {state.currentTrack.artist}
+                {currentTrack.artistNames}
               </p>
             </div>
           </Link>

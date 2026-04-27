@@ -1,17 +1,13 @@
+import { GenreService } from "@/lib/services";
+import { Genre } from "@/types";
 import { Radio } from "lucide-react";
-
-const MOCK_GENRES = [
-  { id: "1", name: "Pop", color: "from-blue-500 to-blue-700" },
-  { id: "2", name: "Hip Hop", color: "from-orange-500 to-red-600" },
-  { id: "3", name: "R&B", color: "from-purple-500 to-pink-600" },
-  { id: "4", name: "Electronic", color: "from-teal-400 to-emerald-600" },
-  { id: "5", name: "Chill Vibes", color: "from-indigo-400 to-cyan-400" },
-  { id: "6", name: "Acoustic", color: "from-amber-600 to-orange-700" },
-];
+import IconComponent from "@/components/icon-component";
 
 type Props = {};
 
-const MoodGenresSection = (props: Props) => {
+export default async function MoodGenresSection(props: Props) {
+  const genres = await GenreService.getGenres();
+
   return (
     <section>
       <div className="flex items-center gap-2 mb-6">
@@ -21,19 +17,35 @@ const MoodGenresSection = (props: Props) => {
         </h2>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        {MOCK_GENRES.map((genre) => (
-          <div
-            key={genre.id}
-            className={`h-24 rounded-lg bg-gradient-to-br ${genre.color} p-4 flex items-end cursor-pointer hover:scale-105 transition-transform duration-300 shadow-md`}
-          >
-            <span className="font-bold text-white text-lg drop-shadow-md">
-              {genre.name}
-            </span>
-          </div>
-        ))}
+        {genres.length > 0 ? (
+          genres.map((genre: Genre) => (
+            <div
+              key={genre.id}
+              className="h-28 rounded-lg p-4 flex items-start justify-start cursor-pointer hover:scale-105 transition-all duration-300 shadow-md relative overflow-hidden group"
+              style={{
+                background: genre.color
+                  ? `linear-gradient(135deg, ${genre.color} 0%, rgba(0,0,0,0.4) 150%)`
+                  : "#18181b",
+              }}
+            >
+              <span className="font-bold text-white text-xl drop-shadow-lg z-10">
+                {genre.name}
+              </span>
+
+              <div className="absolute -right-4 -bottom-4 text-white opacity-20 transform -rotate-12 group-hover:scale-110 transition-transform duration-500">
+                <IconComponent
+                  name={genre.icon || "Music"}
+                  className="w-20 h-20"
+                />
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-muted-foreground">
+            Không tìm thấy thể loại phù hợp
+          </p>
+        )}
       </div>
     </section>
   );
-};
-
-export default MoodGenresSection;
+}

@@ -1,14 +1,14 @@
 import { ScrollSlider } from "@/components/scroll-slider";
-import { TrackCard } from "@/components/track-card";
+import { AlbumCard } from "@/components/album-card";
 
-import { TrackService } from "@/lib/services";
-import { createClient } from "@/lib/supabase/server";
+import { AlbumService } from "@/lib/services";
+import { Album } from "@/types";
 
 type Props = {};
 
-const NewReleasesSection = async (props: Props) => {
-  const supabase = createClient();
-  const newReleases = await TrackService.getNewReleases(supabase);
+export default async function NewReleasesSection(props: Props) {
+  const newReleases = await AlbumService.getNewReleases();
+
   return (
     <section>
       <h2 className="text-2xl md:text-3xl font-bold mb-6 text-foreground">
@@ -16,19 +16,15 @@ const NewReleasesSection = async (props: Props) => {
       </h2>
       {newReleases.length > 0 ? (
         <ScrollSlider>
-          {newReleases.map((track) => (
-            <div key={track.id} className="min-w-[200px] max-w-[240px]">
-              <TrackCard track={track} />
+          {newReleases.map((al: Album) => (
+            <div key={al.id} className="min-w-[200px] max-w-[240px]">
+              <AlbumCard album={al} />
             </div>
           ))}
         </ScrollSlider>
       ) : (
-        <p className="text-muted-foreground">
-          Chưa có bài hát nào trong hệ thống.
-        </p>
+        <p className="text-muted-foreground">Không tìm thấy album phù hợp</p>
       )}
     </section>
   );
-};
-
-export default NewReleasesSection;
+}

@@ -1,27 +1,17 @@
-type GetGenresParams = {
-  search?: string;
-  page?: number;
-  limit?: number;
-};
+import { createClient } from "../supabase/server";
+import { keysToCamel } from "../utils/format";
 
 export const GenreService = {
-  async getGenres(supabase: any, params?: GetGenresParams) {
-    const { search = "", page = 1, limit = 10 } = params || {};
+  async getGenres() {
+    const supabase = createClient();
 
-    let query = supabase
+    const { data, error } = await supabase
       .from("genre")
       .select("*", { count: "exact" })
       .order("created_at", { ascending: false });
 
-    if (search) query = query.ilike("name", `%${search}%`);
+    if (error) return [];
 
-    const from = (page - 1) * limit;
-    const to = from + limit - 1;
-    query = query.range(from, to);
-
-    const { data, count, error } = await query;
-    if (error) throw new Error("Đã có lỗi xảy ra, vui lòng thử lại sau!");
-
-    return { data: data || [], totalCount: count || 0 };
+    return keysToCamel(data);
   },
 };
