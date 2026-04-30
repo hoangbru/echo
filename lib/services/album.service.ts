@@ -1,10 +1,7 @@
-import { createClient } from "../supabase/server";
 import { keysToCamel } from "../utils/format";
 
 export const AlbumService = {
-  async getNewReleases() {
-    const supabase = createClient();
-
+  async getNewReleases(supabase: any) {
     const { data, error } = await supabase
       .from("album")
       .select(
@@ -28,9 +25,7 @@ export const AlbumService = {
     return keysToCamel(data);
   },
 
-  async getTrending() {
-    const supabase = createClient();
-
+  async getTrending(supabase: any) {
     const { data, error } = await supabase
       .from("album")
       .select(

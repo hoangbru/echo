@@ -4,11 +4,10 @@ import { UserRole } from "@/types";
 export async function authorizeApi(allowedRoles: UserRole[] = []) {
   const supabase = createClient();
 
-  // Check token
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Unauthorized", status: 401 };
+  if (!user) return { error: "Vui lòng đăng nhập để thực hiện", status: 401 };
 
   const [userRes, artistRes] = await Promise.all([
     supabase.from("user").select("role").eq("id", user.id).single(),

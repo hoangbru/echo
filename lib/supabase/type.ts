@@ -988,7 +988,7 @@ export type Database = {
           last_login_at: string | null
           premium_expires_at: string | null
           role: Database["public"]["Enums"]["UserRole"]
-          totalPlaylists: number | null
+          total_playlists: number | null
           updated_at: string
           username: string
         }
@@ -1005,7 +1005,7 @@ export type Database = {
           last_login_at?: string | null
           premium_expires_at?: string | null
           role?: Database["public"]["Enums"]["UserRole"]
-          totalPlaylists?: number | null
+          total_playlists?: number | null
           updated_at: string
           username: string
         }
@@ -1022,7 +1022,7 @@ export type Database = {
           last_login_at?: string | null
           premium_expires_at?: string | null
           role?: Database["public"]["Enums"]["UserRole"]
-          totalPlaylists?: number | null
+          total_playlists?: number | null
           updated_at?: string
           username?: string
         }

@@ -67,7 +67,7 @@ export function TrackItem({ track, albumId, onDelete }: TrackItemProps) {
             variant="ghost"
             size="icon"
             onClick={() =>
-              router.push(`/artist/albums/${albumId}/tracks/edit/${track.id}`)
+              router.push(`/studio/albums/${albumId}/tracks/edit/${track.id}`)
             }
             className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/10"
           >

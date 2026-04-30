@@ -17,7 +17,7 @@ interface ArtistCardProps {
 
 export function ArtistCard({ artist }: ArtistCardProps) {
   return (
-    <Link href={`/artist/${artist.id}`}>
+    <Link href={`/studio/${artist.id}`}>
       <div className="bg-neutral-900 rounded-lg p-4 hover:bg-neutral-800 transition text-center cursor-pointer">
         {/* Artist Image */}
         <div className="relative mb-4 aspect-square bg-neutral-800 rounded-full overflow-hidden mx-auto w-24 h-24">

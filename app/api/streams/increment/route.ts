@@ -20,11 +20,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, message: "Đã tăng lượt stream" });
-  } catch (err: any) {
     return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 },
+      { success: true, message: "Đã tăng lượt stream" },
+      { status: 200 },
     );
+  } catch (err: any) {
+    return NextResponse.json({ error: "Lỗi server" }, { status: 500 });
   }
 }

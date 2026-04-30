@@ -1,3 +1,5 @@
+import { keysToCamel } from "../utils/format";
+
 export const ArtistService = {
   async getFeaturedArtists(supabase: any, limit: number = 6) {
     const { data, error } = await supabase
@@ -11,12 +13,12 @@ export const ArtistService = {
       return [];
     }
 
-    return data;
+    return keysToCamel(data);
   },
 
   async getPublicArtistProfile(supabase: any, artistId: string) {
     const { data, error } = await supabase
-      .from("artists")
+      .from("artist")
       .select("*")
       .eq("id", artistId)
       .eq("is_verified", true)
@@ -27,14 +29,20 @@ export const ArtistService = {
       return null;
     }
 
-    return data;
+    return keysToCamel(data);
   },
 
-  async getCurrentArtistProfile(supabase: any, userId: string) {
-    return await supabase
+  async getCurrentArtist(supabase: any, userId: string) {
+    const { data, error } = await supabase
       .from("artist")
       .select("*")
       .eq("user_id", userId)
       .maybeSingle();
+
+    if (error) {
+      console.error("Đã có lỗi xảy ra: ", error.message);
+      return null;
+    }
+    return keysToCamel(data);
   },
 };

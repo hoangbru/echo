@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { UserService } from "@/lib/services";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -36,21 +37,21 @@ export default function AdminLoginPage() {
       });
 
     if (authError) {
-      setError("Email hoặc mật khẩu không chính xác.");
+      setError("Email hoặc mật khẩu không chính xác");
       setLoading(false);
       return;
     }
 
     if (authData.user) {
-      const { data: dbUser } = await supabase
-        .from("User")
-        .select("role")
-        .eq("id", authData.user.id)
-        .single();
+      const dbUser = await UserService.getUserProfile(
+        supabase,
+        authData.user.id,
+        "role",
+      );
 
       if (dbUser?.role !== "ADMIN") {
         await supabase.auth.signOut();
-        setError("Tài khoản này không có quyền Quản trị viên!");
+        setError("Bạn không có quyền truy cập!");
         setLoading(false);
         return;
       }
@@ -109,7 +110,7 @@ export default function AdminLoginPage() {
                     className="w-full bg-zinc-100 text-white hover:bg-zinc-300"
                     disabled={loading}
                   >
-                    {loading ? "Đang xác thực..." : "Đăng nhập Hệ thống"}
+                    {loading ? <Loader2 /> : "Đăng nhập Hệ thống"}
                   </Button>
                 </div>
               </form>

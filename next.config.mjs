@@ -19,7 +19,11 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'omzwdzmfjyknwdeljlct.supabase.co',
-      }
+      },
+      {
+        protocol: 'https',
+        hostname: 'upload.wikimedia.org',
+      },
     ],
     dangerouslyAllowSVG: true,
   },

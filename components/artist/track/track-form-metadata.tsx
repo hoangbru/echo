@@ -2,6 +2,8 @@ import { UseFormReturn } from "react-hook-form";
 import { TrackFormValues } from "@/lib/validations/track.schema";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Artist } from "@/types";
 
 interface TrackFormMetadataProps {
   form: UseFormReturn<TrackFormValues>;
@@ -16,6 +18,7 @@ export function TrackFormMetadata({
   genres,
   status,
 }: TrackFormMetadataProps) {
+  const router = useRouter();
   const {
     register,
     formState: { errors },
@@ -83,7 +86,7 @@ export function TrackFormMetadata({
               Không có nghệ sĩ nào khác.
             </p>
           ) : (
-            artists?.map((artist) => (
+            artists?.map((artist: Artist) => (
               <label
                 key={artist.id}
                 className="flex items-center gap-3 p-2 hover:bg-white/5 rounded-lg cursor-pointer transition-colors"
@@ -95,7 +98,7 @@ export function TrackFormMetadata({
                   className="w-4 h-4 accent-pink-500"
                 />
                 <span className="text-sm text-gray-200">
-                  {artist.stage_name}
+                  {artist.stageName}
                 </span>
               </label>
             ))
@@ -198,16 +201,25 @@ export function TrackFormMetadata({
         </div>
       </div>
 
-      <div className="pt-4 flex justify-end gap-3">
+      <div className="flex gap-4">
         <Button
           type="submit"
           disabled={status === "submitting"}
-          className="bg-pink-500 hover:bg-pink-600 text-white min-w-[150px]"
+          className="flex-1 bg-pink-500 hover:bg-pink-600 text-white font-bold px-6 shadow-[0_0_20px_rgba(236,72,153,0.3)]"
         >
           {status === "submitting" ? (
-            <Loader2 className="w-4 h-4 animate-spin mr-2" />
-          ) : null}
-          {status === "submitting" ? "Đang tải lên..." : "Tải bài hát lên"}
+            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+          ) : (
+            "Lưu thay đổi"
+          )}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => router.back()}
+          className="px-8 border-white/10 text-gray-400 hover:text-white bg-transparent"
+        >
+          Huỷ
         </Button>
       </div>
     </div>

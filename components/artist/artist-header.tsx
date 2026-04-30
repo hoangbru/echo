@@ -16,7 +16,7 @@ import { Artist } from "@/types/artist.type";
 
 interface ArtistHeaderProps {
   onOpenSidebar: () => void;
-  profile: Artist
+  profile: Artist;
 }
 
 export function ArtistHeader({ onOpenSidebar, profile }: ArtistHeaderProps) {
@@ -74,7 +74,7 @@ export function ArtistHeader({ onOpenSidebar, profile }: ArtistHeaderProps) {
         {/* Thông tin tóm tắt */}
         <div className="hidden md:flex flex-col items-end">
           <span className="text-sm font-bold text-white flex items-center gap-1">
-            {profile.stage_name}
+            {profile.stageName}
             {/* Dấu tích xanh nhỏ bên cạnh tên */}
             <svg
               viewBox="0 0 24 24"
@@ -97,16 +97,16 @@ export function ArtistHeader({ onOpenSidebar, profile }: ArtistHeaderProps) {
           className="flex items-center gap-2 group outline-none"
         >
           <div className="relative h-10 w-10 rounded-full ring-2 ring-pink-500/50 overflow-hidden flex-shrink-0 transition-all group-hover:ring-pink-500 shadow-[0_0_10px_rgba(236,72,153,0.2)]">
-            {profile.profile_image ? (
+            {profile.profileImage ? (
               <Image
-                src={profile.profile_image}
-                alt={profile.stage_name || "Artist Avatar"}
+                src={profile.profileImage}
+                alt={profile.stageName || "Artist Avatar"}
                 fill
                 className="object-cover"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-pink-500 to-purple-600 text-white font-bold uppercase">
-                {profile.stage_name ? profile.stage_name.charAt(0) : "A"}
+                {profile.stageName ? profile.stageName.charAt(0) : "A"}
               </div>
             )}
           </div>
@@ -120,7 +120,7 @@ export function ArtistHeader({ onOpenSidebar, profile }: ArtistHeaderProps) {
           <div className="absolute top-full right-0 mt-3 w-56 bg-[#09090b] border border-white/10 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] py-2 z-50 origin-top-right animate-in fade-in zoom-in-95 duration-200">
             <div className="px-4 py-3 border-b border-white/5 mb-2 md:hidden">
               <p className="text-sm font-bold text-white truncate flex items-center gap-1">
-                {profile.stage_name}
+                {profile.stageName}
               </p>
               <p className="text-xs text-pink-400">Verified Artist</p>
             </div>

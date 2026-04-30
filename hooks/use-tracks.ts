@@ -43,7 +43,7 @@ export function useCreateTrack(albumId: string) {
       queryClient.invalidateQueries({ queryKey: ["albums"] });
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.error || "Lỗi khi thêm bài hát");
+      toast.error(error.message || "Lỗi khi thêm bài hát");
     },
   });
 }
@@ -71,7 +71,7 @@ export function useUpdateTrack(albumId: string) {
       });
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.error || "Lỗi khi cập nhật");
+      toast.error(error.message || "Lỗi khi cập nhật");
     },
   });
 }
@@ -93,7 +93,7 @@ export function useDeleteTrack(albumId: string) {
       toast.success("Đã xóa bài hát!");
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.error || "Lỗi khi xóa bài hát");
+      toast.error(error.message || "Lỗi khi xóa bài hát");
     },
   });
 }

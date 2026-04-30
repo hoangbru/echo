@@ -16,7 +16,7 @@ export function useArtistDetail(artistId: string) {
   return useQuery({
     queryKey: ["artist", artistId],
     queryFn: async () => {
-      const res = await apiClient.get(`/artists/${artistId}`);
+      const res = await apiClient.get(`/studios/${artistId}`);
       return res as { data: any };
     },
     enabled: !!artistId,

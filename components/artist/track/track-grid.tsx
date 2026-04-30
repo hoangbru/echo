@@ -45,7 +45,7 @@ export default function TrackGrid({ albumId }: TrackGridProps) {
           Bài hát trong: <span className="text-pink-500">{album?.title}</span>
         </PageHeading>
 
-        <Link href={`/artist/albums/${albumId}/tracks/new`}>
+        <Link href={`/studio/albums/${albumId}/tracks/new`}>
           <Button className="bg-pink-500 hover:bg-pink-600 font-bold shadow-[0_0_15px_rgba(236,72,153,0.3)]">
             <Plus className="w-5 h-5 mr-2" /> Thêm bài hát
           </Button>

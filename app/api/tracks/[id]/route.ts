@@ -84,7 +84,7 @@ export async function GET(
 
     return NextResponse.json({ data: formattedData }, { status: 200 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 404 });
+    return NextResponse.json({ error: "Lỗi server" }, { status: 500 });
   }
 }
 

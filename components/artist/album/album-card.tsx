@@ -16,7 +16,7 @@ export function AlbumCard({ album, onDelete }: AlbumCardProps) {
   const router = useRouter();
 
   return (
-    <Link href={`/artist/albums/${album.id}/tracks`} className="block group">
+    <Link href={`/studio/albums/${album.id}/tracks`} className="block group">
       <div className="bg-card border border-white/5 rounded-2xl p-4 hover:bg-white/10 transition-all">
         <div className="relative aspect-square rounded-xl overflow-hidden mb-4 shadow-lg border border-white/10 bg-black/20">
           <Image
@@ -33,7 +33,7 @@ export function AlbumCard({ album, onDelete }: AlbumCardProps) {
               className="rounded-full h-10 w-10 hover:bg-white text-black"
               onClick={(e) => {
                 e.preventDefault();
-                router.push(`/artist/albums/edit/${album.id}`);
+                router.push(`/studio/albums/edit/${album.id}`);
               }}
             >
               <Edit2 className="w-4 h-4" />

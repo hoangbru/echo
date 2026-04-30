@@ -29,8 +29,8 @@ export function useCreateGenre() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["genres"] });
     },
-    onError: (error: any) => {
-      toast.error(error.message || "Có lỗi xảy ra khi tạo thể loại.");
+    onError: () => {
+      toast.error("Có lỗi xảy ra khi tạo thể loại");
     },
   });
 }

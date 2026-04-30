@@ -1,10 +1,7 @@
-import { createClient } from "../supabase/server";
 import { keysToCamel } from "../utils/format";
 
 export const GenreService = {
-  async getGenres() {
-    const supabase = createClient();
-
+  async getGenres(supabase: any) {
     const { data, error } = await supabase
       .from("genre")
       .select("*", { count: "exact" })

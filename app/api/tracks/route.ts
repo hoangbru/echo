@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
 
     const { data, count, error } = await query;
 
-    if (error) throw new Error("Đã có lỗi xảy ra");
+    if (error) throw new Error("Đã có lỗi xảy ra khi tải danh sách");
 
     const formattedData = keysToCamel(data || []);
 
@@ -97,7 +97,10 @@ export async function POST(request: NextRequest) {
     if (auth.role === UserRole.ADMIN) {
       finalArtistId = formData.get("artistId") as string;
       if (!finalArtistId)
-        throw new Error("Admin cần chọn Nghệ sĩ sở hữu bài hát này");
+        return NextResponse.json(
+          { error: "Admin cần chọn Nghệ sĩ sở hữu bài hát này" },
+          { status: 400 },
+        );
     }
 
     const featArtistsStr = formData.get("featArtistIds") as string;
@@ -107,7 +110,10 @@ export async function POST(request: NextRequest) {
     const rawData = {
       title: formData.get("title") as string,
       albumId: formData.get("albumId") as string,
-      genreId: (!rawGenreId || rawGenreId.trim() === "" || rawGenreId === "null") ? null : rawGenreId,
+      genreId:
+        !rawGenreId || rawGenreId.trim() === "" || rawGenreId === "null"
+          ? null
+          : rawGenreId,
       trackNumber: Number(formData.get("trackNumber")),
       duration: Number(formData.get("duration")) || 0,
       discNumber: Number(formData.get("discNumber")),
@@ -172,7 +178,10 @@ export async function POST(request: NextRequest) {
       .upload(uploadedAudioPath, validAudio);
 
     if (audioErr)
-      throw new Error("Tải lên audio không thành công: " + audioErr.message);
+      return NextResponse.json(
+        { error: "Tải lên audio không thành công" },
+        { status: 400 },
+      );
 
     const audioUrl = supabase.storage
       .from("audio")
@@ -190,7 +199,10 @@ export async function POST(request: NextRequest) {
         .upload(uploadedImagePath, validImage);
 
       if (imageErr)
-        throw new Error("Tải lên ảnh không thành công: " + imageErr.message);
+        return NextResponse.json(
+          { error: "Tải lên ảnh không thành công" },
+          { status: 400 },
+        );
 
       imageUrl = supabase.storage.from("covers").getPublicUrl(uploadedImagePath)
         .data.publicUrl;
@@ -232,7 +244,11 @@ export async function POST(request: NextRequest) {
       .select()
       .single();
 
-    if (dbError) throw dbError;
+    if (dbError)
+      return NextResponse.json(
+        { error: "Không thể tạo mới bài hát" },
+        { status: 400 },
+      );
 
     const trackArtistsData = [
       { track_id: newTrack.id, artist_id: finalArtistId, is_main: true },
@@ -249,22 +265,22 @@ export async function POST(request: NextRequest) {
     const { error: taError } = await supabase
       .from("track_artists")
       .insert(trackArtistsData);
-    if (taError) throw taError;
+    if (taError)
+      return NextResponse.json(
+        { error: "Đã có lỗi khi lưu thông tin Nghệ sĩ" },
+        { status: 400 },
+      );
 
     return NextResponse.json(
       { data: newTrack, message: "Thêm bài hát thành công" },
       { status: 201 },
     );
   } catch (error: any) {
-    console.error("Lỗi tạo Track:", error);
     if (uploadedAudioPath)
       await supabase.storage.from("audio").remove([uploadedAudioPath]);
     if (uploadedImagePath)
       await supabase.storage.from("covers").remove([uploadedImagePath]);
 
-    return NextResponse.json(
-      { error: error.message || "Lỗi server" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Lỗi server" }, { status: 500 });
   }
 }

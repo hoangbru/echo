@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AdminShell } from "@/components/admin/admin-shell";
+import { UserService } from "@/lib/services";
 
 export default async function AdminLayout({
   children,
@@ -15,11 +16,11 @@ export default async function AdminLayout({
 
   if (!user) redirect("/admin-login");
 
-  const { data: dbAdmin } = await supabase
-    .from("User")
-    .select("role, fullName, avatar, username, email") 
-    .eq("id", user.id)
-    .single();
+  const dbAdmin = await UserService.getUserProfile(
+    supabase,
+    user.id,
+    "role, full_name, avatar, username, email",
+  );
 
   if (!dbAdmin || dbAdmin.role !== "ADMIN") {
     redirect("/403");
@@ -31,6 +32,5 @@ export default async function AdminLayout({
     email: dbAdmin.email || user.email,
   };
 
-  // 5. Truyền adminProfile vào AdminShell
   return <AdminShell adminProfile={adminProfile}>{children}</AdminShell>;
 }

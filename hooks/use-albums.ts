@@ -1,14 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/axios";
 import { toast } from "sonner";
+import { QueryParams } from "@/types";
 
-export function useAlbums(params: {
-  search: string;
+type AlbumQueryParams = QueryParams & {
   status: string;
   genre: string;
-  page: number;
   view: string;
-}) {
+};
+
+export function useAlbums(params: AlbumQueryParams) {
   return useQuery({
     queryKey: ["albums", params],
     queryFn: async () => {
@@ -45,7 +46,7 @@ export function useCreateAlbum() {
       queryClient.invalidateQueries({ queryKey: ["albums"] });
     },
     onError: (error: any) => {
-      toast.error(error.message || "Có lỗi xảy ra khi tạo Album.");
+      toast.error(error.message || "Có lỗi xảy ra khi tạo Album");
     },
   });
 }
@@ -65,7 +66,7 @@ export function useUpdateAlbum(id: string) {
       queryClient.invalidateQueries({ queryKey: ["album", id] });
     },
     onError: (error: any) => {
-      toast.error(error.message || "Có lỗi xảy ra khi cập nhật.");
+      toast.error(error.message || "Có lỗi xảy ra khi cập nhật");
     },
   });
 }
@@ -83,7 +84,7 @@ export function useDeleteAlbum() {
       toast.success("Đã xóa Album thành công!");
     },
     onError: (error: any) => {
-      toast.error(error.message || "Có lỗi xảy ra khi xóa Album.");
+      toast.error(error.message || "Có lỗi xảy ra khi xóa Album");
     },
   });
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { AdminSidebar } from "./admin-sidebar";
 import { AdminHeader } from "./admin-header";
 import { AdminMobileOverlay } from "./admin-mobile-overlay";
@@ -15,7 +15,7 @@ export function AdminShell({
   children,
   adminProfile,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   adminProfile: AdminProfileType;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
