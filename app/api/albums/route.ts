@@ -7,6 +7,7 @@ import { imageFileSchema } from "@/lib/validations/file.schema";
 import { UserRole } from "@/types";
 import { authorizeApi } from "@/lib/session";
 import { keysToCamel } from "@/lib/utils/format";
+import { uploadFileToSupabase } from "@/lib/utils/file";
 
 export async function GET(request: NextRequest) {
   try {
@@ -74,7 +75,10 @@ export async function GET(request: NextRequest) {
       { status: 200 },
     );
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: "Đã xảy ra lỗi hệ thống" },
+      { status: 500 },
+    );
   }
 }
 
@@ -93,7 +97,10 @@ export async function POST(request: NextRequest) {
     if (auth.role === UserRole.ADMIN) {
       finalArtistId = formData.get("artistId") as string;
       if (!finalArtistId)
-        throw new Error("Admin cần chọn Nghệ sĩ sở hữu Album này");
+        return NextResponse.json(
+          { error: "Admin cần chọn Nghệ sĩ sở hữu Album này" },
+          { status: 403 },
+        );
     }
 
     const rawGenreId = formData.get("genreId") as string | null;
@@ -101,7 +108,10 @@ export async function POST(request: NextRequest) {
       title: formData.get("title") as string,
       description: (formData.get("description") as string | null) || "",
       releaseDate: (formData.get("releaseDate") as string | null) || "",
-      genreId: (!rawGenreId || rawGenreId.trim() === "" || rawGenreId === "null") ? null : rawGenreId,
+      genreId:
+        !rawGenreId || rawGenreId.trim() === "" || rawGenreId === "null"
+          ? null
+          : rawGenreId,
       isPublished: formData.get("isPublished") === "true",
       albumType: (formData.get("albumType") as string) || "ALBUM",
       isExplicit: formData.get("isExplicit") === "true",
@@ -118,6 +128,7 @@ export async function POST(request: NextRequest) {
       const errorMessage = validatedData.error.errors[0].message;
       return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
+    const safeData = validatedData.data;
 
     const fileValidation = imageFileSchema.safeParse(coverFile);
     if (!fileValidation.success) {
@@ -125,24 +136,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
 
-    const safeData = validatedData.data;
+    let coverImageUrl = null;
     const validFile = fileValidation.data;
 
-    let coverImageUrl = null;
+    const {
+      url: imgUrl,
+      path: iPath,
+      error: imgErr,
+    } = await uploadFileToSupabase(
+      supabase,
+      validFile,
+      "covers",
+      `requests/${finalArtistId}`,
+    );
 
-    const safeName = validFile.name.replace(/[^a-zA-Z0-9.\-_]/g, "");
-    uploadedCoverPath = `albums/artist_${finalArtistId}/cover_${Date.now()}_${safeName}`;
+    if (imgErr) {
+      console.error("Lỗi trong quá trình tải lên file:", imgErr);
+      return NextResponse.json(
+        { error: "Tải lên không thành công" },
+        { status: 400 },
+      );
+    }
 
-    const { error: coverErr } = await supabase.storage
-      .from("covers")
-      .upload(uploadedCoverPath, validFile);
-
-    if (coverErr)
-      throw new Error("Tải lên không thành công" + coverErr.message);
-
-    coverImageUrl = supabase.storage
-      .from("covers")
-      .getPublicUrl(uploadedCoverPath).data.publicUrl;
+    coverImageUrl = imgUrl;
+    uploadedCoverPath = iPath;
 
     const dbData: any = {
       title: safeData.title,
@@ -170,7 +187,10 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (dbError)
-      throw new Error("Thêm mới không thành công!" + dbError.message);
+      return NextResponse.json(
+        { error: "Thêm mới không thành công" },
+        { status: 400 },
+      );
 
     return NextResponse.json(
       { data: newAlbum, message: "Tạo Album thành công!" },
@@ -184,7 +204,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: error.message || "Đã xảy ra lỗi hệ thống" },
+      { error: "Đã xảy ra lỗi hệ thống" },
       { status: 500 },
     );
   }

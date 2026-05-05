@@ -84,7 +84,10 @@ export async function GET(
 
     return NextResponse.json({ data: formattedData }, { status: 200 });
   } catch (error: any) {
-    return NextResponse.json({ error: "Lỗi server" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Đã xảy ra lỗi hệ thống" },
+      { status: 500 },
+    );
   }
 }
 
@@ -135,7 +138,10 @@ export async function PATCH(
     const rawData = {
       title: formData.get("title") as string,
       albumId: formData.get("albumId") as string,
-      genreId: (!rawGenreId || rawGenreId.trim() === "" || rawGenreId === "null") ? null : rawGenreId,
+      genreId:
+        !rawGenreId || rawGenreId.trim() === "" || rawGenreId === "null"
+          ? null
+          : rawGenreId,
       trackNumber: Number(formData.get("trackNumber")),
       discNumber: Number(formData.get("discNumber")),
       isPublished: formData.get("isPublished") === "true",
@@ -286,7 +292,10 @@ export async function PATCH(
       await supabase.storage.from("audio").remove([uploadedAudioPath]);
     if (uploadedImagePath)
       await supabase.storage.from("covers").remove([uploadedImagePath]);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: "Đã xảy ra lỗi hệ thống" },
+      { status: 500 },
+    );
   }
 }
 
@@ -354,7 +363,7 @@ export async function DELETE(
   } catch (error: any) {
     console.error("Lỗi khi xóa Track:", error);
     return NextResponse.json(
-      { error: error.message || "Lỗi server" },
+      { error: "Đã xảy ra lỗi hệ thống" },
       { status: 500 },
     );
   }

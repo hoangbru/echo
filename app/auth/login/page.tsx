@@ -1,6 +1,8 @@
 "use client";
 
-import { createClient } from "@/lib/supabase/client";
+import { useState } from "react";
+import { Loader2, MailCheck } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,9 +13,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useState } from "react";
-import { Loader2, MailCheck } from "lucide-react";
 import { GoogleIcon } from "@/components/icons";
+
+import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const supabase = createClient();

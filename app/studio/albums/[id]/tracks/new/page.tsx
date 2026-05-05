@@ -1,5 +1,5 @@
-import PrevButton from "@/components/prev-button";
-import FormTrackAdd from "./form-track-add";
+import { FormTrackAdd } from "@/components/features/artist/track";
+import { PrevButton } from "@/components/shared/buttons";
 
 export default async function NewTrackPage({
   params,

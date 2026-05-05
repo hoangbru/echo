@@ -10,6 +10,7 @@ import {
 } from "@/lib/validations/file.schema";
 import { keysToCamel } from "@/lib/utils/format";
 import { authorizeApi } from "@/lib/session";
+import { uploadFileToSupabase } from "@/lib/utils/file";
 
 export async function GET(request: NextRequest) {
   try {
@@ -77,7 +78,10 @@ export async function GET(request: NextRequest) {
       { status: 200 },
     );
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: "Đã xảy ra lỗi hệ thống" },
+      { status: 500 },
+    );
   }
 }
 
@@ -170,44 +174,46 @@ export async function POST(request: NextRequest) {
     }
 
     // Upload audio file
-    const safeAudioName = validAudio.name.replace(/[^a-zA-Z0-9.\-_]/g, "");
-    uploadedAudioPath = `tracks/artist_${finalArtistId}/audio_${Date.now()}_${safeAudioName}`;
-
-    const { error: audioErr } = await supabase.storage
-      .from("audio")
-      .upload(uploadedAudioPath, validAudio);
-
+    const {
+      url: audioUrl,
+      path: aPath,
+      error: audioErr,
+    } = await uploadFileToSupabase(
+      supabase,
+      validAudio,
+      "audio",
+      `tracks/artist_${finalArtistId}`,
+    );
     if (audioErr)
       return NextResponse.json(
-        { error: "Tải lên audio không thành công" },
+        { error: "Tải lên audio thất bại" },
         { status: 400 },
       );
-
-    const audioUrl = supabase.storage
-      .from("audio")
-      .getPublicUrl(uploadedAudioPath).data.publicUrl;
-    const audioFileSize = validAudio.size;
+    uploadedAudioPath = aPath;
 
     // Upload image file (Nếu có)
     let imageUrl = null;
     if (validImage) {
-      const safeImageName = validImage.name.replace(/[^a-zA-Z0-9.\-_]/g, "");
-      uploadedImagePath = `tracks/artist_${finalArtistId}/cover_${Date.now()}_${safeImageName}`;
-
-      const { error: imageErr } = await supabase.storage
-        .from("covers")
-        .upload(uploadedImagePath, validImage);
-
+      const {
+        url: imgUrl,
+        path: iPath,
+        error: imageErr,
+      } = await uploadFileToSupabase(
+        supabase,
+        validImage,
+        "covers",
+        `tracks/artist_${finalArtistId}`,
+      );
       if (imageErr)
         return NextResponse.json(
-          { error: "Tải lên ảnh không thành công" },
+          { error: "Tải lên ảnh thất bại" },
           { status: 400 },
         );
-
-      imageUrl = supabase.storage.from("covers").getPublicUrl(uploadedImagePath)
-        .data.publicUrl;
+      imageUrl = imgUrl;
+      uploadedImagePath = iPath;
     }
 
+    const audioFileSize = validAudio.size;
     const fileSizeInBytes = validAudio.size;
 
     let calculatedBitrate = null;
@@ -281,6 +287,9 @@ export async function POST(request: NextRequest) {
     if (uploadedImagePath)
       await supabase.storage.from("covers").remove([uploadedImagePath]);
 
-    return NextResponse.json({ error: "Lỗi server" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Đã xảy ra lỗi hệ thống" },
+      { status: 500 },
+    );
   }
 }

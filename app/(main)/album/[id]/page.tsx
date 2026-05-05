@@ -1,10 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+import { AlbumTrackList } from "@/components/features/guest/album/";
+import { AlbumCard } from "@/components/shared/cards";
+
 import { createClient } from "@/lib/supabase/server";
 import { keysToCamel } from "@/lib/utils/format";
-import { AlbumTrackList } from "@/components/guest/album/album-track-list";
-import { AlbumCard } from "@/components/album-card";
 
 export default async function AlbumDetailPage({
   params,
@@ -14,7 +16,6 @@ export default async function AlbumDetailPage({
   const { id } = await params;
   const supabase = createClient();
 
-  // 1. Fetch data Album hiện tại
   const { data: albumData, error } = await supabase
     .from("album")
     .select(
@@ -121,11 +122,15 @@ export default async function AlbumDetailPage({
           {/* © là Copyright (Bản quyền bài hát/lời/nhạc), ℗ là Phonogram (Bản quyền bản ghi âm) */}
           <p>
             © {releaseYear} {album.artist?.stageName}
-            {album.recordLabel ? `, exclusively licensed to ${album.recordLabel}` : ''}
+            {album.recordLabel
+              ? `, exclusively licensed to ${album.recordLabel}`
+              : ""}
           </p>
           <p>
             ℗ {releaseYear} {album.artist?.stageName}
-            {album.recordLabel ? `, exclusively licensed to ${album.recordLabel}` : ''}
+            {album.recordLabel
+              ? `, exclusively licensed to ${album.recordLabel}`
+              : ""}
           </p>
         </div>
 

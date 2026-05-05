@@ -1,6 +1,6 @@
-import FormAlbumAdd from "./form-album-add";
-import PrevButton from "@/components/prev-button";
-import { PageHeading } from "@/components/page-heading";
+import { FormAlbumAdd } from "@/components/features/artist/album";
+import { PrevButton } from "@/components/shared/buttons";
+import { PageHeading } from "@/components/ui/page-heading";
 
 export default async function NewAlbumPage() {
   return (

@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 import { genreSchema } from "@/lib/validations/genre.schema";
+import { createClient } from "@/lib/supabase/server";
+import { removeVietnameseTones } from "@/lib/utils/utils";
+import { keysToCamel } from "@/lib/utils/format";
 
 export async function GET(request: NextRequest) {
   try {
     const supabase = createClient();
+    const { searchParams } = new URL(request.url);
 
-    const searchParams = request.nextUrl.searchParams;
-    const search = searchParams.get("search") || "";
+    const search = searchParams.get("q") || searchParams.get("search") || "";
 
     let query = supabase
       .from("genre")
@@ -15,16 +17,28 @@ export async function GET(request: NextRequest) {
       .order("name", { ascending: true });
 
     if (search) {
-      query = query.ilike("name", `%${search}%`);
+      const cleanSearch = removeVietnameseTones(search);
+      query = query.ilike("name", `%${cleanSearch}%`);
     }
 
     const { data, error } = await query;
 
-    if (error) throw new Error(error.message);
+    if (error) {
+      console.error("[DB_ERROR_GET_GENRES]:", error.message);
+      return NextResponse.json(
+        { error: "Không thể tải danh sách thể loại lúc này" },
+        { status: 500 },
+      );
+    }
 
-    return NextResponse.json({ data }, { status: 200 });
+    const formattedData = keysToCamel(data);
+    return NextResponse.json({ data: formattedData }, { status: 200 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("API GET Genres Error:", error);
+    return NextResponse.json(
+      { error: "Đã xảy ra lỗi hệ thống" },
+      { status: 500 },
+    );
   }
 }
 
@@ -32,7 +46,6 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = createClient();
 
-    // 1. Kiểm tra quyền (Chỉ cho phép user đã đăng nhập, hoặc bạn có thể check role Admin ở đây)
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -43,10 +56,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 2. Parse dữ liệu dạng JSON (Khác với Album dùng FormData vì Genre không có ảnh)
     const body = await request.json();
 
-    // 3. Validate bằng Zod
     const validatedData = genreSchema.safeParse(body);
     if (!validatedData.success) {
       return NextResponse.json(
@@ -57,7 +68,6 @@ export async function POST(request: NextRequest) {
 
     const safeData = validatedData.data;
 
-    // 4. Lưu vào Database
     const { data: newGenre, error } = await supabase
       .from("genre")
       .insert({
@@ -68,7 +78,6 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
-      // Bắt lỗi trùng tên nếu DB của bạn có set UNIQUE cho cột name
       if (error.code === "23505") {
         throw new Error("Tên thể loại này đã tồn tại!");
       }
@@ -80,6 +89,9 @@ export async function POST(request: NextRequest) {
       { status: 201 },
     );
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: "Đã xảy ra lỗi hệ thống" },
+      { status: 500 },
+    );
   }
 }

@@ -1,11 +1,12 @@
-import { GuestSidebar } from "@/components/guest/guest-sidebar";
-import { GuestHeader } from "@/components/guest/guest-header";
+import { GuestSidebar } from "@/components/layout/sidebar";
+import { GuestHeader } from "@/components/layout/navbar";
+import { MainWrapper } from "@/components/layout/main-wrapper";
+import { GlobalPlayer, QueuePanel } from "@/components/features/player";
+
 import { createClient } from "@/lib/supabase/server";
 import { UserService } from "@/lib/services/user.service";
 import { ArtistService } from "@/lib/services/artist.service";
-import { GlobalPlayer } from "@/components/player/global-player";
-import { QueuePanel } from "@/components/player/queue-panel";
-import { MainWrapper } from "@/components/layout/main-wrapper";
+import { UserRole } from "@/types";
 
 export default async function GuestLayout({
   children,
@@ -20,6 +21,7 @@ export default async function GuestLayout({
 
   let dbProfile = null;
   let isArtist = false;
+  let isAdmin = false;
 
   if (user) {
     const [profileResult, artistResult] = await Promise.all([
@@ -29,9 +31,12 @@ export default async function GuestLayout({
 
     if (profileResult) {
       dbProfile = profileResult;
+      if (profileResult.role === UserRole.ADMIN) {
+        isAdmin = true;
+      }
     }
 
-    if (artistResult) {
+    if (profileResult.role === UserRole.ARTIST && artistResult) {
       isArtist = true;
     }
   }
@@ -44,7 +49,11 @@ export default async function GuestLayout({
         </div>
 
         <main className="flex-1 flex flex-col min-w-0">
-          <GuestHeader profile={dbProfile} isArtist={isArtist} />
+          <GuestHeader
+            profile={dbProfile}
+            isArtist={isArtist}
+            isAdmin={isAdmin}
+          />
           <div className="flex-1 overflow-y-auto pb-32">
             <MainWrapper>{children}</MainWrapper>
           </div>

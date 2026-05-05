@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 
-import { PageHeading } from "@/components/page-heading";
+import { PageHeading } from "@/components/ui/page-heading";
 import { Button } from "@/components/ui/button";
+import { AlbumGrid } from "@/components/features/artist/album";
 
 import { SearchParams } from "@/types";
-import AlbumGrid from "@/components/artist/album/album-grid";
 
 export default async function ArtistAlbumsPage({
   searchParams,
@@ -33,7 +33,7 @@ export default async function ArtistAlbumsPage({
           </p>
         </div>
         <Link href="/studio/albums/new">
-          <Button className="bg-pink-500 hover:bg-pink-600 text-white font-bold px-6 shadow-[0_0_20px_rgba(236,72,153,0.3)]">
+          <Button className="bg-primary hover:bg-pink-600 text-white font-bold px-6 shadow-[0_0_20px_rgba(236,72,153,0.3)]">
             <Plus className="w-4 h-4 mr-2" /> Tạo album mới
           </Button>
         </Link>

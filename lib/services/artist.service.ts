@@ -1,12 +1,11 @@
 import { keysToCamel } from "../utils/format";
 
 export const ArtistService = {
-  async getFeaturedArtists(supabase: any, limit: number = 6) {
+  async getFeaturedArtists(supabase: any) {
     const { data, error } = await supabase
       .from("artist")
-      .select(`id, stage_name, profile_image, is_verified`)
+      .select(`*`)
       .eq("is_verified", true)
-      .limit(limit);
 
     if (error) {
       console.error("Đã có lỗi xảy ra, vui lòng thử lại sau!");

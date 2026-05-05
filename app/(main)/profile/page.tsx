@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import ProfileClient from "./profile-client";
+import { ProfileClient } from "@/components/features/guest/profile";
 
 import { createClient } from "@/lib/supabase/server";
 import { UserService } from "@/lib/services/user.service";
@@ -20,7 +20,6 @@ export default async function ProfilePage() {
   const profile = await UserService.getUserProfile(supabase, user.id);
 
   if (!profile) {
-    console.log("Không tìm thấy profile, đang chuyển hướng...");
     return <div>Không thể tải thông tin người dùng. Vui lòng thử lại.</div>;
   }
 

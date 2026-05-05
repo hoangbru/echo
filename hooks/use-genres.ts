@@ -1,18 +1,17 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/axios";
 import { toast } from "sonner";
-import { GenreFormValues } from "@/lib/validations/genre.schema";
 
-export function useGenres(search: string = "") {
+export const useGenres = (params?: { q?: string }) => {
   return useQuery({
-    queryKey: ["genres", search],
+    queryKey: ["genres", params],
     queryFn: async () => {
-      const res = await apiClient.get("/genres", { params: { search } });
-      return res as { data: any[] };
+      const res = await apiClient.get("/genres", { params });
+
+      return res;
     },
-    staleTime: 1000 * 60 * 60,
   });
-}
+};
 
 export function useCreateGenre() {
   const queryClient = useQueryClient();

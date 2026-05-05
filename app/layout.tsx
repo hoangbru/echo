@@ -3,7 +3,7 @@ import { Geist } from "next/font/google";
 
 import "./globals.css";
 import { Toaster } from "sonner";
-import { QueryProvider } from "@/components/providers/query-provider";
+import { ModalProvider, QueryProvider } from "@/components/providers";
 
 const geist = Geist({ subsets: ["latin"] });
 
@@ -29,6 +29,7 @@ export default function RootLayout({
       >
         <QueryProvider>
           <Toaster />
+          <ModalProvider />
           {children}
         </QueryProvider>
       </body>

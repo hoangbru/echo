@@ -11,7 +11,6 @@ export const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
-    // Nếu bạn cần nhét thêm Token vào header, làm ở đây
     return config;
   },
   (error) => {

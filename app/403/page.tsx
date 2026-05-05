@@ -29,7 +29,7 @@ export default function ForbiddenPage() {
 
         <Link
           href="/"
-          className="flex items-center justify-center gap-2 px-6 py-3 bg-pink-500 hover:bg-pink-600 shadow-[0_0_20px_rgba(236,72,153,0.3)] rounded-full text-white font-medium transition-all hover:-translate-y-1"
+          className="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-pink-600 shadow-[0_0_20px_rgba(236,72,153,0.3)] rounded-full text-white font-medium transition-all hover:-translate-y-1"
         >
           <Home className="w-4 h-4" />
           Trang chủ Echo

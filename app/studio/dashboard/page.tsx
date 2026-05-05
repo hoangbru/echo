@@ -93,11 +93,11 @@ export default function ArtistDashboardPage() {
         {STATS.map((stat, index) => (
           <div
             key={index}
-            className="bg-card border border-white/10 rounded-2xl p-6 shadow-lg hover:border-pink-500/30 transition-all group"
+            className="bg-card border border-white/10 rounded-2xl p-6 shadow-lg hover:border-primary/30 transition-all group"
           >
             <div className="flex justify-between items-start mb-4">
-              <div className="w-12 h-12 rounded-xl bg-pink-500/10 flex items-center justify-center group-hover:bg-pink-500/20 transition-colors">
-                <stat.icon className="w-6 h-6 text-pink-500" />
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                <stat.icon className="w-6 h-6 text-primary" />
               </div>
               <div
                 className={`flex items-center gap-1 text-sm font-medium px-2.5 py-1 rounded-full ${stat.isUp ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"}`}
@@ -130,7 +130,7 @@ export default function ArtistDashboardPage() {
             <h2 className="text-lg font-bold text-white">
               Lượt Nghe Theo Thời Gian
             </h2>
-            <select className="bg-[#09090b] border border-white/10 rounded-lg px-3 py-1.5 text-sm text-gray-300 focus:outline-none focus:border-pink-500">
+            <select className="bg-[#09090b] border border-white/10 rounded-lg px-3 py-1.5 text-sm text-gray-300 focus:outline-none focus:border-primary">
               <option>30 ngày qua</option>
               <option>7 ngày qua</option>
               <option>Năm nay</option>
@@ -141,14 +141,14 @@ export default function ArtistDashboardPage() {
           <div className="flex-1 w-full min-h-[300px] bg-[#09090b] rounded-xl border border-white/5 flex items-center justify-center relative overflow-hidden">
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
             <div className="text-center z-10">
-              <PlayCircle className="w-12 h-12 text-pink-500/20 mx-auto mb-3" />
+              <PlayCircle className="w-12 h-12 text-primary/20 mx-auto mb-3" />
               <p className="text-gray-500 text-sm font-medium">
                 Biểu đồ đang được cập nhật dữ liệu...
               </p>
             </div>
 
             {/* Giả lập các đường line neon */}
-            <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-pink-500/10 to-transparent"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-primary/10 to-transparent"></div>
             <svg
               className="absolute inset-0 w-full h-full"
               preserveAspectRatio="none"
@@ -206,7 +206,7 @@ export default function ArtistDashboardPage() {
                   </p>
                 </div>
 
-                <div className="text-pink-500 font-black text-lg opacity-30">
+                <div className="text-primary font-black text-lg opacity-30">
                   #{idx + 1}
                 </div>
               </div>

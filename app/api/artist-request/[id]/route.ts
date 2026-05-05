@@ -1,7 +1,7 @@
 import { authorizeApi } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 import { keysToCamel } from "@/lib/utils/format";
-import { ArtistRequestStatus, UserRole } from "@/types";
+import { UserRole } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(

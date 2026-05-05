@@ -1,14 +1,16 @@
+import { ReactNode } from "react";
 import { redirect } from "next/navigation";
 
-import { ArtistShell } from "@/components/artist/artist-shell";
+import { ArtistShell } from "@/components/features/artist";
 
-import { ArtistService } from "@/lib/services";
+import { ArtistService, UserService } from "@/lib/services";
 import { createClient } from "@/lib/supabase/server";
+import { UserRole } from "@/types";
 
 export default async function ArtistLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const supabase = createClient();
 
@@ -17,7 +19,20 @@ export default async function ArtistLayout({
   } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
 
-  const artistProfile = await ArtistService.getCurrentArtist(supabase, user.id);
+  let artistProfile = null;
+  let isArtist = false;
+
+  if (user) {
+    const [profileResult, artistResult] = await Promise.all([
+      UserService.getUserProfile(supabase, user.id),
+      ArtistService.getCurrentArtist(supabase, user.id),
+    ]);
+
+    if (profileResult.role === UserRole.ARTIST && artistResult) {
+      isArtist = true;
+      artistProfile = artistResult;
+    }
+  }
 
   if (!artistProfile) {
     redirect("/403");
