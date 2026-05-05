@@ -1,11 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/axios";
-import { ArtistRequestFormValues } from "@/lib/validations/artist-request.schema";
 import { QueryParams } from "@/types";
 import { toast } from "sonner";
 
 type ArtistRequestsQueryParams = QueryParams & {
-  status: string;
+  status?: string;
+  sortBy?: string;
+  sortOrder?: string;
+  fromDate?: string;
+  toDate?: string;
 };
 
 export function useArtistRequests(params: ArtistRequestsQueryParams) {
@@ -22,15 +25,19 @@ export const useSubmitArtistRequest = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: ArtistRequestFormValues) => {
-      const res = await apiClient.post("/artist-request", data);
+    mutationFn: async (formData: FormData) => {
+      const res = await apiClient.post("/artist-request", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       return res;
     },
     onSuccess() {
       queryClient.invalidateQueries({ queryKey: ["artist-request"] });
     },
-    onError() {
-      toast.error("Đã có lỗi xảy ra", { description: "Vui lòng thử lại sau!" });
+    onError(error: any) {
+      toast.error(error.message || "Đã có lỗi khi gửi yêu cầu");
     },
   });
 };

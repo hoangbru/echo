@@ -1,5 +1,5 @@
-import PrevButton from "@/components/prev-button";
-import TrackGrid from "@/components/artist/track/track-grid";
+import { TrackGrid } from "@/components/features/artist/track";
+import { PrevButton } from "@/components/shared/buttons";
 
 export default async function AlbumTracksPage({
   params,

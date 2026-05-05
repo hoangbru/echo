@@ -1,6 +1,6 @@
-import PrevButton from "@/components/prev-button";
-import { PageHeading } from "@/components/page-heading";
-import FormAlbumEdit from "./form-album-edit";
+import { FormAlbumEdit } from "@/components/features/artist/album";
+import { PrevButton } from "@/components/shared/buttons";
+import { PageHeading } from "@/components/ui/page-heading";
 
 export default async function EditAlbumPage({
   params,

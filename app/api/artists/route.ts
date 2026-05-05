@@ -26,6 +26,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ data: formattedData }, { status: 200 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: "Đã xảy ra lỗi hệ thống" },
+      { status: 500 },
+    );
   }
 }

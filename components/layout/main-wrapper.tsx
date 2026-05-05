@@ -2,8 +2,9 @@
 
 import { usePlayer } from "@/hooks/use-player";
 import { cn } from "@/lib/utils/utils";
+import { ReactNode } from "react";
 
-export function MainWrapper({ children }: { children: React.ReactNode }) {
+export function MainWrapper({ children }: { children: ReactNode }) {
   const { isQueueVisible } = usePlayer();
 
   return (

@@ -17,7 +17,10 @@ export async function POST(req: Request) {
     });
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json(
+        { error: "Đã xảy ra lỗi hệ thống" },
+        { status: 500 },
+      );
     }
 
     return NextResponse.json(
@@ -25,6 +28,9 @@ export async function POST(req: Request) {
       { status: 200 },
     );
   } catch (err: any) {
-    return NextResponse.json({ error: "Lỗi server" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Đã xảy ra lỗi hệ thống" },
+      { status: 500 },
+    );
   }
 }

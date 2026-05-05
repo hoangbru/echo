@@ -1,6 +1,7 @@
+import { ReactNode } from "react";
 import { redirect } from "next/navigation";
 
-import { ArtistShell } from "@/components/artist/artist-shell";
+import { ArtistShell } from "@/components/features/artist";
 
 import { ArtistService } from "@/lib/services";
 import { createClient } from "@/lib/supabase/server";
@@ -8,7 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 export default async function ArtistLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const supabase = createClient();
 

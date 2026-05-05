@@ -4,6 +4,12 @@ import { createClient } from "@/lib/supabase/server";
 import { artistRequestSchema } from "@/lib/validations/artist-request.schema";
 import { ArtistRequestStatus, UserRole } from "@/types";
 import { keysToCamel } from "@/lib/utils/format";
+import {
+  audioFileSchema,
+  imageFileSchema,
+} from "@/lib/validations/file.schema";
+import { uploadFileToSupabase } from "@/lib/utils/file";
+import { removeVietnameseTones } from "@/lib/utils/utils";
 
 export async function GET(request: NextRequest) {
   try {
@@ -15,21 +21,36 @@ export async function GET(request: NextRequest) {
 
     const searchParams = request.nextUrl.searchParams;
     const status = searchParams.get("status") || "all";
-
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
+    const search = searchParams.get("search") || "";
+    const fromDate = searchParams.get("fromDate");
+    const toDate = searchParams.get("toDate");
+    const sortBy = searchParams.get("sortBy") || "created_at";
+    const sortOrder = searchParams.get("sortOrder") || "desc";
 
-    let query = supabase
-      .from("artist_request")
-      .select("*", { count: "exact" })
-      .order("created_at", { ascending: false });
+    let query = supabase.from("artist_request").select("*", { count: "exact" });
 
-    if (status === ArtistRequestStatus.APPROVED)
-      query = query.eq("status", "APPROVED");
-    if (status === ArtistRequestStatus.PENDING)
-      query = query.eq("status", "PENDING");
-    if (status === ArtistRequestStatus.REJECTED)
-      query = query.eq("status", "REJECTED");
+    if (status !== "all") {
+      query = query.eq("status", status);
+    }
+
+    if (fromDate) {
+      query = query.gte("created_at", fromDate);
+    }
+
+    if (toDate) {
+      query = query.lte("created_at", toDate);
+    }
+
+    if (search) {
+      const cleanSearch = removeVietnameseTones(search);
+      query = query.or(
+        `stage_name.ilike.%${search}%,contact_email.ilike.%${search}%`,
+      );
+    }
+
+    query = query.order(sortBy, { ascending: sortOrder === "asc" });
 
     const from = (page - 1) * limit;
     const to = from + limit - 1;
@@ -53,28 +74,105 @@ export async function GET(request: NextRequest) {
       { status: 200 },
     );
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: "Đã xảy ra lỗi hệ thống" },
+      { status: 500 },
+    );
   }
 }
 
 export async function POST(request: NextRequest) {
   const supabase = createClient();
+  let uploadedAudioPath: string | null = null;
+  let uploadedImagePath: string | null = null;
+
   try {
     const auth = await authorizeApi();
 
     if (auth.error)
       return NextResponse.json({ error: auth.error }, { status: auth.status });
 
-    const body = await request.json();
+    const formData = await request.formData();
+    const userId = auth.user?.id;
 
-    const validatedData = artistRequestSchema.safeParse(body);
+    const rawData = {
+      stageName: formData.get("stageName") as string,
+      bio: formData.get("bio") as string,
+      contactEmail: formData.get("contactEmail") as string,
+      agreedToTerms: formData.get("agreedToTerms") === "true",
+      facebook: (formData.get("facebook") as string) || "",
+      instagram: (formData.get("instagram") as string) || "",
+      youtube: (formData.get("youtube") as string) || "",
+    };
+
+    const validatedData = artistRequestSchema.safeParse(rawData);
     if (!validatedData.success) {
+      const errorMessage = validatedData.error.errors[0].message;
+      return NextResponse.json({ error: errorMessage }, { status: 400 });
+    }
+    const safeData = validatedData.data;
+
+    const audioFile = formData.get("demoAudioFile") as File | null;
+    const audioValidation = audioFileSchema.safeParse(audioFile);
+    if (!audioValidation.success) {
       return NextResponse.json(
-        { error: validatedData.error.errors[0].message },
+        { error: audioValidation.error.errors[0].message },
         { status: 400 },
       );
     }
-    const safeData = validatedData.data;
+    const validAudio = audioValidation.data;
+
+    let validImage = null;
+    const imageFile = formData.get("profileImageFile") as File | null;
+    if (imageFile && imageFile.size > 0) {
+      const imageValidation = imageFileSchema.safeParse(imageFile);
+      if (!imageValidation.success) {
+        return NextResponse.json(
+          { error: imageValidation.error.errors[0].message },
+          { status: 400 },
+        );
+      }
+      validImage = imageValidation.data;
+    }
+
+    const {
+      url: audioUrl,
+      path: aPath,
+      error: audioErr,
+    } = await uploadFileToSupabase(
+      supabase,
+      validAudio,
+      "audio",
+      `requests/${userId}`,
+    );
+    if (audioErr) {
+      return NextResponse.json(
+        { error: "Không thể tải lên file âm thanh" },
+        { status: 400 },
+      );
+    }
+    uploadedAudioPath = aPath;
+
+    let imageUrl = "";
+    if (imageFile && imageFile.size > 0) {
+      const {
+        url: imgUrl,
+        path: iPath,
+        error: imgErr,
+      } = await uploadFileToSupabase(
+        supabase,
+        imageFile,
+        "covers",
+        `requests/${userId}`,
+      );
+      if (imgErr)
+        return NextResponse.json(
+          { error: "Không thể tải lên ảnh đại diện" },
+          { status: 400 },
+        );
+      imageUrl = imgUrl || "";
+      uploadedImagePath = iPath;
+    }
 
     const socialLinks = {
       facebook: safeData.facebook || "",
@@ -83,15 +181,15 @@ export async function POST(request: NextRequest) {
     };
 
     const dbData: any = {
-      user_id: auth.user?.id,
+      user_id: userId,
       stage_name: safeData.stageName,
       bio: safeData.bio,
       social_links: socialLinks,
-      status: ArtistRequestStatus.PENDING,
       contact_email: safeData.contactEmail,
-      demo_link: safeData.demoLink,
-      profile_image: safeData.profileImage,
+      demo_link: audioUrl,
+      profile_image: imageUrl,
       agreed_to_terms: safeData.agreedToTerms,
+      status: ArtistRequestStatus.PENDING,
     };
 
     const { error } = await supabase.from("artist_request").insert(dbData);
@@ -107,7 +205,15 @@ export async function POST(request: NextRequest) {
       { status: 200 },
     );
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (uploadedAudioPath)
+      await supabase.storage.from("audio").remove([uploadedAudioPath]);
+    if (uploadedImagePath)
+      await supabase.storage.from("covers").remove([uploadedImagePath]);
+
+    return NextResponse.json(
+      { error: "Đã xảy ra lỗi hệ thống" },
+      { status: 500 },
+    );
   }
 }
 
@@ -133,7 +239,7 @@ export async function PATCH(request: NextRequest) {
 
       if (artistError) {
         return NextResponse.json(
-          { error: "Lỗi khi khởi tạo dữ liệu Nghệ sĩ"},
+          { error: "Lỗi khi khởi tạo dữ liệu Nghệ sĩ" },
           { status: 400 },
         );
       }
@@ -173,6 +279,9 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json({ message }, { status: 200 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: "Đã xảy ra lỗi hệ thống" },
+      { status: 500 },
+    );
   }
 }

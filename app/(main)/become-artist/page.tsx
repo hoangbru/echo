@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { ArtistRegisterForm } from "./artist-register-form";
 import { Clock } from "lucide-react";
+
+import { ArtistRegisterForm } from "@/components/features/guest/become-artist";
+
+import { createClient } from "@/lib/supabase/server";
 import { ArtistRequestService, ArtistService } from "@/lib/services";
 
 export default async function BecomeArtistPage() {
@@ -48,7 +50,7 @@ export default async function BecomeArtistPage() {
 
   return (
     <div className="min-h-screen pt-20 pb-24 px-6">
-      <ArtistRegisterForm userId={user.id} />
+      <ArtistRegisterForm />
     </div>
   );
 }

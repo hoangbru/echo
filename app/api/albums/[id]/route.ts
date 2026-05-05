@@ -74,7 +74,10 @@ export async function PATCH(
         { status: 404 },
       );
 
-    if (auth.role !== UserRole.ADMIN && oldAlbum.artist_id !== currentArtistId) {
+    if (
+      auth.role !== UserRole.ADMIN &&
+      oldAlbum.artist_id !== currentArtistId
+    ) {
       return NextResponse.json(
         {
           error: "Bạn không có quyền sửa album này!",
@@ -90,7 +93,10 @@ export async function PATCH(
       title: formData.get("title") as string,
       description: (formData.get("description") as string | null) || "",
       releaseDate: (formData.get("releaseDate") as string | null) || "",
-      genreId: (!rawGenreId || rawGenreId.trim() === "" || rawGenreId === "null") ? null : rawGenreId,
+      genreId:
+        !rawGenreId || rawGenreId.trim() === "" || rawGenreId === "null"
+          ? null
+          : rawGenreId,
       isPublished: formData.get("isPublished") === "true",
       albumType: (formData.get("albumType") as string) || "ALBUM",
       isExplicit: formData.get("isExplicit") === "true",
@@ -169,7 +175,10 @@ export async function PATCH(
   } catch (error: any) {
     if (newUploadedPath)
       await supabase.storage.from("covers").remove([newUploadedPath]);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: "Đã xảy ra lỗi hệ thống" },
+      { status: 500 },
+    );
   }
 }
 
@@ -252,6 +261,9 @@ export async function DELETE(
     );
   } catch (error: any) {
     console.error("API Delete Album Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: "Đã xảy ra lỗi hệ thống" },
+      { status: 500 },
+    );
   }
 }

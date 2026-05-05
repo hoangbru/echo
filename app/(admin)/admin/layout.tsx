@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { AdminShell } from "@/components/admin/admin-shell";
+import { AdminShell } from "@/components/features/admin/admin-shell";
 import { UserService } from "@/lib/services";
 
 export default async function AdminLayout({
