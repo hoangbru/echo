@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const auth = await authorizeApi();
 
     const { searchParams } = new URL(request.url);
-    const search = searchParams.get("q") || "";
+    const search = searchParams.get("q") || searchParams.get("search") || "";
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
     const sortBy = searchParams.get("sortBy") || "stage_name";
@@ -48,20 +48,16 @@ export async function GET(request: NextRequest) {
     const { data, error, count } = await query;
 
     if (error) {
-      console.error("[DB_ERROR_GET_ARTISTS]:", error.message, error.details);
-
+      console.error("[GET_ARTISTS_DB_ERROR]:", error);
       return NextResponse.json(
-        {
-          error:
-            "Không thể tải danh sách nghệ sĩ lúc này. Vui lòng thử lại sau!",
-        },
+        { error: "Không thể tải danh sách nghệ sĩ lúc này" },
         { status: 500 },
       );
     }
 
-    const formattedData = keysToCamel(data);
+    const formattedData = keysToCamel(data || []);
     const totalCount = count || 0;
-    const totalPages = Math.ceil(totalCount / limit);
+    const totalPages = limit > 0 ? Math.ceil(totalCount / limit) : 0;
 
     return NextResponse.json(
       {
@@ -78,9 +74,9 @@ export async function GET(request: NextRequest) {
       { status: 200 },
     );
   } catch (error: any) {
-    console.error("API GET Artists Error:", error);
+    console.error("[GET_ARTISTS_FATAL_ERROR]:", error);
     return NextResponse.json(
-      { error: "Đã xảy ra lỗi hệ thống khi tải dữ liệu nghệ sĩ." },
+      { error: "Đã xảy ra lỗi hệ thống khi tải dữ liệu nghệ sĩ" },
       { status: 500 },
     );
   }

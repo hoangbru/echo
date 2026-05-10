@@ -123,13 +123,13 @@ export default async function AlbumDetailPage({
           <p>
             © {releaseYear} {album.artist?.stageName}
             {album.recordLabel
-              ? `, exclusively licensed to ${album.recordLabel}`
+              ? `, ${album.recordLabel}`
               : ""}
           </p>
           <p>
             ℗ {releaseYear} {album.artist?.stageName}
             {album.recordLabel
-              ? `, exclusively licensed to ${album.recordLabel}`
+              ? `, ${album.recordLabel}`
               : ""}
           </p>
         </div>

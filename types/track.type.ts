@@ -58,25 +58,16 @@ export interface UpdateTrackParams {
   albumCoverUrl?: string | null;
 }
 
+export interface FeatArtist {
+  id: string;
+  stageName: string;
+  profileImage?: string;
+  isMain: boolean;
+}
 export interface TrackDetail extends Track {
-  artist?: {
-    id: string;
-    stageName: string;
-    avatar: string | null;
-  };
+  artists?: FeatArtist[];
   album?: {
     id: string;
     title: string;
-    coverImage: string | null;
   };
-  trackArtists?: TrackArtists[];
-}
-
-export interface TrackArtists {
-  artist: {
-    id: string;
-    stageName: string;
-    profileImage: string | null;
-  };
-  isMain: boolean;
 }

@@ -8,7 +8,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const supabase = await createClient();
+    const supabase = createClient();
 
     const { data, error } = await supabase
       .from("artist")
@@ -16,9 +16,10 @@ export async function GET(
       .eq("id", id)
       .single();
 
-    if (error || !data) {
+    if (error) {
+      console.error("[GET_ARTIST_DB_ERROR]:", error);
       return NextResponse.json(
-        { error: "Không tìm thấy hồ sơ nghệ sĩ này." },
+        { error: "Không tìm thấy hồ sơ nghệ sĩ này" },
         { status: 404 },
       );
     }
@@ -27,6 +28,7 @@ export async function GET(
 
     return NextResponse.json({ data: formattedData }, { status: 200 });
   } catch (error: any) {
+    console.error("[GET_ARTIST_FATAL_ERROR]:", error);
     return NextResponse.json(
       { error: "Đã xảy ra lỗi hệ thống" },
       { status: 500 },

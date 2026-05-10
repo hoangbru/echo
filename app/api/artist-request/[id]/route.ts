@@ -14,7 +14,7 @@ export async function GET(
 
     const auth = await authorizeApi();
     const role = auth.error ? "GUEST" : auth.role;
-    const currentArtistId = auth.artistId;
+    const currentUserId = auth.user?.id;
 
     const { data, error } = await supabase
       .from("artist_request")
@@ -22,25 +22,32 @@ export async function GET(
       .eq("id", id)
       .single();
 
-    if (error || !data) throw new Error("Không tìm thấy Album");
+    if (error) {
+      console.error("[GET_ARTIST_REQUEST_DB_ERROR]", error);
+      return NextResponse.json(
+        { error: "Không tìm thấy đơn yêu cầu" },
+        { status: 404 },
+      );
+    }
 
-    if (!data.is_published) {
-      const isOwner =
-        role === UserRole.ARTIST && data.artist_id === currentArtistId;
-      const isAdmin = role === UserRole.ADMIN;
+    const isOwner = data.user_id === currentUserId;
+    const isAdmin = role === UserRole.ADMIN;
 
-      if (!isOwner && !isAdmin) {
-        return NextResponse.json(
-          { error: "Album này đang ở chế độ riêng tư." },
-          { status: 403 },
-        );
-      }
+    if (!isOwner && !isAdmin) {
+      return NextResponse.json(
+        { error: "Bạn không có quyền xem đơn yêu cầu này" },
+        { status: 403 },
+      );
     }
 
     const formattedData = keysToCamel(data);
 
     return NextResponse.json({ data: formattedData }, { status: 200 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 404 });
+    console.error("[GET_ARTIST_REQUEST_FATAL_ERROR]", error);
+    return NextResponse.json(
+      { error: "Đã xảy ra lỗi hệ thống" },
+      { status: 500 },
+    );
   }
 }

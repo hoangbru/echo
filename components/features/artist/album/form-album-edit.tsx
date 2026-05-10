@@ -22,7 +22,6 @@ import { useGenres } from "@/hooks/use-genres";
 export function FormAlbumEdit({ albumId }: { albumId: string }) {
   const router = useRouter();
 
-  const { data: genresRes } = useGenres();
   const { data: albumRes, isLoading: isLoadingAlbum } = useAlbumDetail(albumId);
   const {
     mutate: updateAlbum,
@@ -135,7 +134,6 @@ export function FormAlbumEdit({ albumId }: { albumId: string }) {
 
         <AlbumFormMetadata
           form={form}
-          genres={genresRes?.data || []}
           status={currentStatus}
         />
       </form>

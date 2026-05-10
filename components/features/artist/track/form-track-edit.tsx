@@ -18,9 +18,7 @@ import {
   TrackFormValues,
 } from "@/lib/validations/track.schema";
 import { useTrackDetail, useUpdateTrack } from "@/hooks/use-tracks";
-import { useGenres } from "@/hooks/use-genres";
 import { useAlbumDetail } from "@/hooks/use-albums";
-import { useArtists } from "@/hooks/use-artists";
 
 export function FormTrackEdit({
   albumId,
@@ -31,8 +29,6 @@ export function FormTrackEdit({
 }) {
   const router = useRouter();
 
-  const { data: genresRes, isLoading: isLoadingGenres } = useGenres();
-  const { data: artistsRes, isLoading: isLoadingArtists } = useArtists();
   const { data: albumRes, isLoading: isLoadingAlbum } = useAlbumDetail(albumId);
   const { data: trackRes, isLoading: isLoadingTrack } = useTrackDetail(trackId);
 
@@ -44,8 +40,6 @@ export function FormTrackEdit({
     isSuccess,
   } = useUpdateTrack(albumId);
 
-  const artists = artistsRes?.data || [];
-  const genres = genresRes?.data || [];
   const track = trackRes?.data || null;
   const album = albumRes?.data || null;
 
@@ -130,7 +124,7 @@ export function FormTrackEdit({
         ? "error"
         : "idle";
 
-  if (isLoadingTrack || isLoadingAlbum || isLoadingArtists || isLoadingGenres) {
+  if (isLoadingTrack || isLoadingAlbum) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-gray-400">
         <Loader2 className="w-8 h-8 animate-spin mb-4 text-primary" />
@@ -187,8 +181,7 @@ export function FormTrackEdit({
         <div className="lg:col-span-2">
           <TrackFormMetadata
             form={form}
-            artists={artists}
-            genres={genres}
+            track={track}
             status={currentStatus}
           />
         </div>

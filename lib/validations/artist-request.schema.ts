@@ -13,7 +13,6 @@ export const artistRequestSchema = z.object({
   youtube: z.string().url("Link không hợp lệ").optional().or(z.literal("")),
 
   reviewComment: z.string().optional().or(z.literal("")),
-  reviewedBy: z.string().email().optional().or(z.literal("")),
 });
 
 export type ArtistRequestFormValues = z.infer<typeof artistRequestSchema>;

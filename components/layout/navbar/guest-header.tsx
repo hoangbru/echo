@@ -17,6 +17,7 @@ import { useState, useRef, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { User } from "@/types/user.type";
+import { SearchInput } from "@/components/features/guest/search";
 
 interface GuestHeaderProps {
   profile: User | null;
@@ -76,15 +77,8 @@ export function GuestHeader({ profile, isArtist, isAdmin }: GuestHeaderProps) {
   return (
     <header className="sticky top-0 z-30 w-full bg-[#09090b]/80 backdrop-blur border-b border-white/5">
       <div className="flex items-center justify-between px-6 py-4">
-        <div className="flex-1 max-w-md">
-          <div className="relative group">
-            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
-            <input
-              type="search"
-              placeholder="Tìm kiếm bài hát, nghệ sĩ..."
-              className="w-full rounded-full bg-card border border-white/10 px-4 py-2.5 pl-11 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
-            />
-          </div>
+        <div className="flex-1">
+          <SearchInput />
         </div>
 
         <div className="flex items-center gap-4 relative" ref={menuRef}>

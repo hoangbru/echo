@@ -1,72 +1,140 @@
 import { NextRequest, NextResponse } from "next/server";
-
-// Mock search data
-const MOCK_TRACKS = [
-  {
-    id: "1",
-    title: "Midnight Dreams",
-    artist: "Synthwave Artists",
-    type: "track",
-  },
-  { id: "2", title: "Electric Pulse", artist: "Future Beats", type: "track" },
-];
-
-const MOCK_ARTISTS = [
-  { id: "a1", name: "Synthwave Artists", type: "artist" },
-  { id: "a2", name: "Future Beats", type: "artist" },
-];
-
-const MOCK_ALBUMS = [
-  { id: "al1", title: "Digital Nights", type: "album" },
-  { id: "al2", title: "Neon Highway", type: "album" },
-];
+import { createClient } from "@/lib/supabase/server";
+import { removeVietnameseTones } from "@/lib/utils/utils";
+import { keysToCamel } from "@/lib/utils/format";
 
 export async function GET(request: NextRequest) {
   try {
+    const supabase = createClient();
     const searchParams = request.nextUrl.searchParams;
-    const query = searchParams.get("q")?.toLowerCase() || "";
+
+    const rawQuery = searchParams.get("q") || "";
     const types = searchParams.get("types")?.split(",") || [
       "track",
       "artist",
       "album",
     ];
 
-    if (!query) {
+    if (!rawQuery.trim()) {
       return NextResponse.json(
-        { error: "Query parameter required" },
+        { error: "Thiếu tham số tìm kiếm bắt buộc" },
         { status: 400 },
       );
     }
 
-    const results: any = {};
+    const cleanSearch = removeVietnameseTones(rawQuery);
+    const searchPattern = `%${cleanSearch}%`;
 
-    // Search tracks
+    const results: any = {
+      tracks: [],
+      artists: [],
+      albums: [],
+    };
+
+    const promises = [];
+
     if (types.includes("track")) {
-      results.tracks = MOCK_TRACKS.filter(
-        (t) =>
-          t.title.toLowerCase().includes(query) ||
-          t.artist.toLowerCase().includes(query),
-      ).slice(0, 10);
+      promises.push(
+        supabase
+          .from("track")
+          .select(
+            `
+            id, 
+            title, 
+            audio_url, 
+            image_url, 
+            duration, 
+            is_explicit, 
+            album(id, cover_image),
+            track_artists(
+              is_main, 
+              artist(id, stage_name, profile_image)
+            )
+          `,
+          )
+          .ilike("title_search", searchPattern)
+          .eq("is_published", true)
+          .limit(10)
+          .then(({ data, error }) => {
+            if (error) console.error("[SEARCH_TRACKS_ERROR]:", error);
+            if (!error && data) {
+              const mappedTracks = data.map((track: any) => {
+                const finalImage =
+                  track.image_url || track.album?.cover_image || null;
+
+                let artistsList = [];
+                if (track.track_artists && track.track_artists.length > 0) {
+                  artistsList = track.track_artists
+                    .filter((ta: any) => ta.artist)
+                    .map((ta: any) => ({
+                      ...ta.artist,
+                      is_main: ta.is_main,
+                    }));
+
+                  artistsList.sort((a: any, b: any) =>
+                    a.is_main === b.is_main ? 0 : a.is_main ? -1 : 1,
+                  );
+                }
+
+                return {
+                  id: track.id,
+                  title: track.title,
+                  audio_url: track.audio_url,
+                  image_url: finalImage,
+                  duration: track.duration,
+                  is_explicit: track.is_explicit,
+                  artists: artistsList,
+                  album: track.album ? { id: track.album.id } : null,
+                };
+              });
+
+              results.tracks = keysToCamel(mappedTracks);
+            }
+          }),
+      );
     }
 
-    // Search artists
     if (types.includes("artist")) {
-      results.artists = MOCK_ARTISTS.filter((a) =>
-        a.name.toLowerCase().includes(query),
-      ).slice(0, 10);
+      promises.push(
+        supabase
+          .from("artist")
+          .select("id, stage_name, profile_image, is_verified")
+          .ilike("stage_name_search", searchPattern)
+          .limit(10)
+          .then(({ data, error }) => {
+            if (error) console.error("[SEARCH_ARTISTS_ERROR]:", error);
+            if (!error && data) results.artists = keysToCamel(data);
+          }),
+      );
     }
 
-    // Search albums
     if (types.includes("album")) {
-      results.albums = MOCK_ALBUMS.filter((a) =>
-        a.title.toLowerCase().includes(query),
-      ).slice(0, 10);
+      promises.push(
+        supabase
+          .from("album")
+          .select(
+            "id, title, cover_image, album_type, is_explicit, artist(id, stage_name)",
+          )
+          .ilike("title_search", searchPattern)
+          .eq("is_published", true)
+          .limit(10)
+          .then(({ data, error }) => {
+            if (error) console.error("[SEARCH_ALBUMS_ERROR]:", error);
+            if (!error && data) results.albums = keysToCamel(data);
+          }),
+      );
     }
 
-    return NextResponse.json(results);
+    await Promise.all(promises);
+
+    return NextResponse.json({ data: results }, { status: 200 });
   } catch (error: any) {
+    console.error("[GET_SEARCH_FATAL_ERROR]:", error);
     return NextResponse.json(
-      { error: "Đã xảy ra lỗi hệ thống" },
+      {
+        error:
+          "Hệ thống đang bận, không thể tìm kiếm lúc này. Vui lòng thử lại sau.",
+      },
       { status: 500 },
     );
   }

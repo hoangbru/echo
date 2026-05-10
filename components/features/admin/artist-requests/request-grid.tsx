@@ -90,7 +90,6 @@ export function RequestsGrid({
         bio: requestToApprove?.bio,
         social_links: requestToApprove?.socialLinks,
         status: ArtistRequestStatus.APPROVED,
-        reviewed_by: user && user.email,
       },
       {
         onSuccess: () => {
@@ -111,7 +110,6 @@ export function RequestsGrid({
         id: requestToReject?.id,
         status: ArtistRequestStatus.REJECTED,
         review_comment: rejectReason,
-        reviewed_by: user && user.email,
       },
       {
         onSuccess: () => {

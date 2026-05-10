@@ -76,9 +76,9 @@ body {
     --muted: 0 0% 30%;
     --muted-foreground: 0 0% 70%;
 
-    /* Accent is same as Primary for Echo */
-    --accent: 330 100% 55%;
-    --accent-foreground: 0 0% 100%;
+    /* Accent: (#450826), (#FFB3D9) */
+    --accent: 330 80% 15%;
+    --accent-foreground: 330 100% 85%;
 
     /* Destructive (#EF4444) */
     --destructive: 0 84% 60%;

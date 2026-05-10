@@ -1,16 +1,18 @@
 "use client";
 
-import { useAlbumTracksDetail, useDeleteTrack } from "@/hooks/use-tracks";
-import { Fragment, useState } from "react";
-import { ConfirmModal } from "@/components/features/modals/confirm-modal";
-import { TrackDetail } from "@/types";
-import { TrackItem } from "./track-item";
-import { AlertCircle, Loader2, Plus, RefreshCcw } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { TrackItemSkeleton } from "./track-item-skeleton";
-import { useAlbumDetail } from "@/hooks/use-albums";
-import { PageHeading } from "@/components/ui/page-heading";
 import Link from "next/link";
+import { Fragment, useState } from "react";
+import { AlertCircle, Plus, RefreshCcw } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { PageHeading } from "@/components/ui/page-heading";
+import { ConfirmModal } from "@/components/features/modals/confirm-modal";
+import { TrackItem } from "./track-item";
+import { TrackItemSkeleton } from "./track-item-skeleton";
+
+import { useAlbumTracksDetail, useDeleteTrack } from "@/hooks/use-tracks";
+import { useAlbumDetail } from "@/hooks/use-albums";
+import { TrackDetail } from "@/types";
 
 interface TrackGridProps {
   albumId: string;
@@ -58,6 +60,7 @@ export function TrackGrid({ albumId }: TrackGridProps) {
             <tr className="bg-background/50 text-muted-foreground text-xs font-bold uppercase tracking-wider border-b border-border/50">
               <th className="py-4 px-4 w-12 text-center">#</th>
               <th className="py-4 px-4">Bài hát</th>
+              <th className="py-4 px-4">Nghệ sĩ kết hợp</th>
               <th className="py-4 px-4">Thể loại</th>
               <th className="py-4 px-4">Trạng thái</th>
               <th className="py-4 px-4 text-right">Thao tác</th>
@@ -70,7 +73,7 @@ export function TrackGrid({ albumId }: TrackGridProps) {
               ))
             ) : isError ? (
               <tr>
-                <td colSpan={4} className="py-20 text-center">
+                <td colSpan={5} className="py-20 text-center">
                   <div className="flex flex-col items-center justify-center gap-4">
                     <AlertCircle className="w-10 h-10 text-red-500/50" />
                     <p className="text-red-400 font-medium">

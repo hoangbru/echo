@@ -61,7 +61,13 @@ export async function GET(request: NextRequest) {
 
     const { data, count, error } = await query;
 
-    if (error) throw new Error("Đã có lỗi xảy ra khi tải danh sách");
+    if (error) {
+      console.error("[GET_TRACKS_DB_ERROR]", error);
+      return NextResponse.json(
+        { error: "Đã có lỗi xảy ra khi tải danh sách" },
+        { status: 500 },
+      );
+    }
 
     const formattedData = keysToCamel(data || []);
 
@@ -78,6 +84,7 @@ export async function GET(request: NextRequest) {
       { status: 200 },
     );
   } catch (error: any) {
+    console.error("[GET_TRACKS_FATAL_ERROR]", error);
     return NextResponse.json(
       { error: "Đã xảy ra lỗi hệ thống" },
       { status: 500 },
@@ -146,7 +153,10 @@ export async function POST(request: NextRequest) {
     const validatedData = trackFormSchema.safeParse(rawData);
     if (!validatedData.success) {
       const errorMessage = validatedData.error.errors[0].message;
-      return NextResponse.json({ error: errorMessage }, { status: 400 });
+      return NextResponse.json(
+        { error: errorMessage.replace(/[.!]/g, "") },
+        { status: 400 },
+      );
     }
     const safeData = validatedData.data;
 
@@ -154,7 +164,7 @@ export async function POST(request: NextRequest) {
     const audioValidation = audioFileSchema.safeParse(audioFile);
     if (!audioValidation.success) {
       return NextResponse.json(
-        { error: audioValidation.error.errors[0].message },
+        { error: audioValidation.error.errors[0].message.replace(/[.!]/g, "") },
         { status: 400 },
       );
     }
@@ -166,14 +176,15 @@ export async function POST(request: NextRequest) {
       const imageValidation = imageFileSchema.safeParse(imageFile);
       if (!imageValidation.success) {
         return NextResponse.json(
-          { error: imageValidation.error.errors[0].message },
+          {
+            error: imageValidation.error.errors[0].message.replace(/[.!]/g, ""),
+          },
           { status: 400 },
         );
       }
       validImage = imageValidation.data;
     }
 
-    // Upload audio file
     const {
       url: audioUrl,
       path: aPath,
@@ -184,14 +195,16 @@ export async function POST(request: NextRequest) {
       "audio",
       `tracks/artist_${finalArtistId}`,
     );
-    if (audioErr)
+
+    if (audioErr) {
+      console.error("[STORAGE_AUDIO_ERROR]", audioErr);
       return NextResponse.json(
         { error: "Tải lên audio thất bại" },
         { status: 400 },
       );
+    }
     uploadedAudioPath = aPath;
 
-    // Upload image file (Nếu có)
     let imageUrl = null;
     if (validImage) {
       const {
@@ -202,24 +215,26 @@ export async function POST(request: NextRequest) {
         supabase,
         validImage,
         "covers",
-        `tracks/artist_${finalArtistId}`,
+        `tracks/${finalArtistId}`,
       );
-      if (imageErr)
+      if (imageErr) {
+        console.error("[STORAGE_IMAGE_ERROR]", imageErr);
+        if (uploadedAudioPath)
+          await supabase.storage.from("audio").remove([uploadedAudioPath]);
         return NextResponse.json(
           { error: "Tải lên ảnh thất bại" },
           { status: 400 },
         );
+      }
       imageUrl = imgUrl;
       uploadedImagePath = iPath;
     }
 
     const audioFileSize = validAudio.size;
-    const fileSizeInBytes = validAudio.size;
-
     let calculatedBitrate = null;
     if (audioFileSize && safeData.duration > 0) {
       calculatedBitrate = Math.round(
-        (fileSizeInBytes * 8) / safeData.duration / 1000,
+        (audioFileSize * 8) / safeData.duration / 1000,
       );
     }
 
@@ -241,8 +256,8 @@ export async function POST(request: NextRequest) {
       composer: safeData.composer || null,
       producer: safeData.producer || null,
       language: safeData.language,
+      slug: generateSlug(safeData.title),
     };
-    dbData.slug = generateSlug(safeData.title);
 
     const { data: newTrack, error: dbError } = await supabase
       .from("track")
@@ -250,11 +265,18 @@ export async function POST(request: NextRequest) {
       .select()
       .single();
 
-    if (dbError)
+    if (dbError) {
+      console.error("[DB_INSERT_TRACK_ERROR]", dbError);
+      if (uploadedAudioPath)
+        await supabase.storage.from("audio").remove([uploadedAudioPath]);
+      if (uploadedImagePath)
+        await supabase.storage.from("covers").remove([uploadedImagePath]);
+
       return NextResponse.json(
         { error: "Không thể tạo mới bài hát" },
         { status: 400 },
       );
+    }
 
     const trackArtistsData = [
       { track_id: newTrack.id, artist_id: finalArtistId, is_main: true },
@@ -271,17 +293,27 @@ export async function POST(request: NextRequest) {
     const { error: taError } = await supabase
       .from("track_artists")
       .insert(trackArtistsData);
-    if (taError)
+
+    if (taError) {
+      console.error("[DB_INSERT_TRACK_ARTISTS_ERROR]", taError);
+      if (uploadedAudioPath)
+        await supabase.storage.from("audio").remove([uploadedAudioPath]);
+      if (uploadedImagePath)
+        await supabase.storage.from("covers").remove([uploadedImagePath]);
+      await supabase.from("track").delete().eq("id", newTrack.id);
+
       return NextResponse.json(
         { error: "Đã có lỗi khi lưu thông tin Nghệ sĩ" },
         { status: 400 },
       );
+    }
 
     return NextResponse.json(
       { data: newTrack, message: "Thêm bài hát thành công" },
       { status: 201 },
     );
   } catch (error: any) {
+    console.error("[POST_TRACK_CATCH_ERROR]", error);
     if (uploadedAudioPath)
       await supabase.storage.from("audio").remove([uploadedAudioPath]);
     if (uploadedImagePath)

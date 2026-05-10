@@ -38,7 +38,13 @@ export async function GET(
       .order("disc_number", { ascending: true })
       .order("track_number", { ascending: true });
 
-    if (error) throw new Error(error.message);
+    if (error) {
+      console.error("[GET_TRACKS_DB_ERROR]:", error);
+      return NextResponse.json(
+        { error: "Không thể tải danh sách bài hát của album này" },
+        { status: 500 },
+      );
+    }
 
     let finalTracks = data || [];
 
@@ -50,7 +56,7 @@ export async function GET(
 
       if (!albumInfo.is_published && !isOwner && !isAdmin) {
         return NextResponse.json(
-          { error: "Album này đang ở chế độ riêng tư." },
+          { error: "Album này đang ở chế độ riêng tư" },
           { status: 403 },
         );
       }
@@ -64,13 +70,27 @@ export async function GET(
 
     const cleanData = finalTracks.map((t: any) => {
       const albumInfo = t.album;
-
       const finalGenre = t.genre || albumInfo.genre;
+
+      let artists = [];
+      if (t.track_artists && t.track_artists.length > 0) {
+        artists = t.track_artists.map((ta: any) => ({
+          ...ta.artist,
+          is_main: ta.is_main,
+        }));
+
+        artists.sort((a: any, b: any) =>
+          a.is_main === b.is_main ? 0 : a.is_main ? -1 : 1,
+        );
+      }
+
       delete t.album;
       delete t.genre;
+      delete t.track_artists;
 
       return {
         ...t,
+        artists,
         image_url: t.image_url || albumInfo.cover_image,
         genre_id: finalGenre?.id || null,
         genre_name: finalGenre?.name || null,
@@ -81,8 +101,9 @@ export async function GET(
 
     return NextResponse.json({ data: formattedTracks }, { status: 200 });
   } catch (error: any) {
+    console.error("[GET_TRACKS_FATAL_ERROR]:", error);
     return NextResponse.json(
-      { error: "Đã xảy ra lỗi hệ thống" },
+      { error: "Đã xảy ra lỗi hệ thống khi tải dữ liệu bài hát" },
       { status: 500 },
     );
   }

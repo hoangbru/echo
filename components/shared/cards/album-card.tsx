@@ -3,14 +3,14 @@
 import { useState, MouseEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Play, Pause, Heart, Loader2 } from "lucide-react";
+import { Play, Pause, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 
 import { cn } from "@/lib/utils/utils";
-import { Album } from "@/types";
+import { Album, FeatArtist, TrackDetail } from "@/types";
 import { usePlayer, PlayerTrack } from "@/hooks/use-player";
 import { apiClient } from "@/lib/axios";
 
@@ -58,11 +58,11 @@ export function AlbumCard({ album }: AlbumCardProps) {
         return;
       }
 
-      const queue: PlayerTrack[] = tracksData.map((t: any) => ({
+      const queue: PlayerTrack[] = tracksData.map((t: TrackDetail) => ({
         id: t.id,
         title: t.title,
         artistNames:
-          t.trackArtists?.map((ta: any) => ta.artist.stageName).join(", ") ||
+          t.artists?.map((ta: FeatArtist) => ta.stageName).join(", ") ||
           album.artist?.stageName ||
           "Unknown Artist",
         imageUrl: t.imageUrl || album.coverImage || "/default-cover.jpg",

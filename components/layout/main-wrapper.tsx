@@ -14,7 +14,7 @@ export function MainWrapper({ children }: { children: ReactNode }) {
         isQueueVisible ? "mr-[350px]" : "mr-0",
       )}
     >
-      {children}
+      <div className="min-h-screen bg-background pb-32">{children}</div>
     </main>
   );
 }

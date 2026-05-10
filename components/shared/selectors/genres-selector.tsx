@@ -97,7 +97,7 @@ export function GenreSelector({
                         field.onChange("");
                         setOpen(false);
                       }}
-                      className="cursor-pointer text-foreground hover:bg-accent hover:text-accent-foreground mb-1 italic text-muted-foreground"
+                      className="cursor-pointer hover:bg-accent hover:text-accent-foreground mb-1 italic text-muted-foreground"
                     >
                       <Minus className="mr-2 h-4 w-4 opacity-50" />
                       {emptyOptionLabel}

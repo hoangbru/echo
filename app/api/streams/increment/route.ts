@@ -1,14 +1,18 @@
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { NextResponse } from "next/server";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const supabase = createClient();
+    const body = await req.json();
 
-    const { trackId, albumId } = await req.json();
+    const { trackId, albumId } = body;
 
     if (!trackId) {
-      return NextResponse.json({ error: "Thiếu trackId" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Thiếu dữ liệu trackId bắt buộc" },
+        { status: 400 },
+      );
     }
 
     const { error } = await supabase.rpc("increment_stream", {
@@ -17,17 +21,19 @@ export async function POST(req: Request) {
     });
 
     if (error) {
+      console.error("[RPC_INCREMENT_STREAM_ERROR]:", error);
       return NextResponse.json(
-        { error: "Đã xảy ra lỗi hệ thống" },
+        { error: "Không thể ghi nhận lượt nghe lúc này" },
         { status: 500 },
       );
     }
 
     return NextResponse.json(
-      { success: true, message: "Đã tăng lượt stream" },
+      { success: true, message: "Ghi nhận lượt nghe thành công" },
       { status: 200 },
     );
   } catch (err: any) {
+    console.error("[POST_STREAM_FATAL_ERROR]:", err);
     return NextResponse.json(
       { error: "Đã xảy ra lỗi hệ thống" },
       { status: 500 },

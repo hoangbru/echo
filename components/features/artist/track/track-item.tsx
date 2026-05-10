@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { Edit2, Globe, Lock, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TrackDetail } from "@/types";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface TrackItemProps {
   track: TrackDetail;
@@ -15,9 +17,10 @@ interface TrackItemProps {
 export function TrackItem({ track, albumId, onDelete }: TrackItemProps) {
   const router = useRouter();
 
-  const artistsText =
-    track.trackArtists?.map((ta: any) => ta.artist.stageName).join(", ") ||
-    "Unknown Artist";
+  const featArtistsStr = track.artists
+    ?.filter((a: any) => !a.isMain)
+    .map((artist: any) => artist.stageName)
+    .join(", ");
 
   return (
     <tr className="group border-b border-white/5 hover:bg-white/5 transition-colors">
@@ -40,6 +43,14 @@ export function TrackItem({ track, albumId, onDelete }: TrackItemProps) {
             <p className="text-xs text-gray-500">{track.isrc || "No ISRC"}</p>
           </div>
         </div>
+      </td>
+      <td className="py-4 px-4 text-sm text-gray-400">
+        {featArtistsStr && (
+          <span className="text-sm text-muted-foreground truncate">
+            <span className="italic mr-1">ft.</span>
+            {featArtistsStr}
+          </span>
+        )}
       </td>
       <td className="py-4 px-4 text-sm text-gray-400">
         {track.genreName || "N/A"}

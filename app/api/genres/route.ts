@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     const formattedData = keysToCamel(data);
     return NextResponse.json({ data: formattedData }, { status: 200 });
   } catch (error: any) {
-    console.error("API GET Genres Error:", error);
+    console.error("[GET_GENRES_FATAL_ERROR]:", error);
     return NextResponse.json(
       { error: "Đã xảy ra lỗi hệ thống" },
       { status: 500 },
@@ -49,6 +49,7 @@ export async function POST(request: NextRequest) {
     const {
       data: { user },
     } = await supabase.auth.getUser();
+
     if (!user) {
       return NextResponse.json(
         { error: "Vui lòng đăng nhập" },
@@ -78,17 +79,19 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
-      if (error.code === "23505") {
-        throw new Error("Tên thể loại này đã tồn tại!");
-      }
-      throw new Error(error.message);
+      console.error("[DB_ERROR_INSERT_GENRE]:", error);
+      return NextResponse.json(
+        { error: "Không thể thêm thể loại mới" },
+        { status: 500 },
+      );
     }
 
     return NextResponse.json(
-      { data: newGenre, message: "Thêm thể loại thành công!" },
+      { data: newGenre, message: "Thêm thể loại thành công" },
       { status: 201 },
     );
   } catch (error: any) {
+    console.error("[POST_GENRE_FATAL_ERROR]:", error);
     return NextResponse.json(
       { error: "Đã xảy ra lỗi hệ thống" },
       { status: 500 },

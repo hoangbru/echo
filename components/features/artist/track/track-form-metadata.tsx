@@ -7,17 +7,25 @@ import { SubmitButton } from "@/components/shared/buttons";
 
 import { TrackFormValues } from "@/lib/validations/track.schema";
 import { ArtistFeatSelector } from "@/components/shared/selectors";
+import { TrackDetail } from "@/types";
 
 interface TrackFormMetadataProps {
   form: UseFormReturn<TrackFormValues>;
+  track: TrackDetail;
   status: string;
 }
 
-export function TrackFormMetadata({ form, status }: TrackFormMetadataProps) {
+export function TrackFormMetadata({
+  form,
+  track,
+  status,
+}: TrackFormMetadataProps) {
   const {
     register,
     formState: { errors },
   } = form;
+
+  const featArtists = track.artists?.filter((a) => !a.isMain);
 
   return (
     <div className="bg-card border border-border rounded-2xl p-6 space-y-6">
@@ -61,7 +69,7 @@ export function TrackFormMetadata({ form, status }: TrackFormMetadataProps) {
       </div>
 
       {/* FEAT ARTISTS */}
-      <ArtistFeatSelector form={form} />
+      <ArtistFeatSelector form={form} featArtists={featArtists || []} />
 
       {/* ROW 3: GENRE, LANGUAGE, CHECKBOXES */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

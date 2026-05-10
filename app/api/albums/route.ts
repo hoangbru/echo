@@ -58,7 +58,15 @@ export async function GET(request: NextRequest) {
 
     const { data, count, error } = await query;
 
-    if (error) throw new Error("Đã có lỗi xảy ra");
+    if (error) {
+      console.error("[DB_ERROR_GET_ALBUMS]:", error.message, error.details);
+      return NextResponse.json(
+        {
+          error: "Hệ thống đang bận hoặc không thể tải danh sách Album lúc này",
+        },
+        { status: 500 },
+      );
+    }
 
     const formattedData = keysToCamel(data || []);
 
@@ -75,6 +83,7 @@ export async function GET(request: NextRequest) {
       { status: 200 },
     );
   } catch (error: any) {
+    console.error("API GET Albums Catch Error:", error);
     return NextResponse.json(
       { error: "Đã xảy ra lỗi hệ thống" },
       { status: 500 },
@@ -147,11 +156,11 @@ export async function POST(request: NextRequest) {
       supabase,
       validFile,
       "covers",
-      `requests/${finalArtistId}`,
+      `albums/artist_${finalArtistId}`,
     );
 
     if (imgErr) {
-      console.error("Lỗi trong quá trình tải lên file:", imgErr);
+      console.error("[STORAGE_ERROR_UPLOAD_COVER]:", imgErr);
       return NextResponse.json(
         { error: "Tải lên không thành công" },
         { status: 400 },
@@ -186,19 +195,27 @@ export async function POST(request: NextRequest) {
       .select()
       .single();
 
-    if (dbError)
+    if (dbError) {
+      console.error(
+        "[DB_ERROR_CREATE_ALBUM]:",
+        dbError.message,
+        dbError.details,
+      );
+      if (uploadedCoverPath) {
+        await supabase.storage.from("covers").remove([uploadedCoverPath]);
+      }
       return NextResponse.json(
-        { error: "Thêm mới không thành công" },
+        { error: "Thêm mới Album không thành công, vui lòng thử lại" },
         { status: 400 },
       );
+    }
 
     return NextResponse.json(
-      { data: newAlbum, message: "Tạo Album thành công!" },
+      { data: newAlbum, message: "Tạo Album thành công" },
       { status: 201 },
     );
   } catch (error: any) {
-    console.error("API Create Album Error:", error);
-
+    console.error("API POST Album Catch Error:", error);
     if (uploadedCoverPath) {
       await supabase.storage.from("covers").remove([uploadedCoverPath]);
     }

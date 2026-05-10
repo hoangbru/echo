@@ -1,4 +1,6 @@
-import { useState } from "react";
+"use client";
+
+import { useEffect, useState } from "react";
 import { Check, ChevronsUpDown, User, X } from "lucide-react";
 import { Controller } from "react-hook-form";
 
@@ -22,8 +24,17 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { cn } from "@/lib/utils/utils";
 import { useArtists } from "@/hooks/use-artists";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { FeatArtist } from "@/types";
 
-export function ArtistFeatSelector({ form }: { form: any }) {
+interface ArtistFeatSelectorProps {
+  form: any;
+  featArtists: FeatArtist[];
+}
+
+export function ArtistFeatSelector({
+  form,
+  featArtists,
+}: ArtistFeatSelectorProps) {
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -39,6 +50,14 @@ export function ArtistFeatSelector({ form }: { form: any }) {
 
   const results = artistsRes?.data || [];
 
+  useEffect(() => {
+    if (featArtists.length > 0 && selectedArtistsData.length === 0) {
+      setSelectedArtistsData(featArtists);
+      const ids = featArtists.map((a) => a.id);
+      form.setValue("featArtistIds", ids);
+    }
+  }, [featArtists, form]);
+
   return (
     <div className="space-y-3">
       <label className="block text-xs font-bold text-muted-foreground uppercase">
@@ -46,7 +65,7 @@ export function ArtistFeatSelector({ form }: { form: any }) {
       </label>
 
       <Controller
-        name="featArtists"
+        name="featArtistIds"
         control={form.control}
         render={({ field }) => {
           const selectedValues = field.value || [];
@@ -61,9 +80,11 @@ export function ArtistFeatSelector({ form }: { form: any }) {
               setSelectedArtistsData((prev) =>
                 prev.filter((a) => a.id !== artist.id),
               );
+              setOpen(false);
             } else {
               field.onChange([...selectedValues, artist.id]);
               setSelectedArtistsData((prev) => [...prev, artist]);
+              setOpen(false);
             }
           };
 

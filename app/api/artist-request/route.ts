@@ -16,8 +16,9 @@ export async function GET(request: NextRequest) {
     const supabase = createClient();
     const auth = await authorizeApi([UserRole.ADMIN]);
 
-    if (auth.error)
+    if (auth.error) {
       return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
 
     const searchParams = request.nextUrl.searchParams;
     const status = searchParams.get("status") || "all";
@@ -59,8 +60,11 @@ export async function GET(request: NextRequest) {
     const { data, count, error } = await query;
 
     if (error) {
-      console.error("Lỗi trong quá trình thực hiện:", error.message);
-      return NextResponse.json({ error: "Đã có lỗi xảy ra" }, { status: 400 });
+      console.error("[GET_ARTIST_REQUESTS_DB_ERROR]:", error);
+      return NextResponse.json(
+        { error: "Không thể tải danh sách yêu cầu lúc này" },
+        { status: 500 },
+      );
     }
 
     const formattedData = keysToCamel(data || []);
@@ -77,6 +81,7 @@ export async function GET(request: NextRequest) {
       { status: 200 },
     );
   } catch (error: any) {
+    console.error("[GET_ARTIST_REQUESTS_FATAL_ERROR]:", error);
     return NextResponse.json(
       { error: "Đã xảy ra lỗi hệ thống" },
       { status: 500 },
@@ -92,8 +97,9 @@ export async function POST(request: NextRequest) {
   try {
     const auth = await authorizeApi();
 
-    if (auth.error)
+    if (auth.error) {
       return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
 
     const formData = await request.formData();
     const userId = auth.user?.id;
@@ -110,8 +116,10 @@ export async function POST(request: NextRequest) {
 
     const validatedData = artistRequestSchema.safeParse(rawData);
     if (!validatedData.success) {
-      const errorMessage = validatedData.error.errors[0].message;
-      return NextResponse.json({ error: errorMessage }, { status: 400 });
+      return NextResponse.json(
+        { error: validatedData.error.errors[0].message },
+        { status: 400 },
+      );
     }
     const safeData = validatedData.data;
 
@@ -146,33 +154,39 @@ export async function POST(request: NextRequest) {
       supabase,
       validAudio,
       "audio",
-      `requests/${userId}`,
+      `requests/user_${userId}`,
     );
+
     if (audioErr) {
+      console.error("[STORAGE_DEMO_AUDIO_ERROR]:", audioErr);
       return NextResponse.json(
         { error: "Không thể tải lên file âm thanh" },
-        { status: 400 },
+        { status: 500 },
       );
     }
     uploadedAudioPath = aPath;
 
     let imageUrl = "";
-    if (imageFile && imageFile.size > 0) {
+    if (validImage) {
       const {
         url: imgUrl,
         path: iPath,
         error: imgErr,
       } = await uploadFileToSupabase(
         supabase,
-        imageFile,
+        validImage,
         "covers",
-        `requests/${userId}`,
+        `requests/user_${userId}`,
       );
-      if (imgErr)
+      if (imgErr) {
+        console.error("[STORAGE_PROFILE_IMAGE_ERROR]:", imgErr);
+        if (uploadedAudioPath)
+          await supabase.storage.from("audio").remove([uploadedAudioPath]);
         return NextResponse.json(
           { error: "Không thể tải lên ảnh đại diện" },
-          { status: 400 },
+          { status: 500 },
         );
+      }
       imageUrl = imgUrl || "";
       uploadedImagePath = iPath;
     }
@@ -195,19 +209,30 @@ export async function POST(request: NextRequest) {
       status: ArtistRequestStatus.PENDING,
     };
 
-    const { error } = await supabase.from("artist_request").insert(dbData);
+    const { error: dbError } = await supabase
+      .from("artist_request")
+      .insert(dbData);
 
-    if (error)
+    if (dbError) {
+      console.error("[DB_INSERT_ARTIST_REQUEST_ERROR]:", dbError);
+
+      if (uploadedAudioPath)
+        await supabase.storage.from("audio").remove([uploadedAudioPath]);
+      if (uploadedImagePath)
+        await supabase.storage.from("covers").remove([uploadedImagePath]);
+
       return NextResponse.json(
-        { error: "Gửi yêu cầu không thành công!" },
-        { status: 400 },
+        { error: "Gửi yêu cầu không thành công" },
+        { status: 500 },
       );
+    }
 
     return NextResponse.json(
-      { message: "Gửi yêu cầu thành công!" },
-      { status: 200 },
+      { message: "Gửi yêu cầu thành công" },
+      { status: 201 },
     );
   } catch (error: any) {
+    console.error("[POST_ARTIST_REQUEST_FATAL_ERROR]:", error);
     if (uploadedAudioPath)
       await supabase.storage.from("audio").remove([uploadedAudioPath]);
     if (uploadedImagePath)
@@ -225,8 +250,10 @@ export async function PATCH(request: NextRequest) {
 
   try {
     const auth = await authorizeApi([UserRole.ADMIN]);
-    if (auth.error)
+    if (auth.error) {
       return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
+    const currentUserId = auth.user?.id;
 
     const body = await request.json();
 
@@ -241,6 +268,7 @@ export async function PATCH(request: NextRequest) {
       });
 
       if (artistError) {
+        console.error("[PATCH_ARTIST_INSERT_ERROR]", artistError);
         return NextResponse.json(
           { error: "Lỗi khi khởi tạo dữ liệu Nghệ sĩ" },
           { status: 400 },
@@ -253,6 +281,8 @@ export async function PATCH(request: NextRequest) {
         .eq("id", body.user_id);
 
       if (userError) {
+        console.error("[PATCH_USER_ROLE_UPDATE_ERROR]", userError);
+        await supabase.from("artist").delete().eq("user_id", body.user_id);
         return NextResponse.json(
           { error: "Lỗi khi cập nhật phân quyền người dùng" },
           { status: 400 },
@@ -266,27 +296,36 @@ export async function PATCH(request: NextRequest) {
         status: body.status,
         review_comment:
           body.status === ArtistRequestStatus.APPROVED
-            ? "Hồ sơ hợp lệ. Chào mừng bạn đến với hệ thống Nghệ sĩ Echo!"
+            ? "Hồ sơ hợp lệ Chào mừng bạn đến với hệ thống Nghệ sĩ Echo"
             : body.review_comment,
         reviewed_at: new Date().toISOString(),
-        reviewed_by: body.reviewed_by,
+        reviewed_by: currentUserId,
       })
       .eq("id", body.id);
 
-    if (requestError)
+    if (requestError) {
+      console.error("[PATCH_REQUEST_UPDATE_ERROR]", requestError);
+      if (body.status === ArtistRequestStatus.APPROVED) {
+        await supabase
+          .from("user")
+          .update({ role: UserRole.USER })
+          .eq("id", body.user_id);
+        await supabase.from("artist").delete().eq("user_id", body.user_id);
+      }
       return NextResponse.json(
         { error: "Không thể cập nhật trạng thái đơn yêu cầu" },
         { status: 400 },
       );
+    }
 
-    let message = "Đã cập nhật trạng thái yêu cầu!";
+    let message = "Đã cập nhật trạng thái yêu cầu";
 
     switch (body.status) {
       case ArtistRequestStatus.APPROVED:
-        message = "Đã chấp nhận đơn yêu cầu!";
+        message = "Đã chấp nhận đơn yêu cầu";
         break;
       case ArtistRequestStatus.REJECTED:
-        message = "Đã từ chối đơn yêu cầu!";
+        message = "Đã từ chối đơn yêu cầu";
         break;
       default:
         break;
@@ -294,6 +333,7 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json({ message }, { status: 200 });
   } catch (error: any) {
+    console.error("[PATCH_ARTIST_REQUEST_FATAL_ERROR]", error);
     return NextResponse.json(
       { error: "Đã xảy ra lỗi hệ thống" },
       { status: 500 },

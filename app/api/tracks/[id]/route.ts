@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { UserRole } from "@/types";
-import { getFilePath } from "@/lib/utils/file";
+import { getFilePath, uploadFileToSupabase } from "@/lib/utils/file";
 import { trackFormSchema } from "@/lib/validations/track.schema";
 import {
   audioFileSchema,
@@ -45,7 +45,8 @@ export async function GET(
       .eq("id", id)
       .single();
 
-    if (error || !data) {
+    if (error) {
+      console.error("[GET_TRACK_DB_ERROR]", error);
       return NextResponse.json(
         { error: "Không tìm thấy bài hát" },
         { status: 404 },
@@ -62,7 +63,7 @@ export async function GET(
 
       if (!isOwner && !isAdmin) {
         return NextResponse.json(
-          { error: "Bài hát này đang ở chế độ riêng tư." },
+          { error: "Bài hát này đang ở chế độ riêng tư" },
           { status: 403 },
         );
       }
@@ -71,19 +72,36 @@ export async function GET(
     const albumInfo = data.album;
     const finalGenre = data.genre || albumInfo.genre;
 
+    let artists = [];
+    if (data.track_artists && data.track_artists.length > 0) {
+      artists = data.track_artists
+        .filter((ta: any) => ta.artist)
+        .map((ta: any) => ({
+          ...ta.artist,
+          is_main: ta.is_main,
+        }));
+
+      artists.sort((a: any, b: any) =>
+        a.is_main === b.is_main ? 0 : a.is_main ? -1 : 1,
+      );
+    }
+
     const result = {
       ...data,
+      artists,
       image_url: data.image_url || albumInfo.cover_image,
       genre_id: finalGenre?.id || null,
       genre_name: finalGenre?.name || null,
     };
 
     delete result.genre;
+    delete result.track_artists;
 
-    const formattedData = keysToCamel(data);
+    const formattedData = keysToCamel(result);
 
     return NextResponse.json({ data: formattedData }, { status: 200 });
   } catch (error: any) {
+    console.error("[GET_TRACK_FATAL_ERROR]", error);
     return NextResponse.json(
       { error: "Đã xảy ra lỗi hệ thống" },
       { status: 500 },
@@ -102,30 +120,33 @@ export async function PATCH(
   try {
     const { id: trackId } = await params;
     const auth = await authorizeApi([UserRole.ARTIST, UserRole.ADMIN]);
-    if (auth.error)
+
+    if (auth.error) {
       return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
     const currentArtistId = auth.artistId;
 
-    const { data: oldTrack } = await supabase
+    const { data: oldTrack, error: oldTrackError } = await supabase
       .from("track")
       .select("artist_id, duration, audio_url, image_url, file_size, bitrate")
       .eq("id", trackId)
       .single();
 
-    if (!oldTrack)
+    if (oldTrackError || !oldTrack) {
+      if (oldTrackError)
+        console.error("[PATCH_TRACK_NOT_FOUND]", oldTrackError);
       return NextResponse.json(
         { error: "Không tìm thấy bài hát" },
         { status: 404 },
       );
+    }
 
     if (
       auth.role !== UserRole.ADMIN &&
       oldTrack.artist_id !== currentArtistId
     ) {
       return NextResponse.json(
-        {
-          error: "Bạn không có quyền sửa bài hát này!",
-        },
+        { error: "Bạn không có quyền sửa bài hát này" },
         { status: 403 },
       );
     }
@@ -156,8 +177,10 @@ export async function PATCH(
 
     const validatedData = trackFormSchema.safeParse(rawData);
     if (!validatedData.success) {
-      const errorMessage = validatedData.error.errors[0].message;
-      return NextResponse.json({ error: errorMessage }, { status: 400 });
+      return NextResponse.json(
+        { error: validatedData.error.errors[0].message },
+        { status: 400 },
+      );
     }
     const safeData = validatedData.data;
 
@@ -191,17 +214,27 @@ export async function PATCH(
     let finalFileSize = oldTrack.file_size;
 
     if (validAudio) {
-      const safeAudioName = validAudio.name.replace(/[^a-zA-Z0-9.\-_]/g, "");
-      uploadedAudioPath = `tracks/artist_${currentArtistId}/audio_${Date.now()}_${safeAudioName}`;
+      const {
+        url: audioUrl,
+        path: aPath,
+        error: audioErr,
+      } = await uploadFileToSupabase(
+        supabase,
+        validAudio,
+        "audio",
+        `tracks/artist_${currentArtistId}`,
+      );
 
-      const { error: audioErr } = await supabase.storage
-        .from("audio")
-        .upload(uploadedAudioPath, validAudio);
-      if (audioErr) throw new Error("Lỗi tải file âm thanh");
+      if (audioErr) {
+        console.error("[STORAGE_AUDIO_ERROR]", audioErr);
+        return NextResponse.json(
+          { error: "Tải lên audio thất bại" },
+          { status: 400 },
+        );
+      }
 
-      finalAudioUrl = supabase.storage
-        .from("audio")
-        .getPublicUrl(uploadedAudioPath).data.publicUrl;
+      finalAudioUrl = audioUrl;
+      uploadedImagePath = aPath;
       finalFileSize = validAudio.size;
 
       if (oldTrack.audio_url) {
@@ -214,16 +247,28 @@ export async function PATCH(
     let finalImageUrl = oldTrack.image_url;
 
     if (validImage) {
-      const safeImageName = validImage.name.replace(/[^a-zA-Z0-9.\-_]/g, "");
-      uploadedImagePath = `tracks/artist_${currentArtistId}/cover_${Date.now()}_${safeImageName}`;
-
-      await supabase.storage
-        .from("covers")
-        .upload(uploadedImagePath, validImage);
-      finalImageUrl = supabase.storage
-        .from("covers")
-        .getPublicUrl(uploadedImagePath).data.publicUrl;
-
+      const {
+        url: imgUrl,
+        path: iPath,
+        error: imageErr,
+      } = await uploadFileToSupabase(
+        supabase,
+        validImage,
+        "covers",
+        `tracks/artist_${currentArtistId}`,
+      );
+      if (imageErr) {
+        console.error("[STORAGE_IMAGE_ERROR]", imageErr);
+        if (uploadedAudioPath)
+          await supabase.storage.from("audio").remove([uploadedAudioPath]);
+        return NextResponse.json(
+          { error: "Tải lên ảnh thất bại" },
+          { status: 400 },
+        );
+      }
+      finalImageUrl = imgUrl;
+      uploadedImagePath = iPath;
+      
       if (oldTrack.image_url && oldTrack.image_url.includes("/tracks/")) {
         const oldImgPath = getFilePath(oldTrack.image_url, "covers");
         if (oldImgPath)
@@ -262,12 +307,23 @@ export async function PATCH(
       producer: safeData.producer || null,
       language: safeData.language,
     };
+
     const { error: updateError } = await supabase
       .from("track")
       .update(dbData)
       .eq("id", trackId);
 
-    if (updateError) throw updateError;
+    if (updateError) {
+      console.error("[PATCH_TRACK_DB_UPDATE]", updateError);
+      if (uploadedAudioPath)
+        await supabase.storage.from("audio").remove([uploadedAudioPath]);
+      if (uploadedImagePath)
+        await supabase.storage.from("covers").remove([uploadedImagePath]);
+      return NextResponse.json(
+        { error: "Không thể cập nhật thông tin bài hát" },
+        { status: 500 },
+      );
+    }
 
     await supabase.from("track_artists").delete().eq("track_id", trackId);
 
@@ -281,13 +337,24 @@ export async function PATCH(
         is_main: false,
       });
     });
-    await supabase.from("track_artists").insert(trackArtistsData);
+
+    const { error: taError } = await supabase
+      .from("track_artists")
+      .insert(trackArtistsData);
+    if (taError) {
+      console.error("[PATCH_TRACK_ARTISTS_ERROR]", taError);
+      return NextResponse.json(
+        { error: "Chưa thể cập nhật đầy đủ thông tin nghệ sĩ góp giọng" },
+        { status: 500 },
+      );
+    }
 
     return NextResponse.json(
       { message: "Cập nhật bài hát thành công" },
       { status: 200 },
     );
   } catch (error: any) {
+    console.error("[PATCH_TRACK_FATAL_ERROR]", error);
     if (uploadedAudioPath)
       await supabase.storage.from("audio").remove([uploadedAudioPath]);
     if (uploadedImagePath)
@@ -307,46 +374,44 @@ export async function DELETE(
   try {
     const { id: trackId } = await params;
     const auth = await authorizeApi([UserRole.ARTIST, UserRole.ADMIN]);
-    if (auth.error)
+
+    if (auth.error) {
       return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
     const currentArtistId = auth.artistId;
 
-    const { data: oldTrack } = await supabase
+    const { data: oldTrack, error: findError } = await supabase
       .from("track")
       .select("audio_url, image_url, artist_id")
       .eq("id", trackId)
       .single();
 
-    if (!oldTrack)
+    if (findError || !oldTrack) {
+      if (findError) console.error("[DELETE_TRACK_NOT_FOUND]", findError);
       return NextResponse.json(
         { error: "Không tìm thấy bài hát" },
         { status: 404 },
       );
+    }
 
     if (
       auth.role !== UserRole.ADMIN &&
       oldTrack.artist_id !== currentArtistId
     ) {
       return NextResponse.json(
-        {
-          error: "Bạn không có quyền sửa bài hát này!",
-        },
+        { error: "Bạn không có quyền xóa bài hát này" },
         { status: 403 },
       );
     }
 
     if (oldTrack.audio_url) {
       const audioPath = getFilePath(oldTrack.audio_url, "audio");
-      if (audioPath) {
-        await supabase.storage.from("audio").remove([audioPath]);
-      }
+      if (audioPath) await supabase.storage.from("audio").remove([audioPath]);
     }
 
     if (oldTrack.image_url && oldTrack.image_url.includes("/tracks/")) {
       const imagePath = getFilePath(oldTrack.image_url, "covers");
-      if (imagePath) {
-        await supabase.storage.from("covers").remove([imagePath]);
-      }
+      if (imagePath) await supabase.storage.from("covers").remove([imagePath]);
     }
 
     const { error: deleteError } = await supabase
@@ -354,14 +419,20 @@ export async function DELETE(
       .delete()
       .eq("id", trackId);
 
-    if (deleteError) throw deleteError;
+    if (deleteError) {
+      console.error("[DELETE_TRACK_DB_ERROR]", deleteError);
+      return NextResponse.json(
+        { error: "Không thể xóa bài hát khỏi hệ thống" },
+        { status: 500 },
+      );
+    }
 
     return NextResponse.json(
       { message: "Đã xóa bài hát thành công" },
       { status: 200 },
     );
   } catch (error: any) {
-    console.error("Lỗi khi xóa Track:", error);
+    console.error("[DELETE_TRACK_FATAL_ERROR]", error);
     return NextResponse.json(
       { error: "Đã xảy ra lỗi hệ thống" },
       { status: 500 },

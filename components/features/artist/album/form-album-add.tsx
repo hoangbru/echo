@@ -17,11 +17,9 @@ import {
   AlbumFormValues,
 } from "@/lib/validations/album.schema";
 import { useCreateAlbum } from "@/hooks/use-albums";
-import { useGenres } from "@/hooks/use-genres";
 
 export function FormAlbumAdd() {
   const router = useRouter();
-  const { data: genresRes } = useGenres();
   const {
     mutate: createAlbum,
     isPending,
@@ -124,7 +122,6 @@ export function FormAlbumAdd() {
 
         <AlbumFormMetadata
           form={form}
-          genres={genresRes?.data}
           status={currentStatus}
         />
       </form>

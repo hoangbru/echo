@@ -10,7 +10,6 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          // Đã sửa before:bg-white/10 thành before:bg-primary-foreground/10
           "relative overflow-hidden bg-gradient-to-r from-primary via-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/60 hover:-translate-y-0.5 active:translate-y-0 before:absolute before:inset-0 before:bg-primary-foreground/10 before:opacity-0 hover:before:opacity-100 before:transition-opacity",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
