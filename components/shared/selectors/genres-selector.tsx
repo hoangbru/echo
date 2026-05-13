@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Check, ChevronsUpDown, Minus } from "lucide-react";
 import { Controller } from "react-hook-form";
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils/helpers";
 
 import { useDebounce } from "@/hooks/use-debounce";
 import { useGenres } from "@/hooks/use-genres";

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { createClient } from "@/lib/supabase/server";
-import { generateSlug, removeVietnameseTones } from "@/lib/utils/utils";
+import { generateSlug, removeVietnameseTones } from "@/lib/utils/helpers";
 import { UserRole } from "@/types";
 import { trackFormSchema } from "@/lib/validations/track.schema";
 import {
@@ -130,6 +130,7 @@ export async function POST(request: NextRequest) {
       discNumber: Number(formData.get("discNumber")),
       isPublished: formData.get("isPublished") === "true",
       isExplicit: formData.get("isExplicit") === "true",
+      lyrics: (formData.get("lyrics") as string) || "",
       isrc: (formData.get("isrc") as string) || "",
       composer: (formData.get("composer") as string) || "",
       producer: (formData.get("producer") as string) || "",
@@ -252,6 +253,7 @@ export async function POST(request: NextRequest) {
       disc_number: safeData.discNumber,
       is_published: safeData.isPublished,
       is_explicit: safeData.isExplicit,
+      lyrics: safeData.lyrics || null,
       isrc: safeData.isrc || null,
       composer: safeData.composer || null,
       producer: safeData.producer || null,

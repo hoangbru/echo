@@ -64,6 +64,7 @@ export function FormTrackEdit({
         language: track.language || "",
         isPublished: track.isPublished,
         isExplicit: track.isExplicit,
+        lyrics: track.lyrics || "",
         isrc: track.isrc || "",
         composer: track.composer || "",
         producer: track.producer || "",
@@ -93,6 +94,7 @@ export function FormTrackEdit({
     formData.append("language", data.language);
 
     formData.append("genreId", data.genreId || "");
+    if (data.lyrics) formData.append("lyrics", data.lyrics);
     if (data.isrc) formData.append("isrc", data.isrc);
     if (data.composer) formData.append("composer", data.composer);
     if (data.producer) formData.append("producer", data.producer);

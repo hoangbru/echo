@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { createClient } from "@/lib/supabase/server";
-import { generateSlug, removeVietnameseTones } from "@/lib/utils/utils";
+import { generateSlug, removeVietnameseTones } from "@/lib/utils/helpers";
 import { albumFormSchema } from "@/lib/validations/album.schema";
 import { imageFileSchema } from "@/lib/validations/file.schema";
 import { UserRole } from "@/types";

@@ -39,7 +39,7 @@ export function ArtistHeader({ onOpenSidebar, profile }: ArtistHeaderProps) {
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     router.refresh();
-    router.push("/auth/login");
+    router.push("/");
   };
 
   return (

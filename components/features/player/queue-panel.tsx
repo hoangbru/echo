@@ -6,7 +6,7 @@ import { Play } from "lucide-react";
 import { DropdownTrackMenu } from "./dropdown-track-menu";
 
 import { usePlayer } from "@/hooks/use-player";
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils/helpers";
 
 export function QueuePanel() {
   const {

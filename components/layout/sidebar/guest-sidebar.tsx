@@ -14,7 +14,7 @@ import {
   Plus,
   Search,
 } from "lucide-react";
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils/helpers";
 import { Button } from "@/components/ui/button";
 import { usePlayer } from "@/hooks/use-player";
 

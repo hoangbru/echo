@@ -9,7 +9,7 @@ import {
   imageFileSchema,
 } from "@/lib/validations/file.schema";
 import { uploadFileToSupabase } from "@/lib/utils/file";
-import { removeVietnameseTones } from "@/lib/utils/utils";
+import { removeVietnameseTones } from "@/lib/utils/helpers";
 
 export async function GET(request: NextRequest) {
   try {

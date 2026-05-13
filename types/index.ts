@@ -5,3 +5,4 @@ export * from "./genre.type";
 export * from "./track.type";
 export * from "./user.type";
 export * from "./query.type";
+export * from "./voice.type";

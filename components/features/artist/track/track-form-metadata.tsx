@@ -11,7 +11,7 @@ import { TrackDetail } from "@/types";
 
 interface TrackFormMetadataProps {
   form: UseFormReturn<TrackFormValues>;
-  track: TrackDetail;
+  track?: TrackDetail;
   status: string;
 }
 
@@ -25,7 +25,9 @@ export function TrackFormMetadata({
     formState: { errors },
   } = form;
 
-  const featArtists = track.artists?.filter((a) => !a.isMain);
+  const featArtists = track?.artists
+    ? track.artists.filter((a) => !a.isMain)
+    : [];
 
   return (
     <div className="bg-card border border-border rounded-2xl p-6 space-y-6">
@@ -108,6 +110,28 @@ export function TrackFormMetadata({
             </span>
           </label>
         </div>
+      </div>
+
+      <div className="pt-6 border-t border-border mt-6">
+        <div className="flex items-center justify-between mb-2">
+          <label className="block text-xs font-bold text-muted-foreground uppercase">
+            Lời bài hát (Lyrics)
+          </label>
+          <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded">
+            Hỗ trợ định dạng LRC (Time-synced)
+          </span>
+        </div>
+        <textarea
+          {...register("lyrics")}
+          placeholder="Nhập lời bài hát tĩnh hoặc định dạng LRC (VD: [00:15.20] Câu hát đầu tiên...)"
+          className="flex min-h-[200px] w-full rounded-xl border border-input bg-background px-3 py-3 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-colors resize-y custom-scrollbar"
+        />
+
+        {errors.lyrics && (
+          <p className="text-destructive text-xs mt-1">
+            {errors.lyrics.message}
+          </p>
+        )}
       </div>
 
       {/* ROW 4: BẢN QUYỀN */}

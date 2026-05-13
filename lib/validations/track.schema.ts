@@ -12,7 +12,8 @@ export const trackFormSchema = z.object({
   discNumber: z.coerce.number().min(1).default(1),
   isPublished: z.boolean().default(true),
   isExplicit: z.boolean().default(false),
-
+  
+  lyrics: z.string().optional(),
   isrc: z.string().max(20).optional().or(z.literal("")),
   composer: z.string().max(100).optional().or(z.literal("")),
   producer: z.string().max(100).optional().or(z.literal("")),

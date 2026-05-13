@@ -1,2 +1,3 @@
-export * from "./brand-icon";
-export * from "./google-icon";
+export { BrandIcon } from "./brand-icon";
+export { GoogleIcon } from "./google-icon";
+export { SpotifyIcon } from "./spotify-icon";

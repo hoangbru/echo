@@ -43,6 +43,7 @@ export function FormTrackAdd({ albumId }: { albumId: string }) {
       discNumber: 1,
       isPublished: true,
       isExplicit: false,
+      lyrics: "",
       isrc: "",
       composer: "",
       producer: "",
@@ -74,6 +75,7 @@ export function FormTrackAdd({ albumId }: { albumId: string }) {
     formData.append("duration", String(duration));
 
     if (data.genreId) formData.append("genreId", data.genreId);
+    if (data.lyrics) formData.append("lyrics", data.lyrics);
     if (data.isrc) formData.append("isrc", data.isrc);
     if (data.composer) formData.append("composer", data.composer);
     if (data.producer) formData.append("producer", data.producer);

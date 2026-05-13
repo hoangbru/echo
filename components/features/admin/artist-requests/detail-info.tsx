@@ -3,7 +3,7 @@ import { siFacebook, siYoutube, siInstagram } from "simple-icons";
 import { BrandIcon } from "@/components/icons";
 import { ZoomableImage } from "@/components/shared";
 
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils/helpers";
 import { ArtistRequest } from "@/types";
 
 interface DetailInfoProps {

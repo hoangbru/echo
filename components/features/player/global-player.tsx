@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/tooltip";
 
 import { usePlayer } from "@/hooks/use-player";
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils/helpers";
 import { formatTime } from "@/lib/utils/format";
 import { apiClient } from "@/lib/axios";
 

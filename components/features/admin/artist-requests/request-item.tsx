@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, X, Eye } from "lucide-react";
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils/helpers";
 import { ArtistRequestStatus, ArtistRequest } from "@/types";
 
 interface RequestItemProps {

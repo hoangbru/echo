@@ -2,7 +2,7 @@
 
 import { useRef, ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils/helpers";
 
 interface ScrollSliderProps {
   children: ReactNode;

@@ -6,7 +6,7 @@ import { X, LogOut, LucideIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils/helpers";
 import { SidebarItem } from "@/constants/sidebar";
 
 interface SidebarProps {

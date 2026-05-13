@@ -21,7 +21,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 import { useDebounce } from "@/hooks/use-debounce";
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils/helpers";
 import { useArtists } from "@/hooks/use-artists";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FeatArtist } from "@/types";
