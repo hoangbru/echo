@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 
 import { Button, ButtonProps } from "@/components/ui/button";
 
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils/helpers";
 
 interface SubmitButtonProps extends ButtonProps {
   isSubmitting: boolean;

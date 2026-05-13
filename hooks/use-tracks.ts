@@ -48,7 +48,7 @@ export function useCreateTrack(albumId: string) {
   });
 }
 
-export function useUpdateTrack(albumId: string) {
+export function useUpdateTrack(trackId: string, albumId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -69,6 +69,7 @@ export function useUpdateTrack(albumId: string) {
       queryClient.invalidateQueries({
         queryKey: ["tracks", "album-detail", albumId],
       });
+      queryClient.invalidateQueries({ queryKey: ["track", trackId] });
     },
     onError: (error: any) => {
       toast.error(error.message || "Lỗi khi cập nhật");

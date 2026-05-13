@@ -9,7 +9,8 @@ import {
   imageFileSchema,
 } from "@/lib/validations/file.schema";
 import { uploadFileToSupabase } from "@/lib/utils/file";
-import { removeVietnameseTones } from "@/lib/utils/utils";
+import { removeVietnameseTones } from "@/lib/utils/helpers";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export async function GET(request: NextRequest) {
   try {
@@ -154,7 +155,7 @@ export async function POST(request: NextRequest) {
       supabase,
       validAudio,
       "audio",
-      `requests/user_${userId}`,
+      `requests/${userId}`,
     );
 
     if (audioErr) {
@@ -176,7 +177,7 @@ export async function POST(request: NextRequest) {
         supabase,
         validImage,
         "covers",
-        `requests/user_${userId}`,
+        `requests/${userId}`,
       );
       if (imgErr) {
         console.error("[STORAGE_PROFILE_IMAGE_ERROR]:", imgErr);
@@ -275,14 +276,17 @@ export async function PATCH(request: NextRequest) {
         );
       }
 
-      const { error: userError } = await supabase
+      console.log(
+        `Updating user ${body.user_id} to ARTIST role and premium status...`,
+      );
+      const { error: userError } = await supabaseAdmin
         .from("user")
-        .update({ role: UserRole.ARTIST })
+        .update({ is_premium: true, role: UserRole.ARTIST })
         .eq("id", body.user_id);
 
       if (userError) {
         console.error("[PATCH_USER_ROLE_UPDATE_ERROR]", userError);
-        await supabase.from("artist").delete().eq("user_id", body.user_id);
+        await supabaseAdmin.from("artist").delete().eq("user_id", body.user_id);
         return NextResponse.json(
           { error: "Lỗi khi cập nhật phân quyền người dùng" },
           { status: 400 },

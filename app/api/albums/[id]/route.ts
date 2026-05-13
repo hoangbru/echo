@@ -149,7 +149,7 @@ export async function PATCH(
         supabase,
         validFile,
         "covers",
-        `albums/artist_${currentArtistId}`,
+        `albums/${currentArtistId}`,
       );
 
       if (imgErr) {

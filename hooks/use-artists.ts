@@ -1,19 +1,19 @@
 import { apiClient } from "@/lib/axios";
+import { QueryParams } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 
-export const useArtists = (params?: {
-  q?: string;
-  limit?: number;
+type ArtistQueryParams = QueryParams & {
   isVerified?: boolean;
-  page?: number;
   sortBy?: string;
   order?: string;
-}) => {
+};
+
+export const useArtists = (params?: ArtistQueryParams) => {
   return useQuery({
     queryKey: ["artists", params],
     queryFn: async () => {
       const res = await apiClient.get("/artists", { params });
-      return res;
+      return res as { data: any[]; meta?: any };
     },
   });
 };

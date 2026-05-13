@@ -2,7 +2,7 @@
 
 import { Play, Pause, Heart, MoreHorizontal, Clock } from "lucide-react";
 import { usePlayer, PlayerTrack } from "@/hooks/use-player";
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils/helpers";
 import { formatDuration } from "@/lib/utils/format";
 
 export function AlbumTrackList({
@@ -31,6 +31,7 @@ export function AlbumTrackList({
     const queue: PlayerTrack[] = tracks.map((t) => ({
       id: t.id,
       title: t.title,
+      lyrics: t.lyrics || "",
       artistNames:
         t.trackArtists?.map((ta: any) => ta.artist.stageName).join(", ") ||
         album.artist?.stageName ||
@@ -53,6 +54,7 @@ export function AlbumTrackList({
     const queue: PlayerTrack[] = tracks.map((t) => ({
       id: t.id,
       title: t.title,
+      lyrics: t.lyrics || "",
       artistNames:
         t.trackArtists?.map((ta: any) => ta.artist.stageName).join(", ") ||
         album.artist?.stageName ||

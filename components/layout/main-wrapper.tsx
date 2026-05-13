@@ -1,7 +1,7 @@
 "use client";
 
 import { usePlayer } from "@/hooks/use-player";
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils/helpers";
 import { ReactNode } from "react";
 
 export function MainWrapper({ children }: { children: ReactNode }) {

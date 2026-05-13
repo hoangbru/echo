@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { removeVietnameseTones } from "@/lib/utils/utils";
+import { removeVietnameseTones } from "@/lib/utils/helpers";
 import { keysToCamel } from "@/lib/utils/format";
 
 export async function GET(request: NextRequest) {

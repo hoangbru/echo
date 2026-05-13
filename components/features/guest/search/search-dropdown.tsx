@@ -7,7 +7,6 @@ import {
   Music,
   Mic2,
   Disc,
-  MoreHorizontal,
   Plus,
   X,
   Play,
@@ -19,6 +18,7 @@ import { toast } from "sonner";
 import { usePlayer, PlayerTrack } from "@/hooks/use-player";
 import { apiClient } from "@/lib/axios";
 import { Button } from "@/components/ui/button";
+import { DropdownTrackMenu } from "../../player";
 
 interface SearchItem {
   id: string;
@@ -90,6 +90,7 @@ export function SearchDropdown({
       const playerTrack: PlayerTrack = {
         id: track.id,
         title: track.title,
+        lyrics: track.lyrics || "",
         artistNames:
           track.artists?.map((a: any) => a.stageName).join(", ") ||
           "Unknown Artist",
@@ -114,6 +115,7 @@ export function SearchDropdown({
         const queue: PlayerTrack[] = tracksData.map((t: any) => ({
           id: t.id,
           title: t.title,
+          lyrics: t.lyrics || "",
           artistNames:
             t.artists?.map((a: any) => a.stageName).join(", ") || item.subtitle,
           imageUrl: t.imageUrl || item.image || "/default-cover.jpg",
@@ -305,12 +307,7 @@ export function SearchDropdown({
             </div>
           ) : (
             <>
-              <div
-                onClick={(e) => e.stopPropagation()}
-                className="p-2 hover:text-white text-gray-400 transition-colors"
-              >
-                <MoreHorizontal className="w-5 h-5" />
-              </div>
+             <DropdownTrackMenu />
               {item.type === "track" && (
                 <div
                   onClick={(e) => e.stopPropagation()}

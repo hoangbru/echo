@@ -22,7 +22,7 @@ import {
   useArtistRequests,
   useUpdateArtistRequest,
 } from "@/hooks/use-artist-request";
-import { useAuth } from "@/hooks/use-auth";
+import { renderTableHeaders } from "@/constants/table-data";
 
 interface RequestsGridProps {
   page: number;
@@ -44,10 +44,10 @@ export function RequestsGrid({
   toDate,
 }: RequestsGridProps) {
   const router = useRouter();
-  const { user } = useAuth();
   const {
     data: requestsRes,
     isLoading,
+    isRefetching,
     isError,
     refetch,
   } = useArtistRequests({
@@ -121,44 +121,6 @@ export function RequestsGrid({
     );
   };
 
-  const renderTableHeaders = () => {
-    if (status === "PENDING") {
-      return (
-        <>
-          <th className="py-4 px-4 w-1/3">Nghệ sĩ</th>
-          <th className="py-4 px-4">Mạng xã hội</th>
-          <th className="py-4 px-4">Ngày gửi</th>
-        </>
-      );
-    }
-    if (status === "REJECTED") {
-      return (
-        <>
-          <th className="py-4 px-4">Nghệ sĩ</th>
-          <th className="py-4 px-4 w-1/3">Người duyệt</th>
-          <th className="py-4 px-4">Ngày xử lý</th>
-        </>
-      );
-    }
-    if (status === "APPROVED") {
-      return (
-        <>
-          <th className="py-4 px-4">Nghệ sĩ</th>
-          <th className="py-4 px-4">Người duyệt</th>
-          <th className="py-4 px-4">Ngày xử lý</th>
-        </>
-      );
-    }
-    // "all"
-    return (
-      <>
-        <th className="py-4 px-4">Nghệ sĩ</th>
-        <th className="py-4 px-4">Trạng thái</th>
-        <th className="py-4 px-4">Ngày gửi</th>
-      </>
-    );
-  };
-
   const requestDropdowns: ToolbarDropdownConfig[] = [
     {
       key: "status",
@@ -199,6 +161,8 @@ export function RequestsGrid({
         showDateRange={true}
         fromDateValue={fromDate}
         toDateValue={toDate}
+        onRefresh={() => refetch()}
+        isRefetching={isRefetching}
       />
 
       <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm mt-6">
@@ -206,7 +170,7 @@ export function RequestsGrid({
           <thead>
             <tr className="bg-muted/30 text-muted-foreground text-xs font-bold uppercase tracking-wider border-b border-border">
               <th className="py-4 px-4 w-12 text-center">#</th>
-              {renderTableHeaders()}
+              {renderTableHeaders(status)}
               <th className="py-4 px-4 text-right">Thao tác</th>
             </tr>
           </thead>

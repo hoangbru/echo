@@ -3,6 +3,7 @@ import { create } from "zustand";
 export interface PlayerTrack {
   id: string;
   title: string;
+  lyrics?: string;
   artistNames: string;
   imageUrl: string;
   audioUrl: string;

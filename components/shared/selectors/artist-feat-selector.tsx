@@ -19,11 +19,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { useDebounce } from "@/hooks/use-debounce";
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils/helpers";
 import { useArtists } from "@/hooks/use-artists";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FeatArtist } from "@/types";
 
 interface ArtistFeatSelectorProps {
@@ -43,7 +43,7 @@ export function ArtistFeatSelector({
   const debouncedSearch = useDebounce(searchTerm, 500);
 
   const { data: artistsRes, isLoading } = useArtists({
-    q: debouncedSearch,
+    search: debouncedSearch,
     limit: 10,
     isVerified: true,
   });
@@ -51,12 +51,22 @@ export function ArtistFeatSelector({
   const results = artistsRes?.data || [];
 
   useEffect(() => {
-    if (featArtists.length > 0 && selectedArtistsData.length === 0) {
-      setSelectedArtistsData(featArtists);
-      const ids = featArtists.map((a) => a.id);
-      form.setValue("featArtistIds", ids);
+    if (featArtists?.length > 0) {
+      console.log("true");
+      if (selectedArtistsData.length === 0) {
+        console.log("true x2");
+        setSelectedArtistsData(featArtists);
+        console.log("Setting initial featArtists in form:", featArtists);
+        const ids = featArtists.map((a) => a.id);
+        console.log("Setting initial featArtistIds in form:", ids);
+        form.setValue("featArtistIds", ids);
+        console.log(
+          "Watching featArtistIds in form:",
+          form.watch("featArtistIds"),
+        );
+      }
     }
-  }, [featArtists, form]);
+  }, [featArtists?.length, form, selectedArtistsData.length]);
 
   return (
     <div className="space-y-3">

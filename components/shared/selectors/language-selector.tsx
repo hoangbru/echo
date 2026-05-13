@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Controller, UseFormReturn } from "react-hook-form";
 
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils/helpers";
 
 import { Button } from "@/components/ui/button";
 import {

@@ -19,6 +19,7 @@ import {
 } from "@/lib/validations/track.schema";
 import { useTrackDetail, useUpdateTrack } from "@/hooks/use-tracks";
 import { useAlbumDetail } from "@/hooks/use-albums";
+import { FeatArtist } from "@/types";
 
 export function FormTrackEdit({
   albumId,
@@ -38,10 +39,13 @@ export function FormTrackEdit({
     isError,
     error,
     isSuccess,
-  } = useUpdateTrack(albumId);
+  } = useUpdateTrack(trackId, albumId);
 
   const track = trackRes?.data || null;
   const album = albumRes?.data || null;
+  const featArtists = track?.artists
+    ? track.artists.filter((a: FeatArtist) => !a.isMain)
+    : [];
 
   const form = useForm<TrackFormValues>({
     resolver: zodResolver(trackFormSchema),
@@ -64,6 +68,7 @@ export function FormTrackEdit({
         language: track.language || "",
         isPublished: track.isPublished,
         isExplicit: track.isExplicit,
+        lyrics: track.lyrics || "",
         isrc: track.isrc || "",
         composer: track.composer || "",
         producer: track.producer || "",
@@ -93,6 +98,7 @@ export function FormTrackEdit({
     formData.append("language", data.language);
 
     formData.append("genreId", data.genreId || "");
+    if (data.lyrics) formData.append("lyrics", data.lyrics);
     if (data.isrc) formData.append("isrc", data.isrc);
     if (data.composer) formData.append("composer", data.composer);
     if (data.producer) formData.append("producer", data.producer);
@@ -107,10 +113,10 @@ export function FormTrackEdit({
       { id: trackId, formData },
       {
         onSuccess: () => {
-          setTimeout(
-            () => router.push(`/studio/albums/${albumId}/tracks`),
-            1500,
-          );
+          // setTimeout(
+          //   () => router.push(`/studio/albums/${albumId}/tracks`),
+          //   1500,
+          // );
         },
       },
     );
@@ -181,7 +187,7 @@ export function FormTrackEdit({
         <div className="lg:col-span-2">
           <TrackFormMetadata
             form={form}
-            track={track}
+            featArtists={featArtists}
             status={currentStatus}
           />
         </div>

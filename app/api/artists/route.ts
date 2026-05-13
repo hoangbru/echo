@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { authorizeApi } from "@/lib/session";
 import { keysToCamel } from "@/lib/utils/format";
-import { removeVietnameseTones } from "@/lib/utils/utils";
+import { removeVietnameseTones } from "@/lib/utils/helpers";
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,12 +10,11 @@ export async function GET(request: NextRequest) {
     const auth = await authorizeApi();
 
     const { searchParams } = new URL(request.url);
-    const search = searchParams.get("q") || searchParams.get("search") || "";
+    const search = searchParams.get("search") || "";
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
     const sortBy = searchParams.get("sortBy") || "stage_name";
     const sortOrder = searchParams.get("order") || "asc";
-    const isVerified = searchParams.get("isVerified");
 
     const offset = (page - 1) * limit;
     const to = offset + limit - 1;
@@ -35,10 +34,6 @@ export async function GET(request: NextRequest) {
       query = query.or(
         `stage_name_search.ilike.%${cleanSearchTerm}%,contact_email.ilike.%${search}%`,
       );
-    }
-
-    if (isVerified !== null) {
-      query = query.eq("is_verified", isVerified === "true");
     }
 
     query = query

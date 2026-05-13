@@ -9,7 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils/helpers";
 import { Album, FeatArtist, TrackDetail } from "@/types";
 import { usePlayer, PlayerTrack } from "@/hooks/use-player";
 import { apiClient } from "@/lib/axios";
@@ -61,6 +61,7 @@ export function AlbumCard({ album }: AlbumCardProps) {
       const queue: PlayerTrack[] = tracksData.map((t: TrackDetail) => ({
         id: t.id,
         title: t.title,
+        lyrics: t.lyrics || "",
         artistNames:
           t.artists?.map((ta: FeatArtist) => ta.stageName).join(", ") ||
           album.artist?.stageName ||

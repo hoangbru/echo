@@ -55,3 +55,13 @@ export const keysToCamel = (obj: any): any => {
   }
   return newObj;
 };
+
+/**
+ * Format elapsed time in seconds
+ * @param ms milliseconds
+ * @returns formatted string like "5s"
+ */
+export const formatElapsed = (ms: number) => {
+  const s = Math.floor(ms / 1000);
+  return `${s}s`;
+};

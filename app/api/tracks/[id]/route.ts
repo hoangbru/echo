@@ -167,6 +167,7 @@ export async function PATCH(
       discNumber: Number(formData.get("discNumber")),
       isPublished: formData.get("isPublished") === "true",
       isExplicit: formData.get("isExplicit") === "true",
+      lyrics: (formData.get("lyrics") as string) || "",
       isrc: (formData.get("isrc") as string) || "",
       composer: (formData.get("composer") as string) || "",
       producer: (formData.get("producer") as string) || "",
@@ -222,7 +223,7 @@ export async function PATCH(
         supabase,
         validAudio,
         "audio",
-        `tracks/artist_${currentArtistId}`,
+        `tracks/${currentArtistId}`,
       );
 
       if (audioErr) {
@@ -255,7 +256,7 @@ export async function PATCH(
         supabase,
         validImage,
         "covers",
-        `tracks/artist_${currentArtistId}`,
+        `tracks/${currentArtistId}`,
       );
       if (imageErr) {
         console.error("[STORAGE_IMAGE_ERROR]", imageErr);
@@ -302,6 +303,7 @@ export async function PATCH(
       disc_number: safeData.discNumber,
       is_published: safeData.isPublished,
       is_explicit: safeData.isExplicit,
+      lyrics: safeData.lyrics || null,
       isrc: safeData.isrc || null,
       composer: safeData.composer || null,
       producer: safeData.producer || null,
