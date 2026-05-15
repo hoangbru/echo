@@ -8,9 +8,6 @@ import { blobToBase64, getSupportedMimeType } from "./utils/voice-helpers";
 const GEMINI_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
-const GEMINI_EMBEDDING_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/embedding-001:embedContent";
-
 const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY ?? "";
 
 export async function analyzeVoiceWithGemini(
