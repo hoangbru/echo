@@ -33,3 +33,21 @@ export function parseLRC(lrcText: string): LyricLine[] {
 
   return parsedLyrics;
 }
+
+/**
+ * Remove LRC timestamps from lyrics, keeping only text content.
+ */
+export function stripLrcTimestamps(lyrics: string): string {
+  return lyrics
+    .split("\n")
+    .map((line) => line.replace(/^\[\d{2}:\d{2}[.:]\d{2,3}\]\s?/, "").trim())
+    .filter(Boolean)
+    .join("\n");
+}
+
+/**
+ * Check whether a lyrics string uses LRC format.
+ */
+export function isLrcFormat(lyrics: string): boolean {
+  return /^\[\d{2}:\d{2}[.:]\d{2,3}\]/.test(lyrics.trimStart());
+}

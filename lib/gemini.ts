@@ -1,56 +1,59 @@
+import { GoogleGenAI, type EmbedContentConfig } from "@google/genai";
+import {
+  GEMINI_GENERATE_MODEL,
+  GEMINI_EMBEDDING_MODEL,
+} from "@/constants/search";
 import {
   VOICE_SYSTEM_PROMPT,
   VOICE_USER_PROMPT,
-} from "@/constants/voice-prompt";
-import { GeminiVoiceResult } from "@/types";
-import { blobToBase64, getSupportedMimeType } from "./utils/voice-helpers";
+} from "@/constants/voice-prompts";
+import { stripLrcTimestamps } from "@/lib/utils/lyrics";
+import type { VoiceAnalysisResult } from "@/types/search";
 
-const GEMINI_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+const MAX_LYRICS_CHARS = 3000; // ~750 tokens, enough to capture full song content
 
-const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY ?? "";
+function createClient(): GoogleGenAI {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) throw new Error("GEMINI_API_KEY is not configured");
+  return new GoogleGenAI({ apiKey });
+}
 
-export async function analyzeVoiceWithGemini(
-  audioBlob: Blob,
-): Promise<GeminiVoiceResult> {
-  const base64Audio = await blobToBase64(audioBlob);
-  const mimeType = getSupportedMimeType(audioBlob);
+// ── Voice analysis ────────────────────────────────────────────────────────────
 
-  const body = {
-    system_instruction: { parts: [{ text: VOICE_SYSTEM_PROMPT }] },
-    contents: [
-      {
-        role: "user",
-        parts: [
-          { inline_data: { mime_type: mimeType, data: base64Audio } },
-          { text: VOICE_USER_PROMPT },
-        ],
-      },
-    ],
-    generationConfig: {
+/**
+ * Analyze audio and return structured search intent.
+ */
+export async function analyzeVoice(
+  audioBase64: string,
+  mimeType: string,
+): Promise<VoiceAnalysisResult> {
+  const ai = createClient();
+
+  const response = await ai.models.generateContent({
+    model: GEMINI_GENERATE_MODEL,
+    config: {
+      systemInstruction: VOICE_SYSTEM_PROMPT,
       temperature: 0.2,
       maxOutputTokens: 512,
       responseMimeType: "application/json",
     },
-  };
-
-  const res = await fetch(`${GEMINI_URL}?key=${GEMINI_API_KEY}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    contents: [
+      {
+        role: "user",
+        parts: [
+          { inlineData: { mimeType, data: audioBase64 } },
+          { text: VOICE_USER_PROMPT },
+        ],
+      },
+    ],
   });
 
-  if (!res.ok) {
-    throw new Error(`Gemini API ${res.status}: ${await res.text()}`);
-  }
-
-  const data = await res.json();
-  const raw: string = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-  if (!raw) throw new Error("Gemini trả về response rỗng");
+  const raw = response.text ?? "";
+  if (!raw) throw new Error("Empty response from Gemini");
 
   const parsed = JSON.parse(
     raw.replace(/```json|```/g, "").trim(),
-  ) as GeminiVoiceResult;
+  ) as VoiceAnalysisResult;
 
   return {
     transcript: parsed.transcript ?? "",
@@ -60,4 +63,43 @@ export async function analyzeVoiceWithGemini(
     language: parsed.language ?? "vi",
     hummingMatch: parsed.hummingMatch ?? null,
   };
+}
+
+// ── Embeddings ────────────────────────────────────────────────────────────────
+
+async function embedText(
+  text: string,
+  taskType: EmbedContentConfig["taskType"],
+): Promise<number[]> {
+  if (!text.trim()) throw new Error("Cannot embed empty text");
+
+  const ai = createClient();
+
+  const response = await ai.models.embedContent({
+    model: GEMINI_EMBEDDING_MODEL,
+    contents: text,
+    config: { taskType, outputDimensionality: 768 },
+  });
+
+  const values = response.embeddings?.[0]?.values;
+  if (!values?.length) throw new Error("Empty embedding response");
+
+  return values;
+}
+
+/**
+ * Embed track lyrics for storage.
+ * Strips LRC timestamps and truncates before sending to Gemini.
+ */
+export async function embedLyrics(lyrics: string): Promise<number[]> {
+  const clean = stripLrcTimestamps(lyrics).slice(0, MAX_LYRICS_CHARS);
+  if (!clean) throw new Error("Lyrics are empty after processing");
+  return embedText(clean, "RETRIEVAL_DOCUMENT");
+}
+
+/**
+ * Embed a user's lyric query for similarity search.
+ */
+export async function embedQuery(query: string): Promise<number[]> {
+  return embedText(query.trim(), "RETRIEVAL_QUERY");
 }

@@ -1,37 +1,40 @@
 import { useRef, useEffect, useCallback } from "react";
+import { getBestMimeType } from "@/lib/utils/audio";
 
-interface UseMicRecorderOptions {
+const MIN_BLOB_SIZE_BYTES = 500;
+
+interface Options {
   maxDurationMs?: number;
   onBlob: (blob: Blob) => void;
-  onError: (msg: string) => void;
+  onError: (message: string) => void;
 }
 
 export function useMicRecorder({
   maxDurationMs = 10_000,
   onBlob,
   onError,
-}: UseMicRecorderOptions) {
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+}: Options) {
+  const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
   const autoStopRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const mimeTypeRef = useRef<string>("");
 
-  const stopStream = useCallback(() => {
+  const releaseStream = useCallback(() => {
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
   }, []);
 
   const stop = useCallback(() => {
     if (autoStopRef.current) clearTimeout(autoStopRef.current);
-    if (mediaRecorderRef.current?.state !== "inactive") {
-      mediaRecorderRef.current?.stop();
+    if (recorderRef.current?.state !== "inactive") {
+      recorderRef.current?.stop();
     }
   }, []);
 
   const start = useCallback(async () => {
-    // check support
     if (!navigator.mediaDevices?.getUserMedia) {
-      onError("Trình duyệt không hỗ trợ ghi âm.");
+      onError("Your browser does not support audio recording.");
       return;
     }
 
@@ -40,48 +43,46 @@ export function useMicRecorder({
       streamRef.current = stream;
       chunksRef.current = [];
 
-      const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
-        ? "audio/webm;codecs=opus"
-        : "audio/webm";
+      const mimeType = getBestMimeType();
+      mimeTypeRef.current = mimeType;
 
       const recorder = new MediaRecorder(stream, { mimeType });
-      mediaRecorderRef.current = recorder;
+      recorderRef.current = recorder;
 
       recorder.ondataavailable = (e) => {
         if (e.data.size > 0) chunksRef.current.push(e.data);
       };
 
       recorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: mimeType });
-        stopStream();
-        if (blob.size > 500) {
-          onBlob(blob);
-        } else {
+        const blob = new Blob(chunksRef.current, { type: mimeTypeRef.current });
+        releaseStream();
+
+        if (blob.size < MIN_BLOB_SIZE_BYTES) {
           onError("Không nhận được giọng nói, thử lại nhé!");
+          return;
         }
+        onBlob(blob);
       };
 
       recorder.start(100);
-
-      autoStopRef.current = setTimeout(() => stop(), maxDurationMs);
+      autoStopRef.current = setTimeout(stop, maxDurationMs);
     } catch (err) {
-      const denied =
+      const isDenied =
         err instanceof DOMException && err.name === "NotAllowedError";
       onError(
-        denied
+        isDenied
           ? "Cần cấp quyền microphone để dùng tính năng này."
           : "Không thể mở microphone. Kiểm tra lại thiết bị nhé!",
       );
     }
-  }, [maxDurationMs, onBlob, onError, stop, stopStream]);
+  }, [maxDurationMs, onBlob, onError, stop, releaseStream]);
 
-  // cleanup on unmount
   useEffect(() => {
     return () => {
       stop();
-      stopStream();
+      releaseStream();
     };
-  }, [stop, stopStream]);
+  }, [stop, releaseStream]);
 
   return { start, stop };
 }

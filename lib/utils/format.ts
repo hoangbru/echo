@@ -65,3 +65,24 @@ export const formatElapsed = (ms: number) => {
   const s = Math.floor(ms / 1000);
   return `${s}s`;
 };
+
+export const mapTrackRow = (row: any, similarity?: number): any => {
+  const artists = (row.track_artists ?? [])
+    .filter((ta: any) => ta.artist)
+    .map((ta: any) => ({ ...ta.artist, is_main: ta.is_main }))
+    .sort((a: any, b: any) =>
+      a.is_main === b.is_main ? 0 : a.is_main ? -1 : 1,
+    );
+
+  return {
+    id: row.id,
+    title: row.title,
+    audio_url: row.audio_url,
+    image_url: row.image_url || row.album?.cover_image || null,
+    duration: row.duration,
+    is_explicit: row.is_explicit,
+    artists,
+    album: row.album ? { id: row.album.id } : null,
+    ...(similarity !== undefined && { similarity }),
+  };
+};

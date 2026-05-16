@@ -11,6 +11,7 @@ import {
 import { keysToCamel } from "@/lib/utils/format";
 import { authorizeApi } from "@/lib/session";
 import { uploadFileToSupabase } from "@/lib/utils/file";
+import { embedLyrics } from "@/lib/gemini";
 
 export async function GET(request: NextRequest) {
   try {
@@ -308,6 +309,20 @@ export async function POST(request: NextRequest) {
         { error: "Đã có lỗi khi lưu thông tin Nghệ sĩ" },
         { status: 400 },
       );
+    }
+
+    if (safeData.lyrics?.trim()) {
+      void embedLyrics(safeData.lyrics)
+        .then((embedding) =>
+          supabase
+            .from("track")
+            .update({ lyrics_embedding: embedding })
+            .eq("id", newTrack.id),
+        )
+        .then(({ error }) => {
+          if (error) console.error("[EMBED_LYRICS]", error.message);
+        })
+        .catch((err) => console.error("[EMBED_LYRICS]", err));
     }
 
     return NextResponse.json(

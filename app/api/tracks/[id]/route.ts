@@ -9,6 +9,7 @@ import {
 } from "@/lib/validations/file.schema";
 import { authorizeApi } from "@/lib/session";
 import { keysToCamel } from "@/lib/utils/format";
+import { embedLyrics } from "@/lib/gemini";
 
 export async function GET(
   request: NextRequest,
@@ -128,7 +129,9 @@ export async function PATCH(
 
     const { data: oldTrack, error: oldTrackError } = await supabase
       .from("track")
-      .select("artist_id, duration, audio_url, image_url, file_size, bitrate")
+      .select(
+        "artist_id, duration, audio_url, image_url, file_size, bitrate, lyrics",
+      )
       .eq("id", trackId)
       .single();
 
@@ -269,7 +272,7 @@ export async function PATCH(
       }
       finalImageUrl = imgUrl;
       uploadedImagePath = iPath;
-      
+
       if (oldTrack.image_url && oldTrack.image_url.includes("/tracks/")) {
         const oldImgPath = getFilePath(oldTrack.image_url, "covers");
         if (oldImgPath)
@@ -349,6 +352,35 @@ export async function PATCH(
         { error: "Chưa thể cập nhật đầy đủ thông tin nghệ sĩ góp giọng" },
         { status: 500 },
       );
+    }
+
+    const newLyrics = safeData.lyrics?.trim() ?? "";
+    const oldLyrics = (oldTrack.lyrics ?? "").trim();
+
+    if (newLyrics !== oldLyrics) {
+      if (newLyrics) {
+        // Lyrics changed — re-embed in background
+        void embedLyrics(newLyrics)
+          .then((embedding) =>
+            supabase
+              .from("track")
+              .update({ lyrics_embedding: embedding })
+              .eq("id", trackId),
+          )
+          .then(({ error }) => {
+            if (error) console.error("[RE_EMBED_LYRICS]", error.message);
+          })
+          .catch((err) => console.error("[RE_EMBED_LYRICS]", err));
+      } else {
+        // Lyrics removed — clear the embedding synchronously (no Gemini call needed)
+        void supabase
+          .from("track")
+          .update({ lyrics_embedding: null })
+          .eq("id", trackId)
+          .then(({ error }) => {
+            if (error) console.error("[CLEAR_LYRICS_EMBEDDING]", error.message);
+          });
+      }
     }
 
     return NextResponse.json(

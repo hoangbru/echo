@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Mic, MicOff, Loader2 } from "lucide-react";
 
-import { VoiceResult, VoiceState } from "@/types/voice.type";
+import { VoiceResult, VoiceState } from "@/types/search";
 
 interface VoiceMicButtonProps {
   onResult: (result: VoiceResult) => void;

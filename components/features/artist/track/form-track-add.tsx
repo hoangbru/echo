@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { AlertCircle, Loader2 } from "lucide-react";
+import Link from "next/link";
 
 import { SuccessModal } from "@/components/features/modals";
 import {
@@ -122,9 +123,12 @@ export function FormTrackAdd({ albumId }: { albumId: string }) {
     <Fragment>
       <PageHeading>
         Thêm bài hát vào:{" "}
-        <span className="text-primary">
+        <Link
+          href={`/studio/albums/${albumId}/tracks`}
+          className="text-primary hover:underline"
+        >
           {isLoadingAlbum ? "..." : album?.title || "Unkown"}
-        </span>
+        </Link>
       </PageHeading>
 
       {(customError || isError) && (

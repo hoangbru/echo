@@ -45,9 +45,7 @@ export function TrackGrid({ albumId }: TrackGridProps) {
       <div className="flex items-center justify-between">
         <PageHeading>
           Bài hát trong:{" "}
-          <Link href={`/studio/albums/${albumId}`} className="text-primary hover:underline">
-            {album?.title}
-          </Link>
+          <span className="text-primary">{album?.title}</span>
         </PageHeading>
 
         <Link href={`/studio/albums/${albumId}/tracks/new`}>
