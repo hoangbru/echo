@@ -5,6 +5,7 @@ import {
   User,
   Disc,
   Share,
+  Heart,
 } from "lucide-react";
 
 import {
@@ -14,7 +15,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LikeButton } from "../guest/track";
 
 export const DropdownTrackMenu = () => {
   return (
@@ -35,7 +35,7 @@ export const DropdownTrackMenu = () => {
           <Plus className="w-4 h-4 mr-1" /> Thêm vào playlist
         </DropdownMenuItem>
         <DropdownMenuItem className="hover:bg-white/10 focus:bg-white/10 cursor-pointer p-3 text-sm font-medium">
-          <LikeButton />
+          <Heart className="w-4 h-4 mr-1" /> Yêu thích
         </DropdownMenuItem>
         <DropdownMenuItem className="hover:bg-white/10 focus:bg-white/10 cursor-pointer p-3 text-sm font-medium">
           <ListPlus className="w-4 h-4 mr-1" /> Thêm vào danh sách chờ

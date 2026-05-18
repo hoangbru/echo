@@ -1,18 +1,20 @@
 "use client";
 
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Edit2, Trash2, Music, Globe, Lock } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Album } from "@/types";
+import Image from "next/image";
 import Link from "next/link";
+import { Edit2, Trash2, Music, Globe, Lock } from "lucide-react";
 
-interface AlbumCardProps {
+import { Button } from "@/components/ui/button";
+
+import { Album } from "@/types";
+
+interface AlbumItemProps {
   album: Album;
   onDelete: (album: Album) => void;
 }
 
-export function AlbumCard({ album, onDelete }: AlbumCardProps) {
+export function AlbumItem({ album, onDelete }: AlbumItemProps) {
   const router = useRouter();
 
   return (

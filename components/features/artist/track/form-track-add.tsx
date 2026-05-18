@@ -8,10 +8,8 @@ import { AlertCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 import { SuccessModal } from "@/components/features/modals";
-import {
-  TrackFormMedia,
-  TrackFormMetadata,
-} from "@/components/features/artist/track";
+import { TrackFormMedia } from "./track-form-media";
+import { TrackFormMetadata } from "./track-form-metadata";
 import { PageHeading } from "@/components/ui/page-heading";
 
 import {

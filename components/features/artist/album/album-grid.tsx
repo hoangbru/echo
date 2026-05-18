@@ -4,8 +4,8 @@ import { Fragment, useState } from "react";
 import { AlertCircle, RefreshCcw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { AlbumCard } from "./album-card";
-import { AlbumCardSkeleton } from "./album-card-skeleton";
+import { AlbumItem } from "./album-item";
+import { AlbumItemSkeleton } from "./album-skeleton";
 import { ConfirmModal } from "@/components/features/modals";
 import { AlbumToolbar } from "./album-toolbar";
 
@@ -14,17 +14,17 @@ import { useAlbums, useDeleteAlbum } from "@/hooks/use-albums";
 interface AlbumGridProps {
   search: string;
   status: string;
-  genre: string;
+  type: string;
   page: number;
 }
 
-export function AlbumGrid({ search, status, genre, page }: AlbumGridProps) {
+export function AlbumGrid({ search, status, type, page }: AlbumGridProps) {
   const {
     data: response,
     isLoading,
     isError,
     refetch,
-  } = useAlbums({ search, status, genre, page, view: "studio" });
+  } = useAlbums({ search, status, type, page, view: "studio" });
   const deleteMutation = useDeleteAlbum();
 
   const albums = response?.data || [];
@@ -42,7 +42,7 @@ export function AlbumGrid({ search, status, genre, page }: AlbumGridProps) {
       <AlbumToolbar
         currentSearch={search}
         currentStatus={status}
-        currentGenre={genre}
+        currentType={type}
       />
 
       <div
@@ -53,7 +53,7 @@ export function AlbumGrid({ search, status, genre, page }: AlbumGridProps) {
         {isLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-8">
             {Array.from({ length: 10 }).map((_, idx) => (
-              <AlbumCardSkeleton key={idx} />
+              <AlbumItemSkeleton key={idx} />
             ))}
           </div>
         ) : isError ? (
@@ -79,7 +79,7 @@ export function AlbumGrid({ search, status, genre, page }: AlbumGridProps) {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-8">
             {albums.map((album: any) => (
-              <AlbumCard
+              <AlbumItem
                 key={album.id}
                 album={album}
                 onDelete={setAlbumToDelete}

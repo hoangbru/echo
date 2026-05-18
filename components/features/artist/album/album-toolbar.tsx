@@ -5,23 +5,20 @@ import { Search, Filter, Tag } from "lucide-react";
 
 import { useQueryString } from "@/hooks/use-query-string";
 import { useDebounce } from "@/hooks/use-debounce";
-import { useGenres } from "@/hooks/use-genres";
+import { AlbumType } from "@/types";
 
 export function AlbumToolbar({
   currentSearch,
   currentStatus,
-  currentGenre,
+  currentType,
 }: {
   currentSearch: string;
   currentStatus: string;
-  currentGenre: string;
+  currentType: string;
 }) {
   const [localSearch, setLocalSearch] = useState(currentSearch);
   const { updateURL } = useQueryString();
   const debouncedSearch = useDebounce(localSearch, 500);
-
-  const { data: genreRes } = useGenres();
-  const genres = genreRes?.data || [];
 
   useEffect(() => {
     if (debouncedSearch !== currentSearch) {
@@ -51,16 +48,17 @@ export function AlbumToolbar({
         <div className="flex items-center gap-2 flex-1 md:flex-none">
           <Tag className="w-4 h-4 text-muted-foreground hidden md:block" />
           <select
-            value={currentGenre}
-            onChange={(e) => updateURL("genre", e.target.value)}
-            className="w-full md:w-[160px] bg-[#09090b] border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:border-primary outline-none cursor-pointer"
+            value={currentType}
+            onChange={(e) => updateURL("type", e.target.value)}
+            className="w-full md:w-[160px] bg-card border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:border-primary focus:ring-1 focus:ring-ring outline-none cursor-pointer transition-colors"
           >
-            <option value="all">Tất cả thể loại</option>
-            {genres.map((g) => (
-              <option key={g.id} value={g.id}>
-                {g.name}
-              </option>
-            ))}
+            <option value="all">Tất cả định dạng</option>
+            <option value={AlbumType.SINGLE}>Single (Đĩa đơn)</option>
+            <option value={AlbumType.EP}>EP (Đĩa mở rộng)</option>
+            <option value={AlbumType.ALBUM}>Album (Album tiêu chuẩn)</option>
+            <option value={AlbumType.COMPILATION}>
+              Compilation (Tuyển tập)
+            </option>
           </select>
         </div>
 

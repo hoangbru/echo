@@ -21,14 +21,27 @@ export function formatNumber(num: number): string {
   return num.toString();
 }
 
-/**
- * Format date
- */
-export function formatDate(date: string | Date): string {
-  return new Date(date).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+export type DateFormatView = "full" | "yearOnly";
+
+export function formatDate(
+  date: string | Date,
+  viewMode: DateFormatView = "full",
+  options?: Intl.DateTimeFormatOptions,
+): string {
+  const parsedDate = new Date(date);
+
+  if (isNaN(parsedDate.getTime())) {
+    return "Không xác định";
+  }
+
+  const baseOptions: Intl.DateTimeFormatOptions =
+    viewMode === "yearOnly"
+      ? { year: "numeric" }
+      : { year: "numeric", month: "long", day: "numeric" };
+
+  return parsedDate.toLocaleDateString("vi-VN", {
+    ...baseOptions,
+    ...options,
   });
 }
 

@@ -7,17 +7,14 @@ import { useRouter } from "next/navigation";
 import { AlertCircle, Loader2 } from "lucide-react";
 
 import { SuccessModal } from "@/components/features/modals";
-import {
-  AlbumFormMedia,
-  AlbumFormMetadata,
-} from "@/components/features/artist/album";
+import { AlbumFormMedia } from "./album-form-media";
+import { AlbumFormMetadata } from "./album-form-metadata";
 
 import {
   albumFormSchema,
   AlbumFormValues,
 } from "@/lib/validations/album.schema";
 import { useAlbumDetail, useUpdateAlbum } from "@/hooks/use-albums";
-import { useGenres } from "@/hooks/use-genres";
 
 export function FormAlbumEdit({ albumId }: { albumId: string }) {
   const router = useRouter();
@@ -132,10 +129,7 @@ export function FormAlbumEdit({ albumId }: { albumId: string }) {
           }}
         />
 
-        <AlbumFormMetadata
-          form={form}
-          status={currentStatus}
-        />
+        <AlbumFormMetadata form={form} status={currentStatus} />
       </form>
 
       <SuccessModal

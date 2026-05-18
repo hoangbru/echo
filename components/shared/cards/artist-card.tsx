@@ -37,9 +37,9 @@ export function ArtistCard({ artist }: ArtistCardProps) {
           {artist.isVerified && <VerifiedBadge />}
         </div>
 
-        <p className="text-xs text-neutral-400">
+        {/* <p className="text-xs text-neutral-400">
           {artist.totalFollowers?.toLocaleString() || 0} followers
-        </p>
+        </p> */}
       </div>
     </Link>
   );

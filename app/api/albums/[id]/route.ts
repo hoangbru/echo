@@ -21,7 +21,7 @@ export async function GET(
 
     const { data, error } = await supabase
       .from("album")
-      .select("*")
+      .select("*, genre(id, name), artist(id, stage_name, profile_image)")
       .eq("id", id)
       .single();
 

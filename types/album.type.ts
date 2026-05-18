@@ -1,5 +1,3 @@
-import { Database } from "@/lib/supabase/type";
-import { Track } from "./track.type";
 import { AlbumFormValues } from "@/lib/validations/album.schema";
 import { AlbumType } from "./enum.type";
 
@@ -13,34 +11,44 @@ export interface AlbumCard {
 
 export interface Album {
   id: string;
+  slug: string | null;
+
   title: string;
   titleSearch: string | null;
-  releaseDate: string;
-  coverImage: string | null;
-  slug: string | null;
-  albumType: AlbumType | null;
-  artistId: string;
   description: string | null;
+  coverImage: string | null;
+  releaseDate: string;
+  albumType: AlbumType | null;
+  language: string | null;
   genreId: string | null;
+
   isExplicit: boolean | null;
   isPublished: boolean;
   recordLabel: string | null;
   upc: string | null;
-  language: string | null;
   copyright: string | null;
+
   rating: number | null;
   totalStreams: number;
   totalTracks: number;
+
   createdAt: string;
   updatedAt: string;
-  tracks?: Track[];
-  artist?: {
-    id: string;
-    stageName: string;
-  };
+
+  artistId: string;
 }
 
-export type AlbumDB = Database["public"]["Tables"]["album"]["Row"];
+export interface AlbumDetail extends Album {
+  genre: {
+    id: string;
+    name: string;
+  } | null;
+  artist: {
+    id: string;
+    stageName: string;
+    profileImage: string | null;
+  };
+}
 
 export interface CreateAlbumParams {
   formData: AlbumFormValues;

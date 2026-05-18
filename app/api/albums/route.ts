@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { generateSlug, removeVietnameseTones } from "@/lib/utils/helpers";
 import { albumFormSchema } from "@/lib/validations/album.schema";
 import { imageFileSchema } from "@/lib/validations/file.schema";
-import { UserRole } from "@/types";
+import { AlbumType, UserRole } from "@/types";
 import { authorizeApi } from "@/lib/session";
 import { keysToCamel } from "@/lib/utils/format";
 import { uploadFileToSupabase } from "@/lib/utils/file";
@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get("status") || "all";
     const genreId = searchParams.get("genre") || "all";
     const view = searchParams.get("view");
+    const type = searchParams.get("type") || "all";
 
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
@@ -38,6 +39,13 @@ export async function GET(request: NextRequest) {
 
     if (genreId !== "all") {
       query = query.eq("genre_id", genreId);
+    }
+
+    if (
+      type !== "all" &&
+      Object.values(AlbumType).includes(type as AlbumType)
+    ) {
+      query = query.eq("album_type", type);
     }
 
     if (role === UserRole.ADMIN) {
@@ -59,7 +67,7 @@ export async function GET(request: NextRequest) {
     const { data, count, error } = await query;
 
     if (error) {
-      console.error("[DB_ERROR_GET_ALBUMS]:", error.message, error.details);
+      console.error("[DB_ERROR_GET_ALBUMS]:", error);
       return NextResponse.json(
         {
           error: "Hệ thống đang bận hoặc không thể tải danh sách Album lúc này",
@@ -83,7 +91,7 @@ export async function GET(request: NextRequest) {
       { status: 200 },
     );
   } catch (error: any) {
-    console.error("API GET Albums Catch Error:", error);
+    console.error("[DB_ERROR_GET_ALBUMS]", error);
     return NextResponse.json(
       { error: "Đã xảy ra lỗi hệ thống" },
       { status: 500 },

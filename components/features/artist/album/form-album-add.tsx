@@ -6,11 +6,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
 
-import { SuccessModal } from "@/components/features/modals/";
-import {
-  AlbumFormMedia,
-  AlbumFormMetadata,
-} from "@/components/features/artist/album/";
+import { SuccessModal } from "@/components/features/modals";
+import { AlbumFormMedia } from "./album-form-media";
+import { AlbumFormMetadata } from "./album-form-metadata";
 
 import {
   albumFormSchema,
@@ -120,10 +118,7 @@ export function FormAlbumAdd() {
           onClearCover={handleClearCover}
         />
 
-        <AlbumFormMetadata
-          form={form}
-          status={currentStatus}
-        />
+        <AlbumFormMetadata form={form} status={currentStatus} />
       </form>
 
       <SuccessModal

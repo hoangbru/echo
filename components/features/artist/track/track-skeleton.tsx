@@ -1,4 +1,4 @@
-export function TrackItemSkeleton() {
+export function TrackRowSkeleton() {
   return (
     <tr className="border-b border-border/50 animate-pulse bg-card">
       <td className="py-3 px-4 w-12">
@@ -14,7 +14,8 @@ export function TrackItemSkeleton() {
         </div>
       </td>
       <td className="py-3 px-4">
-        <div className="h-4 w-16 bg-muted rounded"></div> {/* Nghệ sĩ kết hợp */}
+        <div className="h-4 w-16 bg-muted rounded"></div>{" "}
+        {/* Nghệ sĩ kết hợp */}
       </td>
       <td className="py-3 px-4">
         <div className="h-4 w-16 bg-muted rounded"></div> {/* Thể loại */}

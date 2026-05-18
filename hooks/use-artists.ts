@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/axios";
-import { QueryParams } from "@/types";
+import { Album, QueryParams } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 
 type ArtistQueryParams = QueryParams & {
@@ -17,6 +17,24 @@ export const useArtists = (params?: ArtistQueryParams) => {
     },
   });
 };
+
+export function useAlbumsArtist(artistId: string, currentAlbumId: string) {
+  return useQuery({
+    queryKey: ["albums", "artist", artistId, "exclude", currentAlbumId],
+
+    queryFn: async () => {
+      const res = await apiClient.get(`/artists/${artistId}/albums`, {
+        params: { exclude: currentAlbumId },
+      });
+
+      return res as { data: Album[] };
+    },
+
+    enabled: !!artistId && !!currentAlbumId,
+
+    placeholderData: (previousData) => previousData,
+  });
+}
 
 export function useArtistDetail(artistId: string) {
   return useQuery({

@@ -6,13 +6,13 @@ export const AlbumService = {
       .from("album")
       .select(
         `
-      id, 
-      title, 
-      cover_image, 
-      release_date,
-      album_type,
-      artist (id, stage_name)
-    `,
+        id, 
+        title, 
+        cover_image, 
+        release_date,
+        album_type,
+        artist (id, stage_name)
+      `,
       )
       .eq("is_published", true)
       .order("release_date", { ascending: false })
@@ -52,14 +52,42 @@ export const AlbumService = {
   async getById(supabase: any, albumId: string) {
     const { data, error } = await supabase
       .from("album")
-      .select("*")
+      .select(
+        `
+        *,
+        artist (id, stage_name, profile_image),
+        track (*)
+        `,
+      )
       .eq("id", albumId)
-      .maybeSingle();
+      .eq("is_published", true)
+      .single();
 
     if (error) {
-      return null;
+      return { data: null, error };
     }
+    const album = keysToCamel(data);
 
-    return keysToCamel(data);
+    return { data: album, error: null };
+  },
+
+  async getOtherAlbumsSameArtist(
+    supabase: any,
+    artistId: string,
+    albumId: string,
+  ) {
+    const { data, error } = await supabase
+      .from("album")
+      .select(
+        `id, title, cover_image, release_date, album_type, artist(id, stage_name)`,
+      )
+      .eq("artist_id", artistId)
+      .neq("id", albumId)
+      .eq("is_published", true)
+      .order("release_date", { ascending: false })
+      .limit(6);
+
+    const otherAlbumsData = keysToCamel(data);
+    return { data: otherAlbumsData || [], error };
   },
 };

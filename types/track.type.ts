@@ -64,10 +64,18 @@ export interface FeatArtist {
   profileImage?: string;
   isMain: boolean;
 }
+
 export interface TrackDetail extends Track {
-  artists?: FeatArtist[];
-  album?: {
+  artists: FeatArtist[];
+  album: {
     id: string;
     title: string;
+    coverImage: string | null;
+    isPublished: boolean;
+    artistId: string;
+    genre: {
+      id: string;
+      name: string;
+    } | null;
   };
 }

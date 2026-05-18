@@ -52,7 +52,7 @@ export function VoiceSearchModal({ isOpen, onSearch, onClose }: Props) {
       setPhase("result");
     } catch (err) {
       console.error("[VoiceModal]", err);
-      setErrorMsg("Voice analysis failed. Please try again.");
+      setErrorMsg("Trợ lý giọng nói gặp sự cố. Vui lòng thử lại");
       setPhase("error");
     }
   }, []);

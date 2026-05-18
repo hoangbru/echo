@@ -2,18 +2,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/axios";
 import { toast } from "sonner";
 
-export function useAlbumTracksDetail(albumId: string) {
-  return useQuery({
-    queryKey: ["tracks", "album-detail", albumId],
-    queryFn: async () => {
-      const res = await apiClient.get(`/albums/${albumId}/tracks`);
-
-      return res as { data: any[]; meta?: any };
-    },
-    enabled: !!albumId,
-  });
-}
-
 export function useTrackDetail(trackId: string) {
   return useQuery({
     queryKey: ["track", trackId],

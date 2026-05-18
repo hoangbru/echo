@@ -4,6 +4,7 @@ import { ScrollSlider } from "@/components/shared";
 import { ArtistService } from "@/lib/services";
 import { createClient } from "@/lib/supabase/server";
 import { Artist } from "@/types";
+import { User2 } from "lucide-react";
 
 type Props = {};
 
@@ -13,9 +14,12 @@ export const FeaturedArtistsSection = async (props: Props) => {
 
   return (
     <section>
-      <h2 className="text-2xl md:text-3xl font-bold mb-6 text-foreground">
-        Nghệ sĩ Nổi bật
-      </h2>
+      <div className="flex items-center gap-2 mb-6">
+        <User2 className="w-6 h-6 text-primary" />
+        <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+          Nghệ sĩ nổi bật
+        </h2>
+      </div>
       {featuredArtists.length > 0 ? (
         <ScrollSlider>
           {featuredArtists.map((artist: Artist) => (

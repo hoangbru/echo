@@ -1,11 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/axios";
 import { toast } from "sonner";
-import { QueryParams } from "@/types";
+import { Album, AlbumDetail, QueryParams, TrackDetail } from "@/types";
 
 type AlbumQueryParams = QueryParams & {
   status: string;
-  genre: string;
+  type: string;
   view: string;
 };
 
@@ -14,8 +14,20 @@ export function useAlbums(params: AlbumQueryParams) {
     queryKey: ["albums", params],
     queryFn: async () => {
       const res = await apiClient.get("/albums", { params });
-      return res as { data: any[]; meta?: any };
+      return res as { data: Album[]; meta?: any };
     },
+  });
+}
+
+export function useTracksAlbum(albumId: string) {
+  return useQuery({
+    queryKey: ["tracks", "album-detail", albumId],
+    queryFn: async () => {
+      const res = await apiClient.get(`/albums/${albumId}/tracks`);
+
+      return res as { data: TrackDetail[]; meta?: any };
+    },
+    enabled: !!albumId,
   });
 }
 
@@ -24,7 +36,7 @@ export function useAlbumDetail(id: string) {
     queryKey: ["album", id],
     queryFn: async () => {
       const res = await apiClient.get(`/albums/${id}`);
-      return res as { data: any };
+      return res as { data: AlbumDetail };
     },
     enabled: !!id,
   });

@@ -1,4 +1,4 @@
-export function AlbumCardSkeleton() {
+export function AlbumItemSkeleton() {
   return (
     <div className="bg-card border border-white/5 rounded-2xl p-4">
       <div className="relative aspect-square rounded-xl mb-4 bg-white/5 animate-pulse" />

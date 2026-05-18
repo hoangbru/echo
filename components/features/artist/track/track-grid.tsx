@@ -7,11 +7,11 @@ import { AlertCircle, Plus, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHeading } from "@/components/ui/page-heading";
 import { ConfirmModal } from "@/components/features/modals/confirm-modal";
-import { TrackItem } from "./track-item";
-import { TrackItemSkeleton } from "./track-item-skeleton";
+import { TrackRow } from "./track-row";
+import { TrackRowSkeleton } from "./track-skeleton";
 
-import { useAlbumTracksDetail, useDeleteTrack } from "@/hooks/use-tracks";
-import { useAlbumDetail } from "@/hooks/use-albums";
+import { useDeleteTrack } from "@/hooks/use-tracks";
+import { useAlbumDetail, useTracksAlbum } from "@/hooks/use-albums";
 import { TrackDetail } from "@/types";
 
 interface TrackGridProps {
@@ -25,7 +25,7 @@ export function TrackGrid({ albumId }: TrackGridProps) {
     isLoading,
     isError,
     refetch,
-  } = useAlbumTracksDetail(albumId);
+  } = useTracksAlbum(albumId);
 
   const tracks = tracksRes?.data || [];
   const album = albumRes?.data;
@@ -44,8 +44,7 @@ export function TrackGrid({ albumId }: TrackGridProps) {
     <Fragment>
       <div className="flex items-center justify-between">
         <PageHeading>
-          Bài hát trong:{" "}
-          <span className="text-primary">{album?.title}</span>
+          Bài hát trong: <span className="text-primary">{album?.title}</span>
         </PageHeading>
 
         <Link href={`/studio/albums/${albumId}/tracks/new`}>
@@ -70,7 +69,7 @@ export function TrackGrid({ albumId }: TrackGridProps) {
           <tbody className="divide-y divide-border/50">
             {isLoading ? (
               Array.from({ length: 5 }).map((_, idx) => (
-                <TrackItemSkeleton key={idx} />
+                <TrackRowSkeleton key={idx} />
               ))
             ) : isError ? (
               <tr>
@@ -101,7 +100,7 @@ export function TrackGrid({ albumId }: TrackGridProps) {
               </tr>
             ) : (
               tracks.map((track: TrackDetail) => (
-                <TrackItem
+                <TrackRow
                   key={track.id}
                   track={track}
                   albumId={albumId}

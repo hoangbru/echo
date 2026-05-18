@@ -20,8 +20,8 @@ export default async function ArtistAlbumsPage({
     typeof resolvedParams.search === "string" ? resolvedParams.search : "";
   const status =
     typeof resolvedParams.status === "string" ? resolvedParams.status : "all";
-  const genre =
-    typeof resolvedParams.genre === "string" ? resolvedParams.genre : "all";
+  const type =
+    typeof resolvedParams.type === "string" ? resolvedParams.type : "all";
 
   return (
     <div className="space-y-4">
@@ -38,7 +38,7 @@ export default async function ArtistAlbumsPage({
           </Button>
         </Link>
       </div>
-      <AlbumGrid search={search} status={status} genre={genre} page={page} />
+      <AlbumGrid search={search} status={status} type={type} page={page} />
     </div>
   );
 }

@@ -3,18 +3,18 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Edit2, Globe, Lock, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { TrackDetail } from "@/types";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-interface TrackItemProps {
+import { Button } from "@/components/ui/button";
+
+import { TrackDetail } from "@/types";
+
+interface TrackRowProps {
   track: TrackDetail;
   albumId: string;
   onDelete: (track: TrackDetail) => void;
 }
 
-export function TrackItem({ track, albumId, onDelete }: TrackItemProps) {
+export function TrackRow({ track, albumId, onDelete }: TrackRowProps) {
   const router = useRouter();
 
   const featArtistsStr = track.artists

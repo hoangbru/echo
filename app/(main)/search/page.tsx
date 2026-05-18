@@ -1,4 +1,4 @@
-import { SearchContainer } from "@/components/features/guest/search";
+import { SearchGenreList } from "@/components/features/guest/search";
 
 import { GenreService } from "@/lib/services";
 import { createClient } from "@/lib/supabase/client";
@@ -11,5 +11,9 @@ export default async function SearchPage() {
   const supabase = createClient();
   const genres = await GenreService.getGenres(supabase);
 
-  return <SearchContainer genres={genres} />;
+  return (
+    <div className="min-h-screen bg-background px-4 md:px-8">
+      <SearchGenreList genres={genres} />
+    </div>
+  );
 }

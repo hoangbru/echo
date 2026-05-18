@@ -12,7 +12,7 @@ export const HeroSection = async (props: Props) => {
   const trendingTracks = await TrackService.getTrendingTracks(supabase);
 
   return (
-    <div className="relative bg-gradient-to-b from-primary/20 to-background p-8 md:p-12 mb-8">
+    <div className="relative bg-gradient-to-b from-primary/20 to-background p-4 md:p-8 mb-8">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-8">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-4 text-primary font-medium">

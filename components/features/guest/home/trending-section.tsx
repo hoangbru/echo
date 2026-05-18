@@ -4,7 +4,7 @@ import { ScrollSlider } from "@/components/shared/scroll-slider";
 import { AlbumCard } from "@/components/shared/cards/album-card";
 
 import { AlbumService } from "@/lib/services";
-import { Album } from "@/types";
+import { AlbumDetail } from "@/types";
 import { createClient } from "@/lib/supabase/server";
 
 type Props = {};
@@ -12,7 +12,7 @@ type Props = {};
 export async function TrendingSection(props: Props) {
   const supabase = createClient();
   const trending = await AlbumService.getTrending(supabase);
-  
+
   return (
     <section>
       <div className="flex items-center gap-2 mb-6">
@@ -23,7 +23,7 @@ export async function TrendingSection(props: Props) {
       </div>
       {trending.length > 0 ? (
         <ScrollSlider>
-          {trending.map((al: Album) => (
+          {trending.map((al: AlbumDetail) => (
             <div key={al.id} className="min-w-[200px] max-w-[240px]">
               <AlbumCard album={al} />
             </div>

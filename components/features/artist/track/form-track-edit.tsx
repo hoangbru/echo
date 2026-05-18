@@ -7,10 +7,8 @@ import { useRouter } from "next/navigation";
 import { AlertCircle, Loader2 } from "lucide-react";
 
 import { SuccessModal } from "@/components/features/modals";
-import {
-  TrackFormMedia,
-  TrackFormMetadata,
-} from "@/components/features/artist/track";
+import { TrackFormMedia } from "./track-form-media";
+import { TrackFormMetadata } from "./track-form-metadata";
 import { PageHeading } from "@/components/ui/page-heading";
 
 import {

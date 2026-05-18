@@ -10,12 +10,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 
 import { cn } from "@/lib/utils/helpers";
-import { Album, FeatArtist, TrackDetail } from "@/types";
+import { AlbumDetail, FeatArtist, TrackDetail } from "@/types";
 import { usePlayer, PlayerTrack } from "@/hooks/use-player";
 import { apiClient } from "@/lib/axios";
 
 interface AlbumCardProps {
-  album: Album;
+  album: AlbumDetail;
 }
 
 export function AlbumCard({ album }: AlbumCardProps) {

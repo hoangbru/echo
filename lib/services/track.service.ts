@@ -15,4 +15,27 @@ export const TrackService = {
 
     return keysToCamel(data);
   },
+  checkLikeStatus: async (supabase: any, userId: string, trackId: string) => {
+    const { data } = await supabase
+      .from("liked_tracks")
+      .select("track_id")
+      .eq("user_id", userId)
+      .eq("track_id", trackId)
+      .maybeSingle();
+
+    return !!data;
+  },
+
+  likeTrack: async (supabase: any, userId: string, trackId: string) => {
+    await supabase
+      .from("liked_tracks")
+      .insert({ user_id: userId, track_id: trackId });
+  },
+
+  unlikeTrack: async (supabase: any, userId: string, trackId: string) => {
+    await supabase
+      .from("liked_tracks")
+      .delete()
+      .match({ user_id: userId, track_id: trackId });
+  },
 };
