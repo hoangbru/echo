@@ -45,7 +45,7 @@ export function useLikeTrack(trackId: string) {
 
   const toggleLike = async () => {
     if (!user?.id) {
-      toast.error("Vui lòng đăng nhập để thêm vào danh sách yêu thích!");
+      toast.error("Vui lòng đăng nhập");
       return;
     }
 

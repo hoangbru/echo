@@ -22,7 +22,7 @@ export function AlbumTrackRow({
   isActuallyPlaying,
   onPlaySingleTrack,
 }: AlbumTrackRowProps) {
-  const { toggleLike, isLiked, isLoading } = useLikeTrack(track.id);
+  const { toggleLike, isLiked, isLoading: isLoadingLikeTrack } = useLikeTrack(track.id);
 
   const handleLikeClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -103,7 +103,7 @@ export function AlbumTrackRow({
 
       {/* Cột 4: Thời lượng và Nút Like */}
       <div className="text-sm text-muted-foreground flex justify-center items-center gap-4">
-        <button onClick={handleLikeClick} disabled={isLoading}>
+        <button onClick={handleLikeClick} disabled={isLoadingLikeTrack}>
           <Heart
             className={cn(
               "w-4 h-4 transition-colors",

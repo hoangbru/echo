@@ -16,7 +16,7 @@ export default async function AdminLayout({
 
   if (!user) redirect("/admin-login");
 
-  const dbAdmin = await UserService.getUserProfile(
+  const dbAdmin = await UserService.getProfile(
     supabase,
     user.id,
     "role, full_name, avatar, username, email",

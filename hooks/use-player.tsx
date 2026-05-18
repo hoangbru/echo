@@ -14,9 +14,11 @@ interface PlayerState {
   currentTrack: PlayerTrack | null;
   queue: PlayerTrack[];
   originalQueue: PlayerTrack[];
-  currentIndex: number; // Vị trí bài hiện tại trong Queue
+  currentIndex: number;
   isPlaying: boolean;
   volume: number;
+
+  activeContextId: string | null;
 
   isShuffle: boolean;
   repeatMode: "off" | "all" | "one";
@@ -25,7 +27,12 @@ interface PlayerState {
   toggleShuffle: () => void;
   toggleRepeat: () => void;
   toggleQueue: () => void;
-  playTrack: (track: PlayerTrack, queue?: PlayerTrack[]) => void;
+
+  playTrack: (
+    track: PlayerTrack,
+    queue?: PlayerTrack[],
+    contextId?: string,
+  ) => void;
   togglePlay: () => void;
   playNext: () => void;
   playPrev: () => void;
@@ -49,28 +56,34 @@ export const usePlayer = create<PlayerState>((set, get) => ({
   currentIndex: -1,
   isPlaying: false,
   volume: 0.8,
+  activeContextId: null,
   isShuffle: false,
   repeatMode: "off",
   isQueueVisible: false,
 
-  playTrack: (track, newQueue) => {
-    const { isShuffle, originalQueue } = get();
+  playTrack: (track, newQueue, contextId) => {
+    const {
+      isShuffle,
+      originalQueue,
+      activeContextId: currentContextId,
+    } = get();
     const targetQueue = newQueue || originalQueue;
 
+    const nextContextId =
+      contextId !== undefined ? contextId : currentContextId;
+
     if (isShuffle) {
-      // Tách các bài còn lại (khác bài đang bấm)
       const otherTracks = targetQueue.filter((t) => t.id !== track.id);
-      // Trộn các bài còn lại
       const shuffledOthers = shuffleArray(otherTracks);
-      // Ghép bài đang chọn lên đầu, các bài đã trộn theo sau
       const finalQueue = [track, ...shuffledOthers];
 
       set({
         originalQueue: targetQueue,
         queue: finalQueue,
         currentTrack: track,
-        currentIndex: 0, // Luôn luôn là bài đầu tiên trong list mới
+        currentIndex: 0,
         isPlaying: true,
+        activeContextId: nextContextId,
       });
     } else {
       set({
@@ -79,6 +92,7 @@ export const usePlayer = create<PlayerState>((set, get) => ({
         currentTrack: track,
         currentIndex: targetQueue.findIndex((t) => t.id === track.id),
         isPlaying: true,
+        activeContextId: nextContextId,
       });
     }
   },
@@ -94,7 +108,6 @@ export const usePlayer = create<PlayerState>((set, get) => ({
     const { queue, currentIndex } = get();
     if (queue.length === 0) return;
 
-    // Nếu đang ở bài cuối cùng, quay lại bài đầu tiên (Loop queue)
     const nextIndex = currentIndex + 1 >= queue.length ? 0 : currentIndex + 1;
     const nextTrack = queue[nextIndex];
 
@@ -109,7 +122,6 @@ export const usePlayer = create<PlayerState>((set, get) => ({
     const { queue, currentIndex } = get();
     if (queue.length === 0) return;
 
-    // Nếu đang ở bài đầu tiên, lùi về bài cuối cùng
     const prevIndex =
       currentIndex - 1 < 0 ? queue.length - 1 : currentIndex - 1;
     const prevTrack = queue[prevIndex];
@@ -135,19 +147,14 @@ export const usePlayer = create<PlayerState>((set, get) => ({
         return;
       }
 
-      // Tách riêng bài đang phát ra khỏi mảng gốc
       const otherTracks = originalQueue.filter((t) => t.id !== currentTrack.id);
-
-      // Chỉ trộn những bài còn lại
       const shuffledOthers = shuffleArray(otherTracks);
-
-      // Gắn bài đang phát lên chóp đỉnh (Vị trí 0)
       const newQueue = [currentTrack, ...shuffledOthers];
 
       set({
         isShuffle: true,
         queue: newQueue,
-        currentIndex: 0, // Đưa vị trí hiện tại về 0
+        currentIndex: 0,
       });
     } else {
       const originalIndex = currentTrack
@@ -156,7 +163,7 @@ export const usePlayer = create<PlayerState>((set, get) => ({
       set({
         isShuffle: false,
         queue: originalQueue,
-        currentIndex: originalIndex, // Trả lại vị trí gốc
+        currentIndex: originalIndex,
       });
     }
   },

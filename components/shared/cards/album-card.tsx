@@ -21,12 +21,12 @@ interface AlbumCardProps {
 export function AlbumCard({ album }: AlbumCardProps) {
   const queryClient = useQueryClient();
 
-  const { playTrack, togglePlay, currentTrack, isPlaying } = usePlayer();
+  const { playTrack, togglePlay, activeContextId, isPlaying } = usePlayer();
 
   const [isHovered, setIsHovered] = useState(false);
   const [isLoadingTracks, setIsLoadingTracks] = useState(false);
 
-  const isThisAlbumPlayingInContext = currentTrack?.albumId === album.id;
+  const isThisAlbumPlayingInContext = activeContextId === album.id;
   const showVisualizer = isThisAlbumPlayingInContext && isPlaying;
   const showPausedState = isThisAlbumPlayingInContext && !isPlaying;
 
@@ -71,7 +71,7 @@ export function AlbumCard({ album }: AlbumCardProps) {
         albumId: album.id,
       }));
 
-      playTrack(queue[0], queue);
+      playTrack(queue[0], queue, album.id);
     } catch (error) {
       console.error("Lỗi:", error);
     } finally {

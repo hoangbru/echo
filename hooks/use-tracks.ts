@@ -1,6 +1,27 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  useInfiniteQuery,
+} from "@tanstack/react-query";
 import { apiClient } from "@/lib/axios";
 import { toast } from "sonner";
+import { TrackDetail } from "@/types";
+
+interface LikedTracksQueryParams {
+  limit?: number;
+}
+
+interface LikedTracksResponse {
+  data: TrackDetail[];
+  meta?: {
+    currentPage: number;
+    limit: number;
+    totalItems: number;
+    totalPages: number;
+    hasNextPage: boolean;
+  };
+}
 
 export function useTrackDetail(trackId: string) {
   return useQuery({
@@ -10,6 +31,29 @@ export function useTrackDetail(trackId: string) {
       return res as { data: any };
     },
     enabled: !!trackId,
+  });
+}
+
+export function useLikedTracks({ limit }: LikedTracksQueryParams = {}) {
+  return useInfiniteQuery<LikedTracksResponse, Error>({
+    queryKey: ["liked-tracks", { limit }],
+    queryFn: async ({ pageParam = 1 }) => {
+      const res = await apiClient.get("/users/liked-tracks", {
+        params: {
+          page: pageParam,
+          limit,
+        },
+      });
+
+      return res as LikedTracksResponse;
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      if (lastPage?.meta?.hasNextPage) {
+        return lastPage.meta.currentPage + 1;
+      }
+      return undefined;
+    },
   });
 }
 

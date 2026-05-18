@@ -24,7 +24,7 @@ export default async function ArtistLayout({
 
   if (user) {
     const [profileResult, artistResult] = await Promise.all([
-      UserService.getUserProfile(supabase, user.id),
+      UserService.getProfile(supabase, user.id),
       ArtistService.getCurrentArtist(supabase, user.id),
     ]);
 

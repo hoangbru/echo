@@ -17,7 +17,7 @@ export default async function ProfilePage() {
     redirect("/auth/login");
   }
 
-  const profile = await UserService.getUserProfile(supabase, user.id);
+  const profile = await UserService.getProfile(supabase, user.id);
 
   if (!profile) {
     return <div>Không thể tải thông tin người dùng. Vui lòng thử lại.</div>;

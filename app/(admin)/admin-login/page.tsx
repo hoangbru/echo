@@ -43,7 +43,7 @@ export default function AdminLoginPage() {
     }
 
     if (authData.user) {
-      const dbUser = await UserService.getUserProfile(
+      const dbUser = await UserService.getProfile(
         supabase,
         authData.user.id,
         "role",

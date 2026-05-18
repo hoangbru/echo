@@ -19,4 +19,22 @@ export interface User {
   username: string;
 }
 
+export interface UserAuth {
+  email: string;
+  id: string;
+  userMetadata: UserMetadata;
+}
+
+export interface UserMetadata {
+  avatar_url: string;
+  email: string;
+  email_verified: boolean;
+  full_name: string;
+  iss: string;
+  name: string;
+  phone_verified: boolean;
+  picture: string;
+  provider_id: string;
+  sub: string;
+}
 export type UserDB = Database["public"]["Tables"]["user"]["Row"];

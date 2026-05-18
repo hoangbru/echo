@@ -15,7 +15,22 @@ export const TrackService = {
 
     return keysToCamel(data);
   },
-  checkLikeStatus: async (supabase: any, userId: string, trackId: string) => {
+
+  async getLikedTracks(supabase: any, limit: number = 10) {
+    const { data, error } = await supabase
+      .from("liked_tracks")
+      .select(`*`)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      return [];
+    }
+
+    return keysToCamel(data);
+  },
+
+  async checkLikeStatus(supabase: any, userId: string, trackId: string) {
     const { data } = await supabase
       .from("liked_tracks")
       .select("track_id")
@@ -26,7 +41,7 @@ export const TrackService = {
     return !!data;
   },
 
-  likeTrack: async (supabase: any, userId: string, trackId: string) => {
+  async likeTrack(supabase: any, userId: string, trackId: string) {
     await supabase
       .from("liked_tracks")
       .insert({ user_id: userId, track_id: trackId });

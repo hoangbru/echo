@@ -3,16 +3,7 @@
 import { useState, useEffect, MouseEvent } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import {
-  Music,
-  Mic2,
-  Disc,
-  Plus,
-  X,
-  Play,
-  Pause,
-  Loader2,
-} from "lucide-react";
+import { Music, Mic2, Disc, Plus, X, Play, Pause, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { usePlayer, PlayerTrack } from "@/hooks/use-player";
@@ -38,7 +29,8 @@ export function SearchDropdown({
 }: any) {
   const router = useRouter();
 
-  const { playTrack, currentTrack, isPlaying, togglePlay } = usePlayer();
+  const { playTrack, currentTrack, activeContextId, isPlaying, togglePlay } =
+    usePlayer();
 
   const [recentSearches, setRecentSearches] = useState<SearchItem[]>([]);
   const [loadingPlayId, setLoadingPlayId] = useState<string | null>(null);
@@ -76,9 +68,9 @@ export function SearchDropdown({
     e.stopPropagation();
 
     const isThisTrackPlaying =
-      item.type === "track" && currentTrack?.id === item.id;
+      item.type === "track" && activeContextId === item.id;
     const isThisAlbumPlaying =
-      item.type === "album" && currentTrack?.albumId === item.id;
+      item.type === "album" && activeContextId === item.id;
 
     if (isThisTrackPlaying || isThisAlbumPlaying) {
       togglePlay();
@@ -98,7 +90,7 @@ export function SearchDropdown({
         audioUrl: track.audioUrl,
         albumId: track.album?.id,
       };
-      playTrack(playerTrack, [playerTrack]);
+      playTrack(playerTrack, [playerTrack], track.id);
     } else if (item.type === "album") {
       try {
         setLoadingPlayId(item.id);
@@ -123,7 +115,7 @@ export function SearchDropdown({
           albumId: item.id,
         }));
 
-        playTrack(queue[0], queue);
+        playTrack(queue[0], queue, item.id);
       } catch (error) {
         console.error(error);
         toast.error("Lỗi", {
@@ -307,7 +299,7 @@ export function SearchDropdown({
             </div>
           ) : (
             <>
-             <DropdownTrackMenu />
+              <DropdownTrackMenu />
               {item.type === "track" && (
                 <div
                   onClick={(e) => e.stopPropagation()}

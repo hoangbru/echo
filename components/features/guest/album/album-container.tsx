@@ -30,10 +30,9 @@ const AlbumContainer = ({ albumId }: AlbumContainerProps) => {
     albumId,
   );
   const otherAlbums = otherAlbumsRes?.data || [];
-  const { playTrack, togglePlay, currentTrack, isPlaying } = usePlayer();
+  const { playTrack, togglePlay, activeContextId, isPlaying } = usePlayer();
 
-  const isThisAlbumPlaying = currentTrack?.albumId === albumId;
-  const isAlbumActuallyPlaying = isThisAlbumPlaying && isPlaying;
+  const isThisAlbumPlaying = activeContextId === albumId && isPlaying;
 
   const handlePlayAlbum = () => {
     if (tracks.length === 0) return;
@@ -56,7 +55,7 @@ const AlbumContainer = ({ albumId }: AlbumContainerProps) => {
       albumId: albumId,
     }));
 
-    playTrack(queue[0], queue);
+    playTrack(queue[0], queue, album?.id);
   };
 
   const totalDurationSeconds = tracks.reduce(
@@ -83,7 +82,7 @@ const AlbumContainer = ({ albumId }: AlbumContainerProps) => {
               onClick={handlePlayAlbum}
               className="w-14 h-14 rounded-full bg-primary flex items-center justify-center hover:scale-105 transition-transform shadow-xl"
             >
-              {isAlbumActuallyPlaying ? (
+              {isThisAlbumPlaying ? (
                 <Pause className="w-6 h-6 text-black fill-black" />
               ) : (
                 <Play className="w-6 h-6 text-black fill-black ml-1" />
