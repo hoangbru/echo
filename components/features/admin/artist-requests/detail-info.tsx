@@ -95,7 +95,7 @@ export function DetailInfo({ detailRequest }: DetailInfoProps) {
               rel="noreferrer"
               className="flex items-center gap-2 hover:opacity-75 transition-opacity bg-background px-3 py-1.5 rounded-md border border-border"
             >
-              <BrandIcon icon={siFacebook} className="w-4 h-4 text-blue-500" />
+              <BrandIcon icon={siFacebook} className="w-4 h-4 text-[#0866FF]" />
               <span className="text-sm font-medium text-muted-foreground">
                 Facebook
               </span>
@@ -108,7 +108,7 @@ export function DetailInfo({ detailRequest }: DetailInfoProps) {
               rel="noreferrer"
               className="flex items-center gap-2 hover:opacity-75 transition-opacity bg-background px-3 py-1.5 rounded-md border border-border"
             >
-              <BrandIcon icon={siYoutube} className="w-4 h-4 text-red-500" />
+              <BrandIcon icon={siYoutube} className="w-4 h-4 text-[#FF0000]" />
               <span className="text-sm font-medium text-muted-foreground">
                 YouTube
               </span>
@@ -121,7 +121,10 @@ export function DetailInfo({ detailRequest }: DetailInfoProps) {
               rel="noreferrer"
               className="flex items-center gap-2 hover:opacity-75 transition-opacity bg-background px-3 py-1.5 rounded-md border border-border"
             >
-              <BrandIcon icon={siInstagram} className="w-4 h-4 text-primary" />
+              <BrandIcon
+                icon={siInstagram}
+                className="w-4 h-4 text-[#FF0069]"
+              />
               <span className="text-sm font-medium text-muted-foreground">
                 Instagram
               </span>

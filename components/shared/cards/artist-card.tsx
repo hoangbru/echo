@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 
-import { VerifiedBadge } from "../verified-badge";
+import { VerifiedBadge } from "../badge/verified-badge";
 
 import { Artist } from "@/types/artist.type";
 

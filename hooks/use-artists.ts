@@ -13,7 +13,7 @@ export const useArtists = (params?: ArtistQueryParams) => {
     queryKey: ["artists", params],
     queryFn: async () => {
       const res = await apiClient.get("/artists", { params });
-      return res as { data: any[]; meta?: any };
+      return res.data as { data: any[]; meta?: any };
     },
   });
 };
@@ -27,7 +27,7 @@ export function useAlbumsArtist(artistId: string, currentAlbumId: string) {
         params: { exclude: currentAlbumId },
       });
 
-      return res as { data: Album[] };
+      return res.data as { data: Album[] };
     },
 
     enabled: !!artistId && !!currentAlbumId,
@@ -41,7 +41,7 @@ export function useArtistDetail(artistId: string) {
     queryKey: ["artist", artistId],
     queryFn: async () => {
       const res = await apiClient.get(`/studios/${artistId}`);
-      return res as { data: any };
+      return res.data as { data: any };
     },
     enabled: !!artistId,
   });

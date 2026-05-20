@@ -14,7 +14,7 @@ export function useAlbums(params: AlbumQueryParams) {
     queryKey: ["albums", params],
     queryFn: async () => {
       const res = await apiClient.get("/albums", { params });
-      return res as { data: Album[]; meta?: any };
+      return res.data as { data: Album[]; meta?: any };
     },
   });
 }
@@ -25,7 +25,7 @@ export function useTracksAlbum(albumId: string) {
     queryFn: async () => {
       const res = await apiClient.get(`/albums/${albumId}/tracks`);
 
-      return res as { data: TrackDetail[]; meta?: any };
+      return res.data as { data: TrackDetail[]; meta?: any };
     },
     enabled: !!albumId,
   });
@@ -36,7 +36,7 @@ export function useAlbumDetail(id: string) {
     queryKey: ["album", id],
     queryFn: async () => {
       const res = await apiClient.get(`/albums/${id}`);
-      return res as { data: AlbumDetail };
+      return res.data as { data: AlbumDetail };
     },
     enabled: !!id,
   });
@@ -52,7 +52,7 @@ export function useCreateAlbum() {
           "Content-Type": "multipart/form-data",
         },
       });
-      return res;
+      return res.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["albums"] });
@@ -71,7 +71,7 @@ export function useUpdateAlbum(id: string) {
       const res = await apiClient.patch(`/albums/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      return res;
+      return res.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["albums"] });
@@ -89,7 +89,7 @@ export function useDeleteAlbum() {
   return useMutation({
     mutationFn: async (id: string) => {
       const res = await apiClient.delete(`/albums/${id}`);
-      return res;
+      return res.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["albums"] });

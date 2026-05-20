@@ -8,7 +8,7 @@ export const useGenres = (params?: { q?: string }) => {
     queryFn: async () => {
       const res = await apiClient.get("/genres", { params });
 
-      return res;
+      return res.data;
     },
   });
 };
@@ -23,7 +23,7 @@ export function useCreateGenre() {
           "Content-Type": "multipart/form-data",
         },
       });
-      return res;
+      return res.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["genres"] });

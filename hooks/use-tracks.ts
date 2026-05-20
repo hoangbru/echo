@@ -28,7 +28,7 @@ export function useTrackDetail(trackId: string) {
     queryKey: ["track", trackId],
     queryFn: async () => {
       const res = await apiClient.get(`/tracks/${trackId}`);
-      return res as { data: any };
+      return res.data as { data: any };
     },
     enabled: !!trackId,
   });
@@ -45,7 +45,7 @@ export function useLikedTracks({ limit }: LikedTracksQueryParams = {}) {
         },
       });
 
-      return res as LikedTracksResponse;
+      return res.data as LikedTracksResponse;
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
@@ -66,7 +66,7 @@ export function useCreateTrack(albumId: string) {
         timeout: 0,
         headers: { "Content-Type": "multipart/form-data" },
       });
-      return res;
+      return res.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({

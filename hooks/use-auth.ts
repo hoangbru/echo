@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { UserService } from "@/lib/services";
 import { User } from "@/types";
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "@/lib/axios";
+
+export interface UserAuth {
+  id: string;
+  email: string;
+  user_metadata?: Record<string, any>;
+}
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserAuth | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -15,9 +22,10 @@ export function useAuth() {
       .getUser()
       .then(({ data: { user } }) => {
         if (user) {
-          UserService.getProfile(supabase, user.id).then((userRes) => {
-            const user = userRes || null;
-            setUser(user);
+          setUser({
+            id: user.id,
+            email: user.email || "",
+            user_metadata: user.user_metadata,
           });
         }
         setLoading(false);
@@ -32,9 +40,10 @@ export function useAuth() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        UserService.getProfile(supabase, session?.user.id).then((userRes) => {
-          const user = userRes || null;
-          setUser(user);
+        setUser({
+          id: session.user.id,
+          email: session.user.email || "",
+          user_metadata: session.user.user_metadata,
         });
       } else {
         setUser(null);
@@ -47,4 +56,14 @@ export function useAuth() {
   }, []);
 
   return { user, loading, error };
+}
+
+export function useProfileDetail() {
+  return useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => {
+      const res = await apiClient.get(`/users/profile`);
+      return res.data as { data: User };
+    },
+  });
 }

@@ -16,7 +16,7 @@ export function useArtistRequests(params: ArtistRequestsQueryParams) {
     queryKey: ["artist-request", params],
     queryFn: async () => {
       const res = await apiClient.get("/artist-request", { params });
-      return res as { data: any[]; meta?: any };
+      return res.data as { data: any[]; meta?: any };
     },
   });
 }
@@ -31,7 +31,7 @@ export const useSubmitArtistRequest = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      return res;
+      return res.data;
     },
     onSuccess() {
       queryClient.invalidateQueries({ queryKey: ["artist-request"] });
@@ -48,7 +48,7 @@ export function useUpdateArtistRequest() {
   return useMutation({
     mutationFn: async (data: any) => {
       const res = await apiClient.patch(`/artist-request`, data);
-      return res;
+      return res.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["artist-request"] });
