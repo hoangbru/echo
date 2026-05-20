@@ -1,3 +1,4 @@
+import { checkAndRevokePremium } from "@/lib/payment/check-premium-expiry";
 import { authorizeApi } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 import { keysToCamel } from "@/lib/utils/format";
@@ -13,10 +14,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
 
+    const userId = auth.user?.id || "";
+    const isPremium = await checkAndRevokePremium(userId);
+
     const { data, error } = await supabase
       .from("user")
       .select("*")
-      .eq("id", auth.user?.id)
+      .eq("id", userId)
       .maybeSingle();
 
     if (error) {
@@ -29,7 +33,10 @@ export async function GET(request: NextRequest) {
 
     const formattedData = keysToCamel(data);
 
-    return NextResponse.json({ data: formattedData }, { status: 200 });
+    return NextResponse.json(
+      { data: { ...formattedData, isPremium } },
+      { status: 200 },
+    );
   } catch (error: any) {
     console.error("[GET_USER_FATAL_ERROR]", error);
     return NextResponse.json(

@@ -1,5 +1,5 @@
-import { CheckCircle2, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { CheckCircle2 } from "lucide-react";
 
 export default function PremiumPage() {
   return (
@@ -60,7 +60,7 @@ export default function PremiumPage() {
           <div className="mb-6">
             <h2 className="text-2xl font-semibold mb-2">Echo Pro</h2>
             <div className="text-3xl font-bold mb-1">
-              59.000đ
+              39.000đ
               <span className="text-base font-normal text-muted-foreground">
                 /tháng
               </span>

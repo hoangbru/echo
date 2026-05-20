@@ -1,0 +1,1 @@
+export const PREMIUM_DURATION_DAYS = 30;

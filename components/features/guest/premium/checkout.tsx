@@ -4,37 +4,16 @@ import { useState } from "react";
 import { CreditCard, QrCode, Smartphone, Loader2 } from "lucide-react";
 
 import { useCheckout } from "@/hooks/use-checkout";
-import { apiClient } from "@/lib/axios";
-import { toast } from "sonner";
 
 export default function PremiumCheckout() {
-  // const { mutate, isPending } = useCheckout();
-  const [isPending, setIsPending] = useState<boolean>(false);
+  const { mutate, isPending } = useCheckout();
 
   const [paymentMethod, setPaymentMethod] = useState<
     "stripe" | "zalopay" | "vnpay"
   >("vnpay");
 
   const handlePayment = async () => {
-    setIsPending(true);
-    try {
-      const res = await apiClient.post("/checkout", {
-        provider: paymentMethod,
-      });
-
-      if (res) {
-        const redirectUrl = res.data.url || res.data.checkoutUrl;
-
-        if (redirectUrl) {
-          window.location.href = redirectUrl;
-        }
-      }
-    } catch (error: any) {
-      toast.error(error.message);
-      console.error("Checkout Error:", error);
-    } finally {
-      setIsPending(false);
-    }
+    mutate(paymentMethod);
   };
 
   return (

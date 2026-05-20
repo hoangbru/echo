@@ -25,3 +25,12 @@ export function generateSlug(title: string) {
   const randomString = Math.random().toString(36).substring(2, 8);
   return `${baseSlug}-${randomString}`;
 }
+
+export const sortedObj = (vnp_Params: any) => {
+  return Object.keys(vnp_Params)
+    .sort()
+    .reduce((obj: any, key: string) => {
+      obj[key] = vnp_Params[key];
+      return obj;
+    }, {});
+};
