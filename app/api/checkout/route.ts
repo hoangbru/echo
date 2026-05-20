@@ -93,22 +93,24 @@ export async function POST(req: Request) {
 
       case "zalopay":
         const embed_data = {
-          redirecturl: `${process.env.NEXT_PUBLIC_APP_URL}/premium/success`,
+          redirecturl: `${process.env.NEXT_PUBLIC_APP_URL}/api/zalopay/return`,
         };
         const items = [
           { item_name: itemName, item_price: amount, item_quantity: 1 },
         ];
+        const pad = (n: number) => n.toString().padStart(2, "0");
+        const now = new Date();
+        const datePrefix = `${now.getFullYear().toString().slice(2)}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
 
         const trans = {
-          app_id: zalopay.app_id,
-          app_trans_id: `ECHO_${Date.now()}`,
+          app_id:  parseInt(zalopay.app_id!),
+          app_trans_id: `${datePrefix}_${Date.now()}`,
           app_user: userId,
           app_time: Date.now(),
           amount: amount,
           item: JSON.stringify(items),
           description,
           embed_data: JSON.stringify(embed_data),
-          bank_code: "",
           callback_url: `${process.env.API_URL}/api/webhook/zalopay`,
           mac: "",
         };

@@ -27,7 +27,7 @@ export default function PremiumFailed() {
           </Link>
 
           <Link
-            href="/explore"
+            href="/"
             className="flex items-center justify-center w-full py-3 rounded-md border border-border text-foreground font-medium hover:bg-border/50 transition-colors"
           >
             <Headphones className="w-5 h-5 mr-2" />
