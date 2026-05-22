@@ -1,3 +1,5 @@
+import { Crown } from "lucide-react";
+
 interface ProBadgeProps {
   className?: string;
 }
@@ -5,9 +7,10 @@ interface ProBadgeProps {
 export const ProBadge = ({ className }: ProBadgeProps) => {
   return (
     <span
-      className={`px-2 py-0.5 text-xs font-semibold rounded-md bg-primary text-primary-foreground shadow-sm shadow-ring ${className}`}
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/20 border border-primary/40 text-primary text-[10px] font-bold uppercase tracking-widest ${className}`}
     >
-      PRO
+      <Crown className="w-3 h-3" />
+      Pro
     </span>
   );
 };

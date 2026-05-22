@@ -10,7 +10,7 @@ export async function authorizeApi(allowedRoles: UserRole[] = []) {
   if (!user) return { error: "Vui lòng đăng nhập để thực hiện", status: 401 };
 
   const [userRes, artistRes] = await Promise.all([
-    supabase.from("user").select("role").eq("id", user.id).single(),
+    supabase.from("user").select("*").eq("id", user.id).single(),
     supabase.from("artist").select("id").eq("user_id", user.id).maybeSingle(),
   ]);
 
@@ -24,7 +24,7 @@ export async function authorizeApi(allowedRoles: UserRole[] = []) {
   }
 
   return {
-    user,
+    user: userRes.data,
     role,
     artistId,
     error: null,

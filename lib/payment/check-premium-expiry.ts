@@ -1,8 +1,9 @@
 // Gọi trong middleware hoặc API /api/profile
-import { supabaseAdmin } from "../supabase/admin";
+import { createServiceClient } from "../supabase/service";
 
 export async function checkAndRevokePremium(userId: string) {
-  const { data } = await supabaseAdmin
+  const supabaseService = createServiceClient();
+  const { data } = await supabaseService
     .from("user")
     .select("is_premium, premium_expires_at")
     .eq("id", userId)
@@ -13,7 +14,7 @@ export async function checkAndRevokePremium(userId: string) {
     data.premium_expires_at &&
     data.premium_expires_at < new Date()
   ) {
-    await supabaseAdmin
+    await supabaseService
       .from("user")
       .update({
         is_premium: false,

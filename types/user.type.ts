@@ -1,7 +1,13 @@
 import { Database } from "@/lib/supabase/type";
 import { UserRole } from "./enum.type";
 
-export interface User {
+export type SubscriptionStatus =
+  | "active"
+  | "cancelling"
+  | "past_due"
+  | "inactive";
+
+export interface UserProfile {
   avatar: string | null;
   bio: string | null;
   createdAt: string;
@@ -14,6 +20,9 @@ export interface User {
   lastLoginAt: string | null;
   premiumExpiresAt: string | null;
   role: UserRole;
+  stripeCustomerId: string | null;
+  stripeSubscriptionId: string | null;
+  subscriptionStatus: SubscriptionStatus;
   totalPlaylists: number | null;
   updatedAt: string;
   username: string;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { User } from "@/types";
+import { UserProfile } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/axios";
 
@@ -59,11 +59,11 @@ export function useAuth() {
 }
 
 export function useProfileDetail() {
-  return useQuery({
+  return useQuery<UserProfile>({
     queryKey: ["profile"],
     queryFn: async () => {
       const res = await apiClient.get(`/users/profile`);
-      return res.data as { data: User };
+      return res.data;
     },
   });
 }

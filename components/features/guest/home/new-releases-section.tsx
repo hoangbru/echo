@@ -4,7 +4,7 @@ import { AlbumCard } from "@/components/shared/cards/album-card";
 import { AlbumService } from "@/lib/services";
 import { AlbumDetail } from "@/types";
 import { createClient } from "@/lib/supabase/server";
-import { Newspaper } from "lucide-react";
+import { Disc3 } from "lucide-react";
 
 type Props = {};
 
@@ -15,7 +15,7 @@ export async function NewReleasesSection(props: Props) {
   return (
     <section>
       <div className="flex items-center gap-2 mb-6">
-        <Newspaper className="w-6 h-6 text-primary" />
+        <Disc3 className="w-6 h-6 text-primary" />
         <h2 className="text-2xl md:text-3xl font-bold text-foreground">
           Mới phát hành
         </h2>

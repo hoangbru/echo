@@ -1,16 +1,18 @@
-import { PREMIUM_DURATION_DAYS } from "@/constants/payment";
-import { supabaseAdmin } from "../supabase/admin";
+import { createServiceClient } from "../supabase/service";
 
-export async function activatePremium(userId: string) {
+export async function activatePremium(userId: string, expiresAt?: Date) {
+  const supabase = createServiceClient();
   const now = new Date();
-  const expiresAt = new Date(now);
-  expiresAt.setDate(expiresAt.getDate() + PREMIUM_DURATION_DAYS);
+  const expiry = expiresAt ?? new Date(now.setDate(now.getDate() + 30));
 
-  await supabaseAdmin
+  const { error } = await supabase
     .from("user")
     .update({
       is_premium: true,
-      premium_expires_at: expiresAt,
+      premium_expires_at: expiry.toISOString(),
+      updated_at: new Date().toISOString(),
     })
     .eq("id", userId);
+
+  if (error) throw new Error(`activatePremium failed: ${error.message}`);
 }

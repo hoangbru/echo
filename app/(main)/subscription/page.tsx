@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 
-export default function PremiumPage() {
+export default function SubscriptionPage() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col items-center py-20 px-6">
       <div className="text-center max-w-2xl mb-16">
@@ -86,7 +86,7 @@ export default function PremiumPage() {
           </ul>
 
           <Link
-            href="/premium/checkout"
+            href="/subscription/payment"
             className="w-full py-3 rounded-md bg-primary text-primary-foreground font-bold hover:bg-primary-hover transition-colors shadow-sm shadow-ring flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
           >
             Nâng cấp ngay

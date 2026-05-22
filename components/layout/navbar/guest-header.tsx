@@ -11,17 +11,18 @@ import {
   Mic2,
   Shield,
   LogOut,
+  CreditCard,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { SearchInput } from "@/components/features/guest/search";
 
-import { User } from "@/types/user.type";
+import { UserProfile } from "@/types/user.type";
 import { createClient } from "@/lib/supabase/client";
 
 interface GuestHeaderProps {
-  profile: User | null;
+  profile: UserProfile | null;
   isArtist: boolean;
   isAdmin: boolean;
 }
@@ -164,15 +165,26 @@ export function GuestHeader({ profile, isArtist, isAdmin }: GuestHeaderProps) {
                     <span className="text-sm font-medium">Hồ sơ của tôi</span>
                   </Link>
 
-                  {!isAdmin && !profile.isPremium && (
+                  {!isAdmin && !profile.isPremium ? (
                     <Link
-                      href="/premium"
+                      href="/subscription"
                       onClick={() => setIsMenuOpen(false)}
                       className="w-full px-3 py-2.5 rounded-lg text-left flex items-center gap-3 text-[#FF1A8C] hover:bg-[#FF1A8C]/10 transition-colors"
                     >
                       <Crown className="h-4 w-4" />
                       <span className="text-sm font-medium">
                         Nâng cấp Premium
+                      </span>
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/subscription/manage"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="w-full px-3 py-2.5 rounded-lg text-left flex items-center gap-3 text-[#FF1A8C] hover:bg-[#FF1A8C]/10 transition-colors"
+                    >
+                      <CreditCard className="h-4 w-4" />
+                      <span className="text-sm font-medium">
+                        Quản lý gói đăng ký
                       </span>
                     </Link>
                   )}

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import Stripe from "stripe";
+import Stripe, { CheckoutSession } from "stripe";
 import { stripe } from "@/lib/payment/stripe";
+import { createServiceClient } from "@/lib/supabase/service";
 import { activatePremium } from "@/lib/payment/activate-premium";
 
 export async function POST(req: Request) {
@@ -18,19 +19,70 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object;
-    const userId = session.metadata?.userId;
+  const supabase = createServiceClient();
 
-    if (!userId) {
-      return NextResponse.json({ error: "Missing userId" }, { status: 400 });
+  switch (event.type) {
+    case "checkout.session.completed": {
+      const session = event.data.object as CheckoutSession;
+
+      if (session.mode === "subscription") {
+        await supabase
+          .from("user")
+          .update({
+            stripe_subscription_id: session.subscription as string,
+            subscription_status: "active",
+          })
+          .eq("id", session.metadata?.userId);
+      }
+      break;
     }
 
-    await activatePremium(userId);
+    case "invoice.paid": {
+      const invoice = event.data.object as Stripe.Invoice;
+      const sub = await stripe.subscriptions.retrieve(
+        (invoice.subscription ?? "") as string,
+      );
+
+      const { data: user } = await supabase
+        .from("user")
+        .select("id")
+        .eq("stripe_subscription_id", sub.id)
+        .single();
+
+      if (user) {
+        await activatePremium(user.id, new Date(sub.current_period_end * 1000));
+      }
+      break;
+    }
+
+    case "invoice.payment_failed": {
+      const invoice = event.data.object as Stripe.Invoice;
+      const sub = await stripe.subscriptions.retrieve(
+        invoice.subscription as string,
+      );
+
+      await supabase
+        .from("user")
+        .update({ subscription_status: "past_due" })
+        .eq("stripe_subscription_id", sub.id);
+      break;
+    }
+
+    case "customer.subscription.deleted": {
+      const sub = event.data.object as Stripe.Subscription;
+
+      await supabase
+        .from("user")
+        .update({
+          is_premium: false,
+          subscription_status: "cancelled",
+          stripe_subscription_id: null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("stripe_subscription_id", sub.id);
+      break;
+    }
   }
 
   return NextResponse.json({ received: true });
 }
-
-// Tắt bodyParser để Stripe verify signature được
-export const config = { api: { bodyParser: false } };

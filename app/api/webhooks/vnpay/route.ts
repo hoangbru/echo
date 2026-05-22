@@ -21,7 +21,7 @@ export async function GET(req: Request) {
 
   if (expectedHash !== secureHash) {
     return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_APP_URL}/premium/failed`,
+      `${process.env.NEXT_PUBLIC_APP_URL}/subscription/failed`,
     );
   }
 
@@ -29,11 +29,11 @@ export async function GET(req: Request) {
     const userId = params["vnp_OrderInfo"];
     await activatePremium(userId);
     return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_APP_URL}/premium/success`,
+      `${process.env.NEXT_PUBLIC_APP_URL}/subscription/success`,
     );
   }
 
   return NextResponse.redirect(
-    `${process.env.NEXT_PUBLIC_APP_URL}/premium/failed`,
+    `${process.env.NEXT_PUBLIC_APP_URL}/subscription/failed`,
   );
 }

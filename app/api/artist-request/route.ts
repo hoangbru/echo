@@ -10,7 +10,7 @@ import {
 } from "@/lib/validations/file.schema";
 import { uploadFileToSupabase } from "@/lib/utils/file";
 import { removeVietnameseTones } from "@/lib/utils/helpers";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { createServiceClient } from "@/lib/supabase/service";
 
 export async function GET(request: NextRequest) {
   try {
@@ -276,17 +276,18 @@ export async function PATCH(request: NextRequest) {
         );
       }
 
-      console.log(
-        `Updating user ${body.user_id} to ARTIST role and premium status...`,
-      );
-      const { error: userError } = await supabaseAdmin
+      const supabaseService = createServiceClient();
+      const { error: userError } = await supabaseService
         .from("user")
         .update({ is_premium: true, role: UserRole.ARTIST })
         .eq("id", body.user_id);
 
       if (userError) {
         console.error("[PATCH_USER_ROLE_UPDATE_ERROR]", userError);
-        await supabaseAdmin.from("artist").delete().eq("user_id", body.user_id);
+        await supabaseService
+          .from("artist")
+          .delete()
+          .eq("user_id", body.user_id);
         return NextResponse.json(
           { error: "Lỗi khi cập nhật phân quyền người dùng" },
           { status: 400 },

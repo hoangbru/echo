@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { CreditCard, QrCode, Smartphone, Loader2 } from "lucide-react";
 
-import { useCheckout } from "@/hooks/use-checkout";
+import { useCheckoutSubscription } from "@/hooks/use-subscription";
 
-export default function PremiumCheckout() {
-  const { mutate, isPending } = useCheckout();
+export default function SubscriptionPayment() {
+  const { mutate, isPending } = useCheckoutSubscription();
 
   const [paymentMethod, setPaymentMethod] = useState<
     "stripe" | "zalopay" | "vnpay"

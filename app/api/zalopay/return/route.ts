@@ -6,11 +6,11 @@ export async function GET(req: Request) {
 
   if (status !== "1") {
     return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_APP_URL}/premium/failed`,
+      `${process.env.NEXT_PUBLIC_APP_URL}/subscription/failed`,
     );
   }
 
   return NextResponse.redirect(
-    `${process.env.NEXT_PUBLIC_APP_URL}/premium/success`,
+    `${process.env.NEXT_PUBLIC_APP_URL}/subscription/success`,
   );
 }
