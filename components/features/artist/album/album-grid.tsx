@@ -6,7 +6,7 @@ import { AlertCircle, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AlbumItem } from "./album-item";
 import { AlbumItemSkeleton } from "./album-skeleton";
-import { ConfirmModal } from "@/components/features/modals";
+import { ConfirmModal } from "@/components/shared/modals";
 import { AlbumToolbar } from "./album-toolbar";
 
 import { useAlbums, useDeleteAlbum } from "@/hooks/use-albums";

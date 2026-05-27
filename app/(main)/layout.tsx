@@ -2,6 +2,7 @@ import { GuestSidebar } from "@/components/layout/sidebar";
 import { GuestHeader } from "@/components/layout/navbar";
 import { MainWrapper } from "@/components/layout/main-wrapper";
 import { GlobalPlayer, QueuePanel } from "@/components/features/player";
+import { AuthModal } from "@/components/shared/modals";
 
 import { createClient } from "@/lib/supabase/server";
 import { UserService } from "@/lib/services/user.service";
@@ -60,6 +61,7 @@ export default async function GuestLayout({
         </main>
       </div>
 
+      <AuthModal />
       <QueuePanel />
       <GlobalPlayer />
     </div>

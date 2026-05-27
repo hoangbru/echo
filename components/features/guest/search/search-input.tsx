@@ -22,7 +22,6 @@ export function SearchInput() {
 
   const { data, isLoading } = useSearch(debouncedQuery, { intent });
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (!containerRef.current?.contains(e.target as Node)) {
@@ -64,7 +63,7 @@ export function SearchInput() {
 
       <div ref={containerRef} className="relative w-full max-w-md">
         <div className="relative group">
-          <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
+          <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" />
 
           <input
             ref={inputRef}
@@ -73,7 +72,7 @@ export function SearchInput() {
             onFocus={() => setDropdownOpen(true)}
             onChange={handleInputChange}
             placeholder="Bạn muốn phát gì?"
-            className="w-full h-12 rounded-full bg-[#242424] hover:bg-[#2a2a2a] border border-transparent pl-12 pr-20 py-2 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:bg-[#2a2a2a] focus:border-white/20 focus:ring-1 focus:ring-white/20 transition-all"
+            className="w-full h-12 rounded-full bg-secondary hover:bg-secondary/80 border border-transparent pl-12 pr-20 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:bg-secondary/80 focus:border-border focus:ring-1 focus:ring-ring/30 transition-all"
           />
 
           <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
@@ -82,7 +81,7 @@ export function SearchInput() {
                 type="button"
                 aria-label="Clear"
                 onClick={handleClear}
-                className="flex items-center justify-center w-6 h-6 rounded-full text-gray-400 hover:text-white hover:bg-white/10 transition-all"
+                className="flex items-center justify-center w-6 h-6 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent transition-all"
               >
                 <X size={13} />
               </button>
@@ -91,7 +90,7 @@ export function SearchInput() {
               type="button"
               aria-label="Search by voice"
               onClick={() => setModalOpen(true)}
-              className="flex items-center justify-center w-9 h-9 rounded-full text-gray-400 hover:text-white hover:bg-white/10 transition-all"
+              className="flex items-center justify-center w-9 h-9 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent transition-all"
             >
               <Mic size={17} />
             </button>

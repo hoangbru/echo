@@ -9,26 +9,27 @@ import {
   Music,
   ListMusic,
   TrendingUp,
-  Radio,
-  LogOut,
   Plus,
   Search,
 } from "lucide-react";
-import { cn } from "@/lib/utils/helpers";
+
 import { Button } from "@/components/ui/button";
+
+import { cn } from "@/lib/utils/helpers";
 import { usePlayer } from "@/hooks/use-player";
+import Image from "next/image";
 
 const navItems = [
-  { label: "Home", icon: Home, href: "/" },
-  { label: "Explore", icon: Compass, href: "/explore" },
+  { label: "Trang chủ", icon: Home, href: "/" },
+  { label: "Khám phá", icon: Compass, href: "/explore" },
   { label: "Trending", icon: TrendingUp, href: "/trending" },
-  { label: "Search", icon: Search, href: "/search" },
+  { label: "Tìm kiếm", icon: Search, href: "/search" },
 ];
 
 const libraryItems = [
-  { label: "Liked Songs", icon: Heart, href: "/library/liked" },
-  { label: "Your Playlists", icon: ListMusic, href: "/library/playlists" },
-  { label: "Saved Albums", icon: Music, href: "/library/albums" },
+  { label: "Bài hát đã thích", icon: Heart, href: "/library/liked" },
+  { label: "Playlists của bạn", icon: ListMusic, href: "/library/playlists" },
+  { label: "Albums đã lưu", icon: Music, href: "/library/albums" },
 ];
 
 export function GuestSidebar() {
@@ -40,8 +41,14 @@ export function GuestSidebar() {
       {/* Logo */}
       <div className="p-6 border-b border-border">
         <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-blue-600">
-            <Music className="w-5 h-5 text-white" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg">
+            <Image
+              src={"/echo.png"}
+              alt="echo-logo"
+              width={20}
+              height={20}
+              className="w-full object-cover"
+            />
           </div>
           <span className="text-xl font-bold text-foreground">Echo</span>
         </Link>

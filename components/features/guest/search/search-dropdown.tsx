@@ -127,55 +127,6 @@ export function SearchDropdown({
     }
   };
 
-  const renderClickableArtists = (item: SearchItem) => {
-    if (!item.raw) return <span className="truncate">{item.subtitle}</span>;
-
-    if (item.type === "track") {
-      return (
-        <div className="truncate">
-          <span>Song • </span>
-          {item.raw.artists?.map((artist: any, index: number, arr: any[]) => (
-            <span key={artist.id}>
-              <span
-                onClick={(e) => {
-                  e.stopPropagation();
-                  router.push(`/artist/${artist.id}`);
-                  onClose();
-                }}
-                className="hover:underline hover:text-white cursor-pointer transition-colors"
-              >
-                {artist.stageName}
-              </span>
-              {index < arr.length - 1 && ", "}
-            </span>
-          ))}
-        </div>
-      );
-    }
-
-    if (item.type === "album") {
-      return (
-        <div className="truncate">
-          <span>Album • </span>
-          <span
-            onClick={(e) => {
-              e.stopPropagation();
-              if (item.raw.artist?.id) {
-                router.push(`/artist/${item.raw.artist.id}`);
-                onClose();
-              }
-            }}
-            className="hover:underline hover:text-white cursor-pointer transition-colors"
-          >
-            {item.raw.artist?.stageName || "Unknown Artist"}
-          </span>
-        </div>
-      );
-    }
-
-    return <span>Artist</span>;
-  };
-
   const displayItems: SearchItem[] = [];
   if (results?.tracks?.length > 0) {
     displayItems.push(
@@ -217,6 +168,55 @@ export function SearchDropdown({
     );
   }
 
+  const renderClickableArtists = (item: SearchItem) => {
+    if (!item.raw) return <span className="truncate">{item.subtitle}</span>;
+
+    if (item.type === "track") {
+      return (
+        <div className="truncate text-muted-foreground">
+          <span>Song • </span>
+          {item.raw.artists?.map((artist: any, index: number, arr: any[]) => (
+            <span key={artist.id}>
+              <span
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push(`/artist/${artist.id}`);
+                  onClose();
+                }}
+                className="hover:underline hover:text-foreground cursor-pointer transition-colors"
+              >
+                {artist.stageName}
+              </span>
+              {index < arr.length - 1 && ", "}
+            </span>
+          ))}
+        </div>
+      );
+    }
+
+    if (item.type === "album") {
+      return (
+        <div className="truncate text-muted-foreground">
+          <span>Album • </span>
+          <span
+            onClick={(e) => {
+              e.stopPropagation();
+              if (item.raw.artist?.id) {
+                router.push(`/artist/${item.raw.artist.id}`);
+                onClose();
+              }
+            }}
+            className="hover:underline hover:text-foreground cursor-pointer transition-colors"
+          >
+            {item.raw.artist?.stageName || "Unknown Artist"}
+          </span>
+        </div>
+      );
+    }
+
+    return <span className="text-muted-foreground">Artist</span>;
+  };
+
   const renderItem = (item: SearchItem, isRecent: boolean = false) => {
     const isThisTrackPlaying =
       item.type === "track" && currentTrack?.id === item.id;
@@ -230,11 +230,11 @@ export function SearchDropdown({
         key={`${isRecent ? "recent" : "live"}-${item.id}`}
         onClick={() => handleItemClick(item)}
         role="button"
-        className="w-full flex items-center justify-between px-3 py-2 hover:bg-white/10 rounded-md transition-all text-left group cursor-pointer"
+        className="w-full flex items-center justify-between px-3 py-2 hover:bg-accent hover:text-accent-foreground rounded-md transition-all text-left group cursor-pointer"
       >
         <div className="flex items-center gap-3 overflow-hidden">
           <div
-            className={`w-10 h-10 bg-[#282828] relative flex-shrink-0 transition-all ${item.type === "artist" ? "rounded-full" : "rounded"}`}
+            className={`w-10 h-10 bg-secondary relative flex-shrink-0 transition-all ${item.type === "artist" ? "rounded-full" : "rounded"}`}
           >
             {item.image ? (
               <Image
@@ -244,11 +244,11 @@ export function SearchDropdown({
                 className={`object-cover ${item.type === "artist" ? "rounded-full" : "rounded"}`}
               />
             ) : item.type === "artist" ? (
-              <Mic2 className="w-5 h-5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-500" />
+              <Mic2 className="w-5 h-5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-muted-foreground" />
             ) : item.type === "album" ? (
-              <Disc className="w-5 h-5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-500" />
+              <Disc className="w-5 h-5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-muted-foreground" />
             ) : (
-              <Music className="w-5 h-5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-500" />
+              <Music className="w-5 h-5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-muted-foreground" />
             )}
 
             {item.type !== "artist" && (
@@ -278,12 +278,12 @@ export function SearchDropdown({
               className={
                 isThisPlaying
                   ? "text-sm font-medium text-primary truncate"
-                  : "text-sm font-medium text-white truncate group-hover:underline decoration-white underline-offset-2"
+                  : "text-sm font-medium text-foreground truncate group-hover:underline decoration-foreground underline-offset-2"
               }
             >
               {item.title}
             </span>
-            <div className="text-xs text-gray-400 truncate mt-0.5">
+            <div className="text-xs truncate mt-0.5">
               {renderClickableArtists(item)}
             </div>
           </div>
@@ -293,7 +293,7 @@ export function SearchDropdown({
           {isRecent ? (
             <div
               onClick={(e) => removeRecent(e, item.id)}
-              className="p-2 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-colors"
+              className="p-2 hover:bg-black/10 dark:hover:bg-white/10 rounded-full text-muted-foreground hover:text-foreground transition-colors"
             >
               <X className="w-4 h-4" />
             </div>
@@ -303,7 +303,7 @@ export function SearchDropdown({
               {item.type === "track" && (
                 <div
                   onClick={(e) => e.stopPropagation()}
-                  className="p-2 hover:text-white text-gray-400 transition-colors"
+                  className="p-2 hover:text-foreground text-muted-foreground transition-colors"
                 >
                   <Plus className="w-5 h-5" />
                 </div>
@@ -317,7 +317,7 @@ export function SearchDropdown({
 
   if (isLoading) {
     return (
-      <div className="absolute top-full mt-2 w-full bg-[#181818] border border-white/10 rounded-lg shadow-2xl p-4 text-sm text-primary animate-pulse z-50">
+      <div className="absolute top-full mt-2 w-full bg-popover border border-border rounded-lg shadow-2xl p-4 text-sm text-primary animate-pulse z-50">
         Đang tìm kiếm...
       </div>
     );
@@ -326,25 +326,25 @@ export function SearchDropdown({
   const isTyping = searchTerm.trim().length > 0;
 
   return (
-    <div className="absolute top-full mt-2 w-full max-h-[480px] bg-[#181818] border border-white/10 rounded-lg shadow-2xl overflow-y-auto z-50 py-2 custom-scrollbar">
+    <div className="absolute top-full mt-2 w-full max-h-[480px] bg-popover border border-border rounded-lg shadow-2xl overflow-y-auto z-50 py-2 custom-scrollbar">
       {!isTyping && (
         <div className="px-2">
           {recentSearches.length > 0 ? (
             <>
-              <h3 className="px-3 py-2 text-sm font-bold text-white mb-1">
+              <h3 className="px-3 py-2 text-sm font-bold text-foreground mb-1">
                 Tìm kiếm gần đây
               </h3>
               {recentSearches.map((item) => renderItem(item, true))}
             </>
           ) : (
-            <div className="p-4 text-sm text-gray-400 text-center">
+            <div className="p-4 text-sm text-muted-foreground text-center">
               Hãy nhập từ khóa để tìm kiếm...
             </div>
           )}
         </div>
       )}
       {isTyping && displayItems.length === 0 && (
-        <div className="p-4 text-sm text-gray-400 text-center">
+        <div className="p-4 text-sm text-muted-foreground text-center">
           Không tìm thấy kết quả nào cho "{searchTerm}"
         </div>
       )}

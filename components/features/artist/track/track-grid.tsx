@@ -6,7 +6,7 @@ import { AlertCircle, Plus, RefreshCcw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { PageHeading } from "@/components/ui/page-heading";
-import { ConfirmModal } from "@/components/features/modals/confirm-modal";
+import { ConfirmModal } from "@/components/shared/modals/confirm-modal";
 import { TrackRow } from "./track-row";
 import { TrackRowSkeleton } from "./track-skeleton";
 

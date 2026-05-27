@@ -14,9 +14,9 @@ interface ArtistCardProps {
 export function ArtistCard({ artist }: ArtistCardProps) {
   return (
     <Link href={`/studio/${artist.id}`}>
-      <div className="bg-neutral-900 rounded-lg p-4 hover:bg-neutral-800 transition text-center cursor-pointer">
+      <div className="bg-card text-card-foreground rounded-lg p-4 hover:bg-accent hover:text-accent-foreground transition-colors text-center cursor-pointer border border-transparent hover:border-border">
         {/* Artist Image */}
-        <div className="relative mb-4 aspect-square bg-neutral-800 rounded-full overflow-hidden mx-auto w-24 h-24">
+        <div className="relative mb-4 aspect-square bg-secondary rounded-full overflow-hidden mx-auto w-24 h-24">
           {artist.profileImage ? (
             <Image
               src={artist.profileImage}
@@ -25,7 +25,7 @@ export function ArtistCard({ artist }: ArtistCardProps) {
               className="object-cover"
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center">
+            <div className="w-full h-full bg-gradient-to-br from-secondary to-background flex items-center justify-center">
               <div className="text-4xl">👤</div>
             </div>
           )}
@@ -37,9 +37,9 @@ export function ArtistCard({ artist }: ArtistCardProps) {
           {artist.isVerified && <VerifiedBadge />}
         </div>
 
-        {/* <p className="text-xs text-neutral-400">
-          {artist.totalFollowers?.toLocaleString() || 0} followers
-        </p> */}
+        {/* <p className="text-xs text-muted-foreground">
+      {artist.totalFollowers?.toLocaleString() || 0} followers
+    </p> */}
       </div>
     </Link>
   );

@@ -1,11 +1,18 @@
 "use client";
 
+import { ReactNode, useEffect } from "react";
+
+import { useAuth } from "@/hooks/use-auth";
 import { usePlayer } from "@/hooks/use-player";
 import { cn } from "@/lib/utils/helpers";
-import { ReactNode } from "react";
 
 export function MainWrapper({ children }: { children: ReactNode }) {
-  const { isQueueVisible } = usePlayer();
+  const { user } = useAuth();
+  const { isQueueVisible, setIsAuthenticated } = usePlayer();
+
+  useEffect(() => {
+    setIsAuthenticated(!!user);
+  }, [user, setIsAuthenticated]);
 
   return (
     <main

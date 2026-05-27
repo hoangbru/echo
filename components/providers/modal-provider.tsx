@@ -1,7 +1,14 @@
 "use client";
 
 import { Fragment, useEffect, useState } from "react";
-import { ConfirmModal, InfoModal, SuccessModal } from "../features/modals";
+import { Toaster } from "sonner";
+
+import {
+  ConfirmModal,
+  InfoModal,
+  SuccessModal,
+  UpgradeModal,
+} from "../shared/modals";
 
 export const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -14,9 +21,12 @@ export const ModalProvider = () => {
 
   return (
     <Fragment>
+      <Toaster />
+
       {/* <ConfirmModal /> */}
       {/* <InfoModal /> */}
       {/* <SuccessModal /> */}
+      <UpgradeModal />
     </Fragment>
   );
 };

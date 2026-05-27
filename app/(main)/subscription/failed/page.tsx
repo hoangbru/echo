@@ -3,7 +3,7 @@ import { XCircle, RefreshCcw, Headphones } from "lucide-react";
 
 export default function PaymentFailedPage() {
   return (
-  <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-6">
+  <div className="min-h-screen bg-background pb-32 text-foreground flex items-center justify-center">
         <div className="bg-card border border-border rounded-lg p-10 max-w-md w-full text-center">
           <div className="flex justify-center mb-6">
             <XCircle className="w-20 h-20 text-muted-foreground" />

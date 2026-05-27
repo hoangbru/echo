@@ -8,12 +8,12 @@ import { useRouter } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
 import { RequestItemSkeleton } from "./request-item-skeleton";
 import { RequestItem } from "./request-item";
-import { ConfirmModal, InfoModal } from "@/components/features/modals";
+import { ConfirmModal, InfoModal } from "@/components/shared/modals";
 import {
   DataPagination,
   DataTableToolbar,
   ToolbarDropdownConfig,
-} from "@/components/features/data-tables";
+} from "@/components/shared/data-tables";
 import { DetailInfo } from "./detail-info";
 import { RefreshButton } from "@/components/shared/buttons";
 

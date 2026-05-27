@@ -1,4 +1,3 @@
-// Gọi trong middleware hoặc API /api/profile
 import { createServiceClient } from "../supabase/service";
 
 export async function checkAndRevokePremium(userId: string) {

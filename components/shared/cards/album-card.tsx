@@ -47,7 +47,7 @@ export function AlbumCard({ album }: AlbumCardProps) {
         queryKey: ["tracks", "album-detail", album.id],
         queryFn: async () => {
           const res = await apiClient.get(`/albums/${album.id}/tracks`);
-          return res.data || [];
+          return res.data.data || [];
         },
       });
 
@@ -82,7 +82,7 @@ export function AlbumCard({ album }: AlbumCardProps) {
   return (
     <Link href={`/album/${album.id}`}>
       <div
-        className="bg-card rounded-xl p-4 border border-border/50 hover:border-primary/40 hover:bg-[#1A1A1A] transition-all duration-300 group cursor-pointer h-full flex flex-col"
+        className="bg-card rounded-xl p-4 border border-border/50 hover:border-primary/40 hover:bg-accent transition-all duration-300 group cursor-pointer h-full flex flex-col"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -96,8 +96,8 @@ export function AlbumCard({ album }: AlbumCardProps) {
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-neutral-800 to-black flex items-center justify-center">
-              <div className="text-4xl text-neutral-600">🎵</div>
+            <div className="w-full h-full bg-gradient-to-br from-secondary to-background flex items-center justify-center">
+              <div className="text-4xl text-muted-foreground/50">🎵</div>
             </div>
           )}
 
@@ -127,14 +127,14 @@ export function AlbumCard({ album }: AlbumCardProps) {
               <Button
                 onClick={handlePlay}
                 disabled={isLoadingTracks}
-                className="bg-primary hover:bg-primary/90 rounded-full p-3 shadow-[0_0_20px_rgba(255,26,140,0.6)]"
+                className="bg-primary hover:bg-primary/90 rounded-full p-3 shadow-lg shadow-primary/60"
               >
                 {isLoadingTracks ? (
-                  <Loader2 className="w-5 h-5 text-white animate-spin" />
+                  <Loader2 className="w-5 h-5 text-primary-foreground animate-spin" />
                 ) : showVisualizer ? (
-                  <Pause className="w-5 h-5 fill-white text-white" />
+                  <Pause className="w-5 h-5 fill-primary-foreground text-primary-foreground" />
                 ) : (
-                  <Play className="w-5 h-5 fill-white text-white translate-x-[2px]" />
+                  <Play className="w-5 h-5 fill-primary-foreground text-primary-foreground translate-x-[2px]" />
                 )}
               </Button>
             </div>

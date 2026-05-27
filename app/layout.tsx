@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 
 import "./globals.css";
-import { Toaster } from "sonner";
-import { ModalProvider, QueryProvider } from "@/components/providers";
+import {
+  ModalProvider,
+  QueryProvider,
+  ThemeProvider,
+} from "@/components/providers";
 
 const geist = Geist({ subsets: ["latin"] });
 
@@ -13,7 +16,7 @@ export const metadata: Metadata = {
     "Stream your favorite music with Echo. Discover artists, create playlists, and enjoy unlimited music.",
   generator: ".app",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/ico/favicon.ico",
   },
 };
 
@@ -28,9 +31,14 @@ export default function RootLayout({
         className={`${geist.className} font-sans antialiased bg-background text-foreground`}
       >
         <QueryProvider>
-          <Toaster />
-          <ModalProvider />
-          {children}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem={false}
+          >
+            <ModalProvider />
+            {children}
+          </ThemeProvider>
         </QueryProvider>
       </body>
     </html>

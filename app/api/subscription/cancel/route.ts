@@ -5,7 +5,7 @@ import { stripe } from "@/lib/payment/stripe";
 import { createClient } from "@/lib/supabase/server";
 
 export async function POST() {
-  const auth = await authorizeApi([UserRole.USER]);
+  const auth = await authorizeApi([UserRole.USER, UserRole.ARTIST]);
   if (auth.error) {
     return NextResponse.json({ error: auth.error }, { status: auth.status });
   }

@@ -1,3 +1,3 @@
-export * from "./modal-provider";
-export * from "./query-provider";
-export * from "./theme-provider";
+export { ModalProvider } from "./modal-provider";
+export { QueryProvider } from "./query-provider";
+export { ThemeProvider } from "./theme-provider";

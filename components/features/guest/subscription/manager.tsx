@@ -15,14 +15,13 @@ import {
   RefreshCw,
   ShieldCheck,
   Download,
-  Radio,
+  Mic2,
 } from "lucide-react";
 
-import { ProBadge } from "@/components/shared/badge";
 import { SkeletonCard } from "./skeleton-card";
 
 import { SubscriptionStatus } from "@/types";
-import { useProfileDetail } from "@/hooks/use-auth";
+import { useProfile } from "@/hooks/use-auth";
 import { useCancelSubscription } from "@/hooks/use-subscription";
 import { formatDate } from "@/lib/utils/format";
 
@@ -37,7 +36,7 @@ const statusLabel: Record<
 };
 
 export function SubscriptionManager() {
-  const { data: profile, isLoading } = useProfileDetail();
+  const { data: profile, isLoading } = useProfile();
   const cancelMutation = useCancelSubscription();
   const [confirmCancel, setConfirmCancel] = useState(false);
 
@@ -64,7 +63,13 @@ export function SubscriptionManager() {
         <div className="mb-10">
           <h1 className="text-3xl md:text-4xl font-bold mb-2 flex items-center gap-3">
             Quản lý Gói Đăng ký
-            {isPro && <ProBadge />}
+            {isPro && (
+              <span
+                className={`inline-flex items-center px-2 py-0.5 rounded-full bg-primary/20 border border-primary/40 text-yellow-500`}
+              >
+                <Crown className="w-3 h-3 fill-current" />
+              </span>
+            )}
           </h1>
           <p className="text-muted-foreground text-sm">
             Quản lý đặc quyền âm nhạc, thông tin thanh toán và lịch sử giao dịch
@@ -96,7 +101,7 @@ export function SubscriptionManager() {
                     </h2>
                     <p className="text-muted-foreground text-sm mt-1">
                       {isPro
-                        ? "Luồng âm thanh Lossless và trải nghiệm không giới hạn."
+                        ? "Luồng âm thanh chất lương và trải nghiệm không giới hạn."
                         : "Khám phá thế giới âm nhạc với các tính năng cơ bản."}
                     </p>
                     {profile?.subscriptionStatus &&
@@ -155,20 +160,20 @@ export function SubscriptionManager() {
               <ul className="space-y-3">
                 {[
                   {
-                    icon: Radio,
-                    label: "Kho nhạc Lossless chất lượng phòng thu (1411kbps)",
-                  },
-                  {
                     icon: ShieldCheck,
-                    label: "Trải nghiệm nghe nhạc hoàn toàn không quảng cáo",
+                    label: "Chuyển bài không giới hạn",
                   },
                   {
                     icon: Download,
-                    label: "Tải xuống thư viện nhạc để nghe ngoại tuyến",
+                    label: "Tải xuống và nghe nhạc ngoại tuyến",
+                  },
+                  {
+                    icon: Mic2,
+                    label: "Hiển thị lời bài hát thời gian thực nâng cao",
                   },
                   {
                     icon: Zap,
-                    label: "Chuyển bài không giới hạn & gợi ý AI chuyên sâu",
+                    label: "Huy hiệu Pro & Tùy chỉnh giao diện độc quyền",
                   },
                 ].map(({ icon: Icon, label }) => (
                   <li key={label} className="flex items-center text-sm">

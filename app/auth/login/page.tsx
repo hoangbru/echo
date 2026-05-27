@@ -74,35 +74,37 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-svh w-full items-center justify-center bg-[#09090b] p-6 md:p-10">
+    <div className="flex min-h-svh w-full items-center justify-center bg-background p-6 md:p-10">
       <div className="w-full max-w-sm">
-        <Card className="border-zinc-800 bg-zinc-950/50 shadow-2xl backdrop-blur-xl">
+        <Card className="border-border bg-card shadow-2xl backdrop-blur-xl">
           <CardHeader className="space-y-2 text-center">
-            <CardTitle className="text-3xl font-bold tracking-tight text-zinc-50">
-              Welcome back
+            <CardTitle className="text-3xl font-bold tracking-tight text-foreground">
+              Chào mừng trở lại
             </CardTitle>
-            <CardDescription className="text-zinc-400">
-              Enter your email to sign in to your account
+            <CardDescription className="text-muted-foreground">
+              Nhập email của bạn để đăng nhập vào tài khoản
             </CardDescription>
           </CardHeader>
           <CardContent>
             {isEmailSent ? (
               <div className="flex flex-col items-center justify-center space-y-6 py-4 text-center animate-in fade-in zoom-in duration-300">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-900 border border-zinc-800">
-                  <MailCheck className="h-8 w-8 text-zinc-300" />
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-sidebar-background border border-border">
+                  <MailCheck className="h-8 w-8 text-primary" />
                 </div>
                 <div className="space-y-2">
-                  <h3 className="text-lg font-medium text-zinc-50">
+                  <h3 className="text-lg font-medium text-foreground">
                     Kiểm tra hộp thư của bạn
                   </h3>
-                  <p className="text-sm text-zinc-400">
+                  <p className="text-sm text-muted-foreground">
                     Chúng tôi đã gửi một liên kết đăng nhập đến{" "}
-                    <span className="font-semibold text-zinc-200">{email}</span>
+                    <span className="font-semibold text-foreground">
+                      {email}
+                    </span>
                   </p>
                 </div>
                 <Button
                   variant="outline"
-                  className="w-full border-zinc-800 bg-transparent text-zinc-300 hover:bg-zinc-900 hover:text-zinc-50 mt-4"
+                  className="w-full border-border bg-transparent text-foreground hover:bg-white/5 mt-4"
                   onClick={() => setIsEmailSent(false)}
                 >
                   Thử lại với email khác
@@ -113,15 +115,17 @@ export default function LoginPage() {
                 <form onSubmit={handleEmailLogin}>
                   <div className="flex flex-col gap-6">
                     <div className="grid gap-2">
-                      <Label htmlFor="email">Email</Label>
+                      <Label htmlFor="email" className="text-foreground">
+                        Email
+                      </Label>
                       <Input
                         id="email"
                         type="email"
-                        placeholder="m@example.com"
+                        placeholder="email@vidu.com"
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="border-zinc-800 bg-zinc-900/50 text-zinc-100 placeholder:text-zinc-500 focus-visible:ring-zinc-700"
+                        className="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-primary"
                       />
                     </div>
 
@@ -129,7 +133,7 @@ export default function LoginPage() {
 
                     <Button
                       type="submit"
-                      className="w-full bg-zinc-100 text-white hover:bg-zinc-300"
+                      className="w-full bg-primary text-primary-foreground hover:bg-[#FF47A3] font-semibold"
                       disabled={isEmailLoading}
                     >
                       {isEmailLoading ? (
@@ -138,7 +142,7 @@ export default function LoginPage() {
                           Đang gửi link...
                         </>
                       ) : (
-                        "Sign in with Email"
+                        "Đăng nhập bằng Email"
                       )}
                     </Button>
                   </div>
@@ -146,11 +150,11 @@ export default function LoginPage() {
 
                 <div className="relative my-2">
                   <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-zinc-800" />
+                    <span className="w-full border-t border-border" />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-[#0c0c0e] px-2 text-zinc-500 rounded-full">
-                      Or continue with
+                    <span className="bg-card px-2 text-muted-foreground rounded-full">
+                      Hoặc tiếp tục với
                     </span>
                   </div>
                 </div>
@@ -159,7 +163,7 @@ export default function LoginPage() {
                 <Button
                   variant="outline"
                   type="button"
-                  className="w-full border-zinc-800 bg-zinc-900/50 text-zinc-100 hover:bg-zinc-800 hover:text-zinc-50 transition-all"
+                  className="w-full border-border bg-background text-foreground hover:bg-white/5 transition-all font-semibold"
                   onClick={handleGoogleLogin}
                   disabled={isGoogleLoading}
                 >

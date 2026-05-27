@@ -22,7 +22,7 @@ export function ScrollSlider({ children, className }: ScrollSliderProps) {
   };
 
   return (
-    <div className={cn("relative group w-full", className)}>
+    <div className={cn("relative group/slider w-full", className)}>
       <div
         ref={scrollRef}
         className={cn(
@@ -35,7 +35,7 @@ export function ScrollSlider({ children, className }: ScrollSliderProps) {
 
       <button
         onClick={() => scroll("left")}
-        className="absolute left-[-15px] top-1/2 -translate-y-1/2 bg-background/80 border border-primary/20 backdrop-blur-md p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 hover:bg-primary hover:text-white z-30 shadow-[0_0_15px_rgba(255,26,140,0.3)]"
+        className="absolute left-[-15px] top-1/2 -translate-y-1/2 bg-background/80 border border-primary/20 backdrop-blur-md p-2 rounded-full opacity-0 group-hover/slider:opacity-100 transition-all duration-300 hover:scale-110 hover:bg-primary hover:text-primary-foreground z-30 shadow-lg shadow-primary/30"
         aria-label="Scroll Left"
       >
         <ChevronLeft className="w-5 h-5" />
@@ -43,7 +43,7 @@ export function ScrollSlider({ children, className }: ScrollSliderProps) {
 
       <button
         onClick={() => scroll("right")}
-        className="absolute right-[-15px] top-1/2 -translate-y-1/2 bg-background/80 border border-primary/20 backdrop-blur-md p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 hover:bg-primary hover:text-white z-30 shadow-[0_0_15px_rgba(255,26,140,0.3)]"
+        className="absolute right-[-15px] top-1/2 -translate-y-1/2 bg-background/80 border border-primary/20 backdrop-blur-md p-2 rounded-full opacity-0 group-hover/slider:opacity-100 transition-all duration-300 hover:scale-110 hover:bg-primary hover:text-primary-foreground z-30 shadow-lg shadow-primary/30"
         aria-label="Scroll Right"
       >
         <ChevronRight className="w-5 h-5" />

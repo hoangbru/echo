@@ -12,7 +12,7 @@ import { createClient } from "@/lib/supabase/server";
 export async function POST(req: Request) {
   try {
     const { provider } = await req.json();
-    const auth = await authorizeApi([UserRole.USER]);
+    const auth = await authorizeApi([UserRole.USER, UserRole.ARTIST]);
 
     if (auth.error) {
       return NextResponse.json({ error: auth.error }, { status: auth.status });
@@ -80,9 +80,10 @@ export async function POST(req: Request) {
           vnp_OrderInfo: userId,
           vnp_OrderType: "billpayment",
           vnp_Amount: amount * 100,
-          vnp_ReturnUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/webhook/vnpay`,
+          vnp_ReturnUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/webhooks/vnpay`,
           vnp_IpAddr: "127.0.0.1",
           vnp_CreateDate: createDate,
+          vnp_BankCode: 'NCB'
         };
 
         const sortedParams = sortedObj(vnp_Params);
@@ -120,7 +121,7 @@ export async function POST(req: Request) {
           item: JSON.stringify(items),
           description,
           embed_data: JSON.stringify(embed_data),
-          callback_url: `${process.env.API_URL}/api/webhook/zalopay`,
+          callback_url: `${process.env.API_URL}/api/webhooks/zalopay`,
           mac: "",
         };
 

@@ -58,12 +58,12 @@ export function useAuth() {
   return { user, loading, error };
 }
 
-export function useProfileDetail() {
+export function useProfile() {
   return useQuery<UserProfile>({
     queryKey: ["profile"],
     queryFn: async () => {
       const res = await apiClient.get(`/users/profile`);
-      return res.data;
+      return res.data.data;
     },
   });
 }

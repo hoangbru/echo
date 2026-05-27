@@ -1,16 +1,18 @@
+"use client";
+
 import { ArtistCard } from "@/components/shared/cards";
 import { ScrollSlider } from "@/components/shared";
 
-import { ArtistService } from "@/lib/services";
-import { createClient } from "@/lib/supabase/server";
 import { Artist } from "@/types";
 import { UserStar } from "lucide-react";
+import { useArtists } from "@/hooks/use-artists";
 
-type Props = {};
+export const FeaturedArtistsSection = () => {
+  const { data: artistsRes, isLoading } = useArtists({});
 
-export const FeaturedArtistsSection = async (props: Props) => {
-  const supabase = createClient();
-  const featuredArtists = await ArtistService.getFeaturedArtists(supabase);
+  const featuredArtists = artistsRes?.data || [];
+
+  if (isLoading) return "Đang tải...";
 
   return (
     <section>

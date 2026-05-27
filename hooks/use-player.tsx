@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { create } from "zustand";
 
 export interface PlayerTrack {
@@ -8,6 +9,11 @@ export interface PlayerTrack {
   imageUrl: string;
   audioUrl: string;
   albumId: string;
+}
+
+interface SkipData {
+  count: number;
+  startTime: number | null;
 }
 
 interface PlayerState {
@@ -24,6 +30,15 @@ interface PlayerState {
   repeatMode: "off" | "all" | "one";
   isQueueVisible: boolean;
 
+  isAuthenticated: boolean;
+  showLoginModal: boolean;
+  skipData: SkipData;
+  teasingTrack: PlayerTrack | null;
+
+  setTeasingTrack: (track: PlayerTrack | null) => void;
+  setIsAuthenticated: (status: boolean) => void;
+  setShowLoginModal: (show: boolean) => void;
+
   toggleShuffle: () => void;
   toggleRepeat: () => void;
   toggleQueue: () => void;
@@ -38,6 +53,10 @@ interface PlayerState {
   playPrev: () => void;
   setVolume: (volume: number) => void;
   setQueue: (queue: PlayerTrack[]) => void;
+
+  checkCanSkip: () => boolean;
+
+  resetPlayer: () => void;
 }
 
 const shuffleArray = (array: PlayerTrack[]) => {
@@ -61,7 +80,43 @@ export const usePlayer = create<PlayerState>((set, get) => ({
   repeatMode: "off",
   isQueueVisible: false,
 
+  isAuthenticated: false,
+  showLoginModal: false,
+  skipData: { count: 0, startTime: null },
+  teasingTrack: null,
+
+  setTeasingTrack: (track) => set({ teasingTrack: track }),
+  setIsAuthenticated: (status) => set({ isAuthenticated: status }),
+  setShowLoginModal: (show) => set({ showLoginModal: show }),
+
+  checkCanSkip: () => {
+    const { skipData } = get();
+    const now = Date.now();
+    const ONE_HOUR = 60 * 60 * 1000;
+
+    if (!skipData.startTime || now - skipData.startTime > ONE_HOUR) {
+      set({ skipData: { count: 1, startTime: now } });
+      return true;
+    }
+
+    if (skipData.count >= 6) {
+      return false;
+    }
+
+    set({
+      skipData: { count: skipData.count + 1, startTime: skipData.startTime },
+    });
+    return true;
+  },
+
   playTrack: (track, newQueue, contextId) => {
+    const { isAuthenticated } = get();
+
+    if (!isAuthenticated) {
+      set({ showLoginModal: true, teasingTrack: track });
+      return;
+    }
+
     const {
       isShuffle,
       originalQueue,
@@ -98,15 +153,32 @@ export const usePlayer = create<PlayerState>((set, get) => ({
   },
 
   togglePlay: () => {
-    const { currentTrack, isPlaying } = get();
+    const { currentTrack, isPlaying, isAuthenticated } = get();
+
+    if (!isAuthenticated) {
+      set({ showLoginModal: true });
+      return;
+    }
+
     if (currentTrack) {
       set({ isPlaying: !isPlaying });
     }
   },
 
   playNext: () => {
-    const { queue, currentIndex } = get();
+    const { queue, currentIndex, isAuthenticated, checkCanSkip } = get();
+
+    if (!isAuthenticated) {
+      set({ showLoginModal: true });
+      return;
+    }
+
     if (queue.length === 0) return;
+
+    if (!checkCanSkip()) {
+      toast.warning("Đã đạt giới hạn 6 lần chuyển bài trong 1 giờ.");
+      return;
+    }
 
     const nextIndex = currentIndex + 1 >= queue.length ? 0 : currentIndex + 1;
     const nextTrack = queue[nextIndex];
@@ -119,8 +191,19 @@ export const usePlayer = create<PlayerState>((set, get) => ({
   },
 
   playPrev: () => {
-    const { queue, currentIndex } = get();
+    const { queue, currentIndex, isAuthenticated, checkCanSkip } = get();
+
+    if (!isAuthenticated) {
+      set({ showLoginModal: true });
+      return;
+    }
+
     if (queue.length === 0) return;
+
+    if (!checkCanSkip()) {
+      console.warn("Đã đạt giới hạn 6 lần chuyển bài trong 1 giờ.");
+      return;
+    }
 
     const prevIndex =
       currentIndex - 1 < 0 ? queue.length - 1 : currentIndex - 1;
@@ -134,7 +217,6 @@ export const usePlayer = create<PlayerState>((set, get) => ({
   },
 
   setVolume: (volume: number) => set({ volume }),
-
   setQueue: (queue: PlayerTrack[]) => set({ queue }),
 
   toggleShuffle: () => {
@@ -175,4 +257,16 @@ export const usePlayer = create<PlayerState>((set, get) => ({
   },
 
   toggleQueue: () => set({ isQueueVisible: !get().isQueueVisible }),
+
+  resetPlayer: () => {
+    set({
+      currentTrack: null,
+      queue: [],
+      originalQueue: [],
+      currentIndex: -1,
+      isPlaying: false,
+      activeContextId: null,
+      teasingTrack: null,
+    });
+  },
 }));

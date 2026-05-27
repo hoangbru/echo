@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { AlertCircle, Loader2 } from "lucide-react";
 
-import { SuccessModal } from "@/components/features/modals";
+import { SuccessModal } from "@/components/shared/modals";
 import { TrackFormMedia } from "./track-form-media";
 import { TrackFormMetadata } from "./track-form-metadata";
 import { PageHeading } from "@/components/ui/page-heading";
