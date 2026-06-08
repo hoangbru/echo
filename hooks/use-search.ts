@@ -9,9 +9,13 @@ import type { SearchIntent, SearchType, SearchResults } from "@/types/search";
 interface Options {
   intent?: SearchIntent;
   types?: SearchType[];
+  enabled?: boolean;
 }
 
-export function useSearch(query: string, { intent, types }: Options = {}) {
+export function useSearch(
+  query: string,
+  { intent, types, enabled }: Options = {},
+) {
   const resolvedTypes: SearchType[] =
     types ??
     (intent ? INTENT_TO_SEARCH_TYPES[intent] : undefined) ??
@@ -25,7 +29,7 @@ export function useSearch(query: string, { intent, types }: Options = {}) {
       });
       return res.data;
     },
-    enabled: query.trim().length > 0,
+    enabled: query.trim().length > 0 && (enabled ?? true),
     staleTime: 5 * 60 * 1000,
   });
 }

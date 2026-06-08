@@ -8,10 +8,11 @@ import {
   audioFileSchema,
   imageFileSchema,
 } from "@/lib/validations/file.schema";
-import { keysToCamel } from "@/lib/utils/format";
+import { keysToCamel, mapTrackRow } from "@/lib/utils/format";
 import { authorizeApi } from "@/lib/session";
 import { uploadFileToSupabase } from "@/lib/utils/file";
 import { embedLyrics } from "@/lib/gemini";
+import { TRACK_SELECT } from "@/constants/query";
 
 export async function GET(request: NextRequest) {
   try {
@@ -26,13 +27,20 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get("status") || "all";
     const genreId = searchParams.get("genre") || "all";
     const view = searchParams.get("view");
+    const artistId = searchParams.get("artistId") || null;
 
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
 
     let query = supabase
       .from("track")
-      .select("*", { count: "exact" })
+      .select(
+        `
+        ${TRACK_SELECT},
+        genre(id, name)
+        `,
+        { count: "exact" },
+      )
       .order("created_at", { ascending: false });
 
     if (search) {
@@ -44,12 +52,13 @@ export async function GET(request: NextRequest) {
       query = query.eq("genre_id", genreId);
     }
 
+    if (artistId) query = query.eq("artist_id", artistId);
+
     if (role === UserRole.ADMIN) {
       if (status === "public") query = query.eq("is_published", true);
       if (status === "private") query = query.eq("is_published", false);
     } else if (role === UserRole.ARTIST && view === "studio") {
       query = query.eq("artist_id", currentArtistId);
-
       if (status === "public") query = query.eq("is_published", true);
       if (status === "private") query = query.eq("is_published", false);
     } else {
@@ -70,7 +79,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const formattedData = keysToCamel(data || []);
+    const formattedData = keysToCamel(
+      (data || []).map((row) => mapTrackRow(row)),
+    );
 
     return NextResponse.json(
       {

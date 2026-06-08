@@ -63,7 +63,7 @@ export function useProfile() {
     queryKey: ["profile"],
     queryFn: async () => {
       const res = await apiClient.get(`/users/profile`);
-      return res.data.data;
+      return res.data.data as UserProfile;
     },
   });
 }

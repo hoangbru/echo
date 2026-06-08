@@ -79,10 +79,20 @@ export const formatElapsed = (ms: number) => {
   return `${s}s`;
 };
 
-export const mapTrackRow = (row: any, similarity?: number): any => {
+export function mapTrackRow(row: any, similarity?: number): any {
+  const albumRaw = Array.isArray(row.album) ? row.album[0] : row.album;
+
   const artists = (row.track_artists ?? [])
-    .filter((ta: any) => ta.artist)
-    .map((ta: any) => ({ ...ta.artist, is_main: ta.is_main }))
+    .map((ta: any) => {
+      const a = Array.isArray(ta.artist) ? ta.artist[0] : ta.artist;
+      return {
+        id: a?.id ?? null,
+        stage_name: a?.stage_name ?? null,
+        profile_image: a?.profile_image ?? null,
+        is_main: ta.is_main ?? false,
+        is_verified: a?.is_verified ?? false,
+      };
+    })
     .sort((a: any, b: any) =>
       a.is_main === b.is_main ? 0 : a.is_main ? -1 : 1,
     );
@@ -91,11 +101,17 @@ export const mapTrackRow = (row: any, similarity?: number): any => {
     id: row.id,
     title: row.title,
     audio_url: row.audio_url,
-    image_url: row.image_url || row.album?.cover_image || null,
+    image_url: row.image_url ?? albumRaw?.cover_image ?? null,
     duration: row.duration,
     is_explicit: row.is_explicit,
     artists,
-    album: row.album ? { id: row.album.id } : null,
-    ...(similarity !== undefined && { similarity }),
+    album: albumRaw
+      ? {
+          id: albumRaw.id,
+          title: albumRaw.title ?? null,
+          cover_image: albumRaw.cover_image ?? null,
+        }
+      : null,
+    ...(similarity !== undefined ? { similarity } : {}),
   };
-};
+}

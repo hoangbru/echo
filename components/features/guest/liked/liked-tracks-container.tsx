@@ -1,12 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import {
-  Download,
-  Pause,
-  Play,
-  Shuffle,
-} from "lucide-react";
+import { Download, Pause, Play, Shuffle } from "lucide-react";
 
 import { LikedTrackHero } from "./liked-tracks-hero";
 import { LikedTracksList } from "./liked-tracks-list";
@@ -62,33 +57,38 @@ const LikedTracksContainer = () => {
   }
 
   return (
-    <div>
+    <div className="bg-background min-h-screen">
       {/* --- HERO SECTION --- */}
       {tracks && (
         <LikedTrackHero totalTracks={tracks.length} totalMins={totalMins} />
       )}
 
       {/* --- CONTENT SECTION --- */}
-      <div className="px-6 bg-gradient-to-b from-neutral-900/50 to-[#121212] min-h-screen pt-4">
+      <div className="px-6 bg-gradient-to-b from-secondary/50 to-background min-h-screen pt-4">
         <div className="pb-8">
           {/* --- ACTION BAR --- */}
           <div className="flex items-center gap-6 py-6">
             <button
               onClick={handlePlayPlaylist}
-              className="w-14 h-14 rounded-full bg-primary flex items-center justify-center hover:scale-105 transition-transform shadow-xl"
+              className={`w-14 h-14 rounded-full flex items-center justify-center transition-all shadow-lg ${
+                tracks.length > 0
+                  ? "bg-primary hover:scale-105 shadow-primary/30 cursor-pointer"
+                  : "bg-primary/50 cursor-not-allowed opacity-50"
+              }`}
+              disabled={tracks.length === 0}
             >
               {isThisPlaylistPlaying ? (
-                <Pause className="w-6 h-6 text-black fill-black" />
+                <Pause className="w-6 h-6 text-primary-foreground fill-primary-foreground" />
               ) : (
-                <Play className="w-6 h-6 text-black fill-black ml-1" />
+                <Play className="w-6 h-6 text-primary-foreground fill-primary-foreground ml-1" />
               )}
             </button>
 
-            <button className="text-gray-400 hover:text-white transition-colors">
+            <button className="text-muted-foreground hover:text-foreground hover:scale-110 transition-all">
               <Shuffle className="w-8 h-8" />
             </button>
 
-            <button className="text-gray-400 hover:text-white transition-colors">
+            <button className="text-muted-foreground hover:text-foreground hover:scale-110 transition-all">
               <Download className="w-8 h-8" />
             </button>
           </div>

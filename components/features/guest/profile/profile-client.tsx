@@ -200,7 +200,7 @@ export function ProfileClient({
       <div className="space-y-4">
         <h2 className="text-xl font-bold text-foreground">Quick Access</h2>
         <a
-          href="/library/playlists"
+          href="/playlists"
           className="group relative bg-card/60 backdrop-blur-sm rounded-xl p-6 border border-white/5 transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/20 flex items-center gap-4"
         >
           <div className="h-12 w-12 rounded-xl bg-primary/15 flex items-center justify-center transition-all duration-300 group-hover:bg-primary/25 group-hover:shadow-lg group-hover:shadow-primary/30">

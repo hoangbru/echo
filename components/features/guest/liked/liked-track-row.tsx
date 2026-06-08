@@ -42,17 +42,17 @@ export function LikedTrackRow({
     } catch (error) {
       toast.error("Đã có lỗi xảy ra, vui lòng thử lại");
     } finally {
-      setIsLoadingLikeTrack(true);
+      setIsLoadingLikeTrack(false);
     }
   };
 
   return (
     <div
-      className="group grid grid-cols-[50px_minmax(0,1fr)_100px] lg:grid-cols-[50px_minmax(0,2fr)_minmax(0,1.5fr)_minmax(0,1fr)_100px] gap-4 px-4 py-2 rounded-md hover:bg-card transition-colors items-center cursor-pointer"
+      className="group grid grid-cols-[50px_minmax(0,1fr)_100px] lg:grid-cols-[50px_minmax(0,2fr)_minmax(0,1.5fr)_minmax(0,1fr)_100px] gap-4 px-4 py-2 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors items-center cursor-pointer"
       onDoubleClick={() => onPlaySingleTrack(track, index)}
     >
       {/* Cột 1: STT / Icon Play / Sóng nhạc */}
-      <div className="text-center text-muted-foreground text-sm font-medium relative w-full h-full flex items-center justify-center">
+      <div className="text-center text-muted-foreground text-sm font-medium relative w-full h-full flex items-center justify-center group-hover:text-foreground">
         <span
           className={cn(
             "group-hover:opacity-0",
@@ -82,7 +82,7 @@ export function LikedTrackRow({
       </div>
 
       <div className="flex items-center gap-3 min-w-0 pr-4">
-        <div className="relative w-10 h-10 shrink-0 bg-muted rounded-sm overflow-hidden">
+        <div className="relative w-10 h-10 shrink-0 bg-secondary rounded-sm overflow-hidden shadow-sm">
           <Image
             src={track.imageUrl || "/default-cover.jpg"}
             alt={track.title}
@@ -93,32 +93,40 @@ export function LikedTrackRow({
         <div className="flex flex-col min-w-0">
           <span
             className={cn(
-              "text-base truncate font-medium",
-              isThisTrackPlaying ? "text-primary" : "text-foreground",
+              "text-base truncate font-medium transition-colors",
+              isThisTrackPlaying
+                ? "text-primary"
+                : "text-foreground group-hover:text-primary",
             )}
           >
             {track.title}
           </span>
-          <span className="text-sm text-muted-foreground truncate group-hover:text-foreground transition-colors mt-0.5">
+          <span className="text-sm text-muted-foreground truncate group-hover:text-foreground/80 transition-colors mt-0.5">
             {track.artists?.map((a) => a.stageName).join(", ") ||
               "Unknown Artist"}
           </span>
         </div>
       </div>
 
-      <div className="hidden lg:block text-sm text-muted-foreground hover:text-foreground hover:underline cursor-pointer truncate">
+      <div className="hidden lg:block text-sm text-muted-foreground hover:text-foreground hover:underline cursor-pointer truncate transition-colors">
         {track.album?.title || "Single"}
       </div>
 
-      <div className="hidden lg:block text-sm text-muted-foreground truncate">
+      <div className="hidden lg:block text-sm text-muted-foreground truncate group-hover:text-foreground/80 transition-colors">
         {track.createdAt ? formatDate(track.createdAt) : "Gần đây"}
       </div>
 
       <div className="text-sm text-muted-foreground flex justify-center items-center gap-4">
-        <button onClick={handleLikeClick} disabled={isLoadingLikeTrack}>
-          <Heart className="w-4 h-4 transition-colors fill-primary text-primary opacity-100" />
+        <button
+          onClick={handleLikeClick}
+          disabled={isLoadingLikeTrack}
+          className="hover:scale-110 transition-transform"
+        >
+          <Heart className="w-4 h-4 transition-colors fill-primary text-primary opacity-100 drop-shadow-sm" />
         </button>
-        {formatDuration(track.duration)}
+        <span className="group-hover:text-foreground transition-colors">
+          {formatDuration(track.duration)}
+        </span>
       </div>
     </div>
   );

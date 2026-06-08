@@ -53,7 +53,9 @@ export function LikedTracksList({ tracks }: LikedTracksContainerProps) {
   if (!tracks || tracks.length === 0) {
     return (
       <div className="py-20 text-center flex flex-col items-center gap-4">
-        <Heart className="w-12 h-12 text-muted-foreground" />
+        <div className="w-20 h-20 bg-secondary rounded-full flex items-center justify-center mb-2">
+          <Heart className="w-10 h-10 text-muted-foreground/60" />
+        </div>
         <h3 className="text-xl font-bold text-foreground">
           Chưa có bài hát nào
         </h3>
@@ -66,7 +68,7 @@ export function LikedTracksList({ tracks }: LikedTracksContainerProps) {
 
   return (
     <div className="mt-4">
-      <div className="grid grid-cols-[50px_minmax(0,1fr)_100px] lg:grid-cols-[50px_minmax(0,2fr)_minmax(0,1.5fr)_minmax(0,1fr)_100px] gap-4 px-4 py-2 border-b border-border text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4 sticky top-0 bg-background z-10">
+      <div className="grid grid-cols-[50px_minmax(0,1fr)_100px] lg:grid-cols-[50px_minmax(0,2fr)_minmax(0,1.5fr)_minmax(0,1fr)_100px] gap-4 px-4 py-2 border-b border-border text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4 sticky top-0 bg-background z-10 shadow-sm">
         <div className="text-center">#</div>
         <div>Tiêu đề</div>
         <div className="hidden lg:block">Album</div>
@@ -80,7 +82,7 @@ export function LikedTracksList({ tracks }: LikedTracksContainerProps) {
         {isError ? (
           <div className="py-20 text-center">
             <div className="flex flex-col items-center justify-center gap-4">
-              <p className="text-red-400 font-medium">
+              <p className="text-destructive font-medium">
                 Đã có lỗi xảy ra khi tải danh sách bài hát.
               </p>
               <Button
@@ -91,10 +93,6 @@ export function LikedTracksList({ tracks }: LikedTracksContainerProps) {
                 <RefreshCcw className="w-4 h-4 mr-2" /> Thử lại
               </Button>
             </div>
-          </div>
-        ) : tracks.length === 0 ? (
-          <div className="py-20 text-center text-muted-foreground">
-            Chưa có bài hát nào phù hợp.
           </div>
         ) : (
           tracks.map((track, index) => {
@@ -119,7 +117,7 @@ export function LikedTracksList({ tracks }: LikedTracksContainerProps) {
             ref={ref}
             className="h-10 w-full flex items-center justify-center mt-4"
           >
-            <span className="text-muted-foreground animate-pulse">
+            <span className="text-muted-foreground animate-pulse text-sm">
               Đang tải thêm...
             </span>
           </div>

@@ -1,3 +1,4 @@
+import { Tab } from "@/types/playlist.type";
 import type { SearchIntent, SearchType } from "@/types/search";
 
 /** Map Gemini intent → API types param */
@@ -22,6 +23,12 @@ export const INTENT_LABELS: Record<SearchIntent, string> = {
   mood: "💫 Tâm trạng / thể loại",
   unknown: "🔍 Tìm kiếm",
 };
+
+export const TABS: { key: Tab; label: string }[] = [
+  { key: "track", label: "Bài hát" },
+  { key: "album", label: "Album" },
+  { key: "artist", label: "Nghệ sĩ" },
+];
 
 /** Gemini model names */
 export const GEMINI_GENERATE_MODEL = "gemini-2.5-flash";

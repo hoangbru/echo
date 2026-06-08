@@ -1,4 +1,3 @@
-import { Database } from "@/lib/supabase/type";
 import { TrackFormValues } from "@/lib/validations/track.schema";
 
 export interface Track {
@@ -36,8 +35,6 @@ export interface Track {
   createdAt: Date | string;
   updatedAt: Date | string;
 }
-
-export type TrackDB = Database["public"]["Tables"]["track"]["Row"];
 
 export interface CreateTrackParams {
   formData: TrackFormValues;

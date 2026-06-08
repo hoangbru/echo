@@ -217,7 +217,7 @@ export function RequestsGrid({
         totalPages={meta.totalPages}
         currentCount={meta.currentCount}
         totalCount={meta.totalCount}
-        onPageChange={(newPage) => {
+        onPageChange={(newPage: number) => {
           router.push(`?status=${status}&page=${newPage}`);
         }}
         itemName="đơn đăng ký"
@@ -265,7 +265,7 @@ export function RequestsGrid({
               placeholder="Nhập lý do từ chối (bắt buộc)..."
               className="bg-background border-border text-foreground mt-2 placeholder:text-muted-foreground focus-visible:ring-primary"
               value={rejectReason}
-              onChange={(e) => setRejectReason(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setRejectReason(e.target.value)}
             />
           </div>
         }

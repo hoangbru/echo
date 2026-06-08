@@ -31,13 +31,21 @@ export const AlbumHeroSection = ({
             {album.title}
           </h1>
           <div className="flex items-center gap-2 text-sm font-medium mt-2 flex-wrap">
-            <Image
-              src={album.artist.profileImage || "/default-avatar.png"}
-              width={24}
-              height={24}
-              alt="artist"
-              className="rounded-full object-cover w-6 h-6"
-            />
+            {album.artist.profileImage ? (
+              <div className="relative rounded-full w-6 h-6">
+                <Image
+                  src={album.artist.profileImage || "/default-avatar.png"}
+                  width={24}
+                  height={24}
+                  alt="artist"
+                  className="object-cover"
+                />
+              </div>
+            ) : (
+              <div className="w-6 h-6 rounded-full flex items-center justify-center bg-gradient-to-br from-primary to-primary/60 text-foreground font-bold uppercase text-sm">
+                {(album.artist.stageName || "U")[0]}
+              </div>
+            )}
             <span className="hover:underline cursor-pointer font-bold">
               {album.artist.stageName}
             </span>

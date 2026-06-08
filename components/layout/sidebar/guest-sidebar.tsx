@@ -27,9 +27,9 @@ const navItems = [
 ];
 
 const libraryItems = [
-  { label: "Bài hát đã thích", icon: Heart, href: "/library/liked" },
-  { label: "Playlists của bạn", icon: ListMusic, href: "/library/playlists" },
-  { label: "Albums đã lưu", icon: Music, href: "/library/albums" },
+  { label: "Bài hát đã thích", icon: Heart, href: "/liked" },
+  { label: "Playlists của bạn", icon: ListMusic, href: "/playlists" },
+  { label: "Albums đã lưu", icon: Music, href: "/albums" },
 ];
 
 export function GuestSidebar() {
@@ -90,7 +90,7 @@ export function GuestSidebar() {
               className="h-6 w-6 p-0 text-foreground hover:text-primary"
               asChild
             >
-              <Link href="/library/create">
+              <Link href="/create">
                 <Plus className="w-4 h-4" />
               </Link>
             </Button>

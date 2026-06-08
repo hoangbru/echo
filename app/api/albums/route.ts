@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
     const genreId = searchParams.get("genre") || "all";
     const view = searchParams.get("view");
     const type = searchParams.get("type") || "all";
+    const artistId = searchParams.get("artistId") || null;
 
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
@@ -47,6 +48,8 @@ export async function GET(request: NextRequest) {
     ) {
       query = query.eq("album_type", type);
     }
+
+    if (artistId) query = query.eq("artist_id", artistId);
 
     if (role === UserRole.ADMIN) {
       if (status === "public") query = query.eq("is_published", true);

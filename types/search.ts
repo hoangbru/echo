@@ -39,7 +39,11 @@ export interface TrackResult {
   duration: number;
   isExplicit: boolean;
   artists: ArtistResult[];
-  album: { id: string } | null;
+  album: {
+    id: string;
+    title: string | null;
+    coverImage: string | null;
+  } | null;
   similarity?: number; // only present for lyrics search
 }
 

@@ -35,7 +35,7 @@ export function ConfirmModal({
   cancelText = "Huỷ",
 }: ConfirmModalProps) {
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={isOpen} onOpenChange={(open: boolean) => !open && onClose()}>
       <DialogContent className="bg-card border-white/10 text-white">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
