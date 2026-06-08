@@ -10,6 +10,7 @@ import { usePlayer, PlayerTrack } from "@/hooks/use-player";
 import { apiClient } from "@/lib/axios";
 import { Button } from "@/components/ui/button";
 import { DropdownTrackMenu } from "../../player";
+import type { SearchResults } from "@/types/search";
 
 interface SearchItem {
   id: string;
@@ -21,14 +22,50 @@ interface SearchItem {
   raw?: any;
 }
 
+interface SearchDropdownProps {
+  results: SearchResults | undefined;
+  isLoading: boolean;
+  onClose: () => void;
+  searchTerm?: string;
+}
+
+const RECENT_SEARCHES_KEY = "music_recent_searches";
+const MAX_RECENT = 5;
+
+function loadRecentSearches(): SearchItem[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const saved = localStorage.getItem(RECENT_SEARCHES_KEY);
+    return saved ? (JSON.parse(saved) as SearchItem[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveRecentSearches(items: SearchItem[]): void {
+  try {
+    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(items));
+  } catch {
+    // Quota exceeded or private browsing — fail silently
+  }
+}
+
+export function addToRecentSearches(item: SearchItem): void {
+  const recents = loadRecentSearches();
+  const next = [item, ...recents.filter((r) => r.id !== item.id)].slice(
+    0,
+    MAX_RECENT,
+  );
+  saveRecentSearches(next);
+}
+
 export function SearchDropdown({
   results,
   isLoading,
   onClose,
   searchTerm = "",
-}: any) {
+}: SearchDropdownProps) {
   const router = useRouter();
-
   const { playTrack, currentTrack, activeContextId, isPlaying, togglePlay } =
     usePlayer();
 
@@ -36,32 +73,39 @@ export function SearchDropdown({
   const [loadingPlayId, setLoadingPlayId] = useState<string | null>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem("music_recent_searches");
-    if (saved) {
-      try {
-        setRecentSearches(JSON.parse(saved));
-      } catch (e) {
-        console.error("Lỗi parse lịch sử:", e);
-      }
-    }
+    setRecentSearches(loadRecentSearches());
   }, []);
 
-  const handleItemClick = (item: SearchItem) => {
-    const newRecents = [
+  useEffect(() => {
+    const handler = (e: StorageEvent) => {
+      if (e.key === RECENT_SEARCHES_KEY) {
+        setRecentSearches(loadRecentSearches());
+      }
+    };
+    window.addEventListener("storage", handler);
+    return () => window.removeEventListener("storage", handler);
+  }, []);
+
+  const persistRecent = (item: SearchItem) => {
+    const next = [
       item,
       ...recentSearches.filter((r) => r.id !== item.id),
-    ].slice(0, 5);
-    setRecentSearches(newRecents);
-    localStorage.setItem("music_recent_searches", JSON.stringify(newRecents));
+    ].slice(0, MAX_RECENT);
+    setRecentSearches(next);
+    saveRecentSearches(next);
+  };
+
+  const handleItemClick = (item: SearchItem) => {
+    persistRecent(item);
     router.push(item.path);
     onClose();
   };
 
   const removeRecent = (e: MouseEvent, id: string) => {
     e.stopPropagation();
-    const newRecents = recentSearches.filter((r) => r.id !== id);
-    setRecentSearches(newRecents);
-    localStorage.setItem("music_recent_searches", JSON.stringify(newRecents));
+    const next = recentSearches.filter((r) => r.id !== id);
+    setRecentSearches(next);
+    saveRecentSearches(next);
   };
 
   const handlePlayClick = async (e: MouseEvent, item: SearchItem) => {
@@ -76,6 +120,8 @@ export function SearchDropdown({
       togglePlay();
       return;
     }
+
+    persistRecent(item);
 
     if (item.type === "track") {
       const track = item.raw;
@@ -128,11 +174,11 @@ export function SearchDropdown({
   };
 
   const displayItems: SearchItem[] = [];
-  if (results?.tracks?.length > 0) {
+  if (results?.tracks && results.tracks.length > 0) {
     displayItems.push(
       ...results.tracks.map((t: any) => ({
         id: t.id,
-        type: "track",
+        type: "track" as const,
         title: t.title,
         subtitle: `Song • ${t.artists?.map((a: any) => a.stageName).join(", ")}`,
         image: t.imageUrl,
@@ -141,11 +187,11 @@ export function SearchDropdown({
       })),
     );
   }
-  if (results?.albums?.length > 0) {
+  if (results?.albums && results.albums.length > 0) {
     displayItems.push(
       ...results.albums.map((a: any) => ({
         id: a.id,
-        type: "album",
+        type: "album" as const,
         title: a.title,
         subtitle: `Album • ${a.artist?.stageName || "Unknown Artist"}`,
         image: a.coverImage,
@@ -154,11 +200,11 @@ export function SearchDropdown({
       })),
     );
   }
-  if (results?.artists?.length > 0) {
+  if (results?.artists && results.artists.length > 0) {
     displayItems.push(
       ...results.artists.map((a: any) => ({
         id: a.id,
-        type: "artist",
+        type: "artist" as const,
         title: a.stageName,
         subtitle: "Artist",
         image: a.profileImage,
@@ -345,7 +391,7 @@ export function SearchDropdown({
       )}
       {isTyping && displayItems.length === 0 && (
         <div className="p-4 text-sm text-muted-foreground text-center">
-          Không tìm thấy kết quả nào cho "{searchTerm}"
+          Không tìm thấy kết quả nào cho &ldquo;{searchTerm}&rdquo;
         </div>
       )}
       {isTyping && displayItems.length > 0 && (

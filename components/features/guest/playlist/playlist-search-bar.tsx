@@ -35,9 +35,9 @@ export const PlaylistSearchBar = ({
     enabled: debouncedQuery.trim().length > 0,
   });
 
-  const tracks = data?.data?.tracks ?? [];
-  const albums = data?.data?.albums ?? [];
-  const artists = data?.data?.artists ?? [];
+  const tracks = data?.tracks ?? [];
+  const albums = data?.albums ?? [];
+  const artists = data?.artists ?? [];
 
   const counts: Record<Tab, number> = {
     track: tracks.length,

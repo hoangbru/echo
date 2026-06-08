@@ -34,7 +34,7 @@ export function SearchInput() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
-    setIntent(undefined); // manual typing resets voice intent
+    setIntent(undefined);
     setDropdownOpen(true);
   };
 

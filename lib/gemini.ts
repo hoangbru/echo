@@ -10,15 +10,13 @@ import {
 import { stripLrcTimestamps } from "@/lib/utils/lyrics";
 import type { VoiceAnalysisResult } from "@/types/search";
 
-const MAX_LYRICS_CHARS = 3000; // ~750 tokens, enough to capture full song content
+const MAX_LYRICS_CHARS = 3000;
 
 function createClient(): GoogleGenAI {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error("GEMINI_API_KEY is not configured");
   return new GoogleGenAI({ apiKey });
 }
-
-// ── Voice analysis ────────────────────────────────────────────────────────────
 
 /**
  * Analyze audio and return structured search intent.
@@ -33,9 +31,12 @@ export async function analyzeVoice(
     model: GEMINI_GENERATE_MODEL,
     config: {
       systemInstruction: VOICE_SYSTEM_PROMPT,
-      temperature: 0.2,
+      temperature: 0.1, // Lower temp for more deterministic JSON output
       maxOutputTokens: 512,
       responseMimeType: "application/json",
+      thinkingConfig: {
+        thinkingBudget: 0,
+      },
     },
     contents: [
       {
@@ -53,7 +54,17 @@ export async function analyzeVoice(
 
   const parsed = JSON.parse(
     raw.replace(/```json|```/g, "").trim(),
-  ) as VoiceAnalysisResult;
+  ) as VoiceAnalysisResult & { hummingCandidates?: any[] };
+
+  let hummingMatch = parsed.hummingMatch ?? null;
+  if (
+    parsed.intent === "humming" &&
+    Array.isArray(parsed.hummingCandidates) &&
+    parsed.hummingCandidates.length > 0
+  ) {
+    const best = parsed.hummingCandidates[0];
+    hummingMatch = best.confidence >= 0.6 ? best : null;
+  }
 
   return {
     transcript: parsed.transcript ?? "",
@@ -61,11 +72,9 @@ export async function analyzeVoice(
     searchQuery: parsed.searchQuery ?? "",
     confidence: typeof parsed.confidence === "number" ? parsed.confidence : 0.8,
     language: parsed.language ?? "vi",
-    hummingMatch: parsed.hummingMatch ?? null,
+    hummingMatch,
   };
 }
-
-// ── Embeddings ────────────────────────────────────────────────────────────────
 
 async function embedText(
   text: string,
@@ -87,19 +96,12 @@ async function embedText(
   return values;
 }
 
-/**
- * Embed track lyrics for storage.
- * Strips LRC timestamps and truncates before sending to Gemini.
- */
 export async function embedLyrics(lyrics: string): Promise<number[]> {
   const clean = stripLrcTimestamps(lyrics).slice(0, MAX_LYRICS_CHARS);
   if (!clean) throw new Error("Lyrics are empty after processing");
   return embedText(clean, "RETRIEVAL_DOCUMENT");
 }
 
-/**
- * Embed a user's lyric query for similarity search.
- */
 export async function embedQuery(query: string): Promise<number[]> {
   return embedText(query.trim(), "RETRIEVAL_QUERY");
 }

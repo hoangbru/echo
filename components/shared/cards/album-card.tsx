@@ -58,7 +58,7 @@ export function AlbumCard({ album }: AlbumCardProps) {
         return;
       }
 
-      const queue: PlayerTrack[] = tracksData.map((t: TrackDetail) => ({
+      const queue: PlayerTrack[] = tracksData?.map((t: TrackDetail) => ({
         id: t.id,
         title: t.title,
         lyrics: t.lyrics || "",
