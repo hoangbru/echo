@@ -1,71 +1,65 @@
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+"use client";
 
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "@/lib/axios";
+import { toast } from "sonner";
 import { useAuth } from "./use-auth";
-import { TrackService } from "@/lib/services/track.service";
-import { createClient } from "@/lib/supabase/client";
 
 export function useLikeTrack(trackId: string) {
-  const supabase = createClient();
-  const [isLiked, setIsLiked] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  useEffect(() => {
-    if (!user?.id || !trackId) {
-      setIsLiked(false);
-      setIsLoading(false);
-      return;
-    }
+  const queryKey = ["track-like", trackId];
 
-    let isMounted = true;
+  const { data, isLoading: isQueryLoading } = useQuery({
+    queryKey,
+    queryFn: async () => {
+      if (!user) return { isLiked: false };
+      const res = await apiClient.get(`/tracks/${trackId}/like`);
+      return res.data as { isLiked: boolean };
+    },
+    enabled: !!trackId && !!user,
+    staleTime: 5 * 60 * 1000,
+  });
 
-    const fetchLikeStatus = async () => {
-      setIsLoading(true);
-      try {
-        const status = await TrackService.checkLikeStatus(
-          supabase,
-          user.id,
-          trackId,
-        );
-        if (isMounted) setIsLiked(status);
-      } catch (error) {
-        console.error("Lỗi khi kiểm tra trạng thái bài hát:", error);
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
-    };
+  const isLiked = data?.isLiked ?? false;
 
-    fetchLikeStatus();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [trackId, user?.id]);
-
-  const toggleLike = async () => {
-    if (!user?.id) {
-      toast.error("Vui lòng đăng nhập");
-      return;
-    }
-
-    if (!trackId) return;
-
-    const previousState = isLiked;
-    setIsLiked(!isLiked);
-
-    try {
-      if (previousState) {
-        await TrackService.unlikeTrack(supabase, user.id, trackId);
+  const mutation = useMutation({
+    mutationFn: async (currentlyLiked: boolean) => {
+      if (currentlyLiked) {
+        await apiClient.delete(`/tracks/${trackId}/like`);
       } else {
-        await TrackService.likeTrack(supabase, user.id, trackId);
-        toast.success("Đã thêm vào Bài hát yêu thích");
+        await apiClient.post(`/tracks/${trackId}/like`);
       }
-    } catch (error) {
-      setIsLiked(previousState);
-      toast.error("Có lỗi xảy ra, vui lòng thử lại sau!");
+    },
+    onMutate: async (currentlyLiked) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previousState = queryClient.getQueryData(queryKey);
+      queryClient.setQueryData(queryKey, { isLiked: !currentlyLiked });
+
+      return { previousState };
+    },
+    onError: (err, newTodo, context) => {
+      queryClient.setQueryData(queryKey, context?.previousState);
+      toast.error("Không thể thực hiện tác vụ này. Vui lòng thử lại!");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKey: ["liked-tracks"] });
+    },
+  });
+
+  const toggleLike = () => {
+    if (!user) {
+      toast.error("Vui lòng đăng nhập để thả tim bài hát!");
+      return;
     }
+    mutation.mutate(isLiked);
   };
 
-  return { isLiked, isLoading, toggleLike };
+  return {
+    isLiked,
+    toggleLike,
+    isLoading: isQueryLoading || mutation.isPending,
+  };
 }

@@ -1,19 +1,14 @@
-import { useState } from "react";
 import Image from "next/image";
-import { toast } from "sonner";
-import { Play, Heart, Pause } from "lucide-react";
+import { Play, Heart, Pause, Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils/helpers";
 import { formatDate, formatDuration } from "@/lib/utils/format";
 import { TrackDetail } from "@/types";
-import { TrackService } from "@/lib/services";
-import { useAuth } from "@/hooks/use-auth";
-import { createClient } from "@/lib/supabase/client";
+import { useLikeTrack } from "@/hooks/use-like-track";
 
 interface LikedTrackRowProps {
   track: TrackDetail;
   index: number;
-  refetch: () => void;
   isThisTrackPlaying: boolean;
   isActuallyPlaying: boolean;
   onPlaySingleTrack: (track: TrackDetail, index: number) => void;
@@ -22,36 +17,17 @@ interface LikedTrackRowProps {
 export function LikedTrackRow({
   track,
   index,
-  refetch,
   isThisTrackPlaying,
   isActuallyPlaying,
   onPlaySingleTrack,
 }: LikedTrackRowProps) {
-  const supabase = createClient();
-  const { user } = useAuth();
-
-  const [isLoadingLikeTrack, setIsLoadingLikeTrack] = useState<boolean>(false);
-
-  const handleLikeClick = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsLoadingLikeTrack(true);
-
-    try {
-      await TrackService.unlikeTrack(supabase, user?.id || "", track.id);
-      refetch();
-    } catch (error) {
-      toast.error("Đã có lỗi xảy ra, vui lòng thử lại");
-    } finally {
-      setIsLoadingLikeTrack(false);
-    }
-  };
+  const { toggleLike, isLoading: isLoadingLikeTrack } = useLikeTrack(track.id);
 
   return (
     <div
       className="group grid grid-cols-[50px_minmax(0,1fr)_100px] lg:grid-cols-[50px_minmax(0,2fr)_minmax(0,1.5fr)_minmax(0,1fr)_100px] gap-4 px-4 py-2 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors items-center cursor-pointer"
       onDoubleClick={() => onPlaySingleTrack(track, index)}
     >
-      {/* Cột 1: STT / Icon Play / Sóng nhạc */}
       <div className="text-center text-muted-foreground text-sm font-medium relative w-full h-full flex items-center justify-center group-hover:text-foreground">
         <span
           className={cn(
@@ -118,11 +94,15 @@ export function LikedTrackRow({
 
       <div className="text-sm text-muted-foreground flex justify-center items-center gap-4">
         <button
-          onClick={handleLikeClick}
+          onClick={toggleLike}
           disabled={isLoadingLikeTrack}
           className="hover:scale-110 transition-transform"
         >
-          <Heart className="w-4 h-4 transition-colors fill-primary text-primary opacity-100 drop-shadow-sm" />
+          {isLoadingLikeTrack ? (
+            <Loader2 className="animate-spin"/>
+          ) : (
+            <Heart className="w-4 h-4 transition-colors fill-primary text-primary opacity-100 drop-shadow-sm" />
+          )}
         </button>
         <span className="group-hover:text-foreground transition-colors">
           {formatDuration(track.duration)}

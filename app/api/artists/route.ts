@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
       });
 
     if (!auth.error && auth.user) {
-      query = query.neq("user_id", auth.user.id);
+      query = query.neq("user_id", auth.user?.id);
     }
 
     if (search) {

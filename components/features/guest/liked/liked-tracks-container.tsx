@@ -85,10 +85,6 @@ const LikedTracksContainer = () => {
             </button>
 
             <button className="text-muted-foreground hover:text-foreground hover:scale-110 transition-all">
-              <Shuffle className="w-8 h-8" />
-            </button>
-
-            <button className="text-muted-foreground hover:text-foreground hover:scale-110 transition-all">
               <Download className="w-8 h-8" />
             </button>
           </div>

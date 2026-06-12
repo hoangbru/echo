@@ -18,12 +18,7 @@ export const PlaylistGrid = () => {
   const playlists = playlistsRes?.data || [];
 
   const handleCreatePlaylist = () => {
-    const defaultTitle = `Danh sách phát của tôi #${playlists.length + 1}`;
-
-    const formData = new FormData();
-    formData.append("title", defaultTitle);
-
-    createPlaylist(formData, {
+    createPlaylist(undefined, {
       onSuccess: (response) => {
         const newPlaylistId = response.data.id;
         router.push(`/playlists/${newPlaylistId}`);
@@ -38,11 +33,11 @@ export const PlaylistGrid = () => {
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div
               key={i}
-              className="p-4 bg-card border border-border rounded-2xl flex flex-col gap-4"
+              className="p-4 bg-card border border-border rounded-[0.5rem] flex flex-col gap-4"
             >
-              <div className="aspect-square bg-secondary animate-pulse rounded-xl"></div>
-              <div className="h-5 w-3/4 bg-secondary animate-pulse rounded-lg"></div>
-              <div className="h-4 w-1/2 bg-secondary animate-pulse rounded-lg"></div>
+              <div className="aspect-square bg-sidebar-background animate-pulse rounded-[4px]"></div>
+              <div className="h-5 w-3/4 bg-sidebar-background animate-pulse rounded-[4px]"></div>
+              <div className="h-4 w-1/2 bg-sidebar-background animate-pulse rounded-[4px]"></div>
             </div>
           ))}
         </div>
@@ -67,8 +62,8 @@ export const PlaylistGrid = () => {
           ))}
         </div>
       ) : (
-        <div className="text-center py-24 bg-card rounded-2xl border border-border shadow-sm">
-          <div className="w-24 h-24 bg-secondary rounded-full flex items-center justify-center mx-auto mb-6">
+        <div className="text-center py-24 bg-card rounded-[0.5rem] border border-border shadow-sm">
+          <div className="w-24 h-24 bg-sidebar-background rounded-full flex items-center justify-center mx-auto mb-6">
             <Music className="w-12 h-12 text-muted-foreground/60" />
           </div>
           <h2 className="text-2xl font-bold mb-2 text-foreground">
@@ -81,7 +76,7 @@ export const PlaylistGrid = () => {
           <Button
             onClick={handleCreatePlaylist}
             disabled={isCreating}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 py-6 rounded-full text-[16px] shadow-lg shadow-primary/20 hover:scale-105 transition-all"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 py-6 rounded-[0.5rem] text-[16px] shadow-lg shadow-primary/20 hover:scale-105 transition-all"
           >
             {isCreating ? (
               <Loader2 className="w-6 h-6 mr-2 animate-spin" />

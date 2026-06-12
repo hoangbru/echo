@@ -46,4 +46,3 @@ export interface UserMetadata {
   provider_id: string;
   sub: string;
 }
-export type UserDB = Database["public"]["Tables"]["user"]["Row"];

@@ -161,7 +161,7 @@ export async function PATCH(
     }
 
     const isAdmin = auth.role === UserRole.ADMIN;
-    const isOwner = existing.user_id === auth.user.id;
+    const isOwner = existing.user_id === auth.user?.id;
 
     if (!isOwner && !isAdmin) {
       return NextResponse.json(
@@ -318,7 +318,7 @@ export async function DELETE(
     }
 
     const isAdmin = auth.role === UserRole.ADMIN;
-    const isOwner = existing.user_id === auth.user.id;
+    const isOwner = existing.user_id === auth.user?.id;
 
     if (!isOwner && !isAdmin) {
       return NextResponse.json(

@@ -28,7 +28,7 @@ export function useTrackDetail(trackId: string) {
     queryKey: ["track", trackId],
     queryFn: async () => {
       const res = await apiClient.get(`/tracks/${trackId}`);
-      return res.data as { data: any };
+      return res.data.data as TrackDetail;
     },
     enabled: !!trackId,
   });

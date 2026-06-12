@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils/helpers";
 import { formatDuration } from "@/lib/utils/format";
 import { useLikeTrack } from "@/hooks/use-like-track";
 import { TrackDetail, AlbumDetail, FeatArtist } from "@/types";
+import { DropdownTrackMenu } from "@/components/shared";
 
 interface AlbumTrackRowProps {
   track: TrackDetail;
@@ -22,7 +23,11 @@ export function AlbumTrackRow({
   isActuallyPlaying,
   onPlaySingleTrack,
 }: AlbumTrackRowProps) {
-  const { toggleLike, isLiked, isLoading: isLoadingLikeTrack } = useLikeTrack(track.id);
+  const {
+    toggleLike,
+    isLiked,
+    isLoading: isLoadingLikeTrack,
+  } = useLikeTrack(track.id);
 
   const handleLikeClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -103,7 +108,7 @@ export function AlbumTrackRow({
 
       {/* Cột 4: Thời lượng và Nút Like */}
       <div className="text-sm text-muted-foreground flex justify-center items-center gap-4">
-        <button onClick={handleLikeClick} disabled={isLoadingLikeTrack}>
+        {/* <button onClick={handleLikeClick} disabled={isLoadingLikeTrack}>
           <Heart
             className={cn(
               "w-4 h-4 transition-colors",
@@ -112,8 +117,9 @@ export function AlbumTrackRow({
                 : "opacity-0 group-hover:opacity-100 hover:text-foreground",
             )}
           />
-        </button>
+        </button> */}
         {formatDuration(track.duration)}
+        <DropdownTrackMenu trackId={track.id} />
       </div>
     </div>
   );

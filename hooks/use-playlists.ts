@@ -9,6 +9,12 @@ export type PlaylistQueryParams = QueryParams & {
   userId?: string;
 };
 
+export interface CreatePlaylistPayload {
+  title?: string;
+  description?: string | null;
+  isPublic?: boolean;
+}
+
 export function usePlaylists(params: PlaylistQueryParams) {
   return useQuery({
     queryKey: ["playlists", params],
@@ -16,6 +22,7 @@ export function usePlaylists(params: PlaylistQueryParams) {
       const res = await apiClient.get("/playlists", { params });
       return res.data as { data: Playlist[]; meta?: any };
     },
+    staleTime: 60 * 1000,
   });
 }
 
@@ -33,18 +40,20 @@ export function usePlaylistDetail(id: string) {
 export function useCreatePlaylist() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (formData: FormData) => {
-      const res = await apiClient.post("/playlists", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+    mutationFn: async (payload?: CreatePlaylistPayload) => {
+      const res = await apiClient.post("/playlists", payload || {});
       return res.data as { data: Playlist; message: string };
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: ["playlists"] });
-      toast.success("Tạo playlist thành công!");
+      toast.success(response.message || "Tạo playlist thành công!");
     },
     onError: (error: any) => {
-      toast.error(error.message || "Có lỗi xảy ra khi tạo playlist");
+      const errorMessage =
+        error?.response?.data?.error ||
+        error.message ||
+        "Có lỗi xảy ra khi tạo playlist";
+      toast.error(errorMessage);
     },
   });
 }
@@ -88,17 +97,25 @@ export function useDeletePlaylist() {
 
 // ─── Playlist Track Hooks ─────────────────────────────────────────────────────
 
-export function useAddTrackToPlaylist(playlistId: string) {
+interface AddTrackToPlaylistInput {
+  playlistId: string;
+  trackId: string;
+}
+
+export function useAddTrackToPlaylist() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (trackId: string) => {
+    mutationFn: async ({ playlistId, trackId }: AddTrackToPlaylistInput) => {
       const res = await apiClient.post(`/playlists/${playlistId}/tracks`, {
         trackId,
       });
       return res.data as { message: string };
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["playlist", playlistId] });
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["playlist", variables.playlistId],
+      });
+      queryClient.invalidateQueries({ queryKey: ["playlists"] });
       toast.success("Đã thêm bài hát vào playlist!");
     },
     onError: (error: any) => {

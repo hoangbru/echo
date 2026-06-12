@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MoreHorizontal, Pause, Play, Edit2 } from "lucide-react";
+import { Pause, Play, Edit2 } from "lucide-react";
 
 import { PlaylistTrackList } from "./playlist-track-list";
 import { PlaylistHeroSection } from "./playlist-hero-section";
@@ -125,10 +125,6 @@ export const PlaylistDetailContainer = ({
               onClick={() => setIsEditModalOpen(true)}
             >
               <Edit2 className="w-6 h-6" />
-            </button>
-
-            <button className="text-muted-foreground hover:text-foreground hover:scale-110 transition-all">
-              <MoreHorizontal className="w-8 h-8" />
             </button>
           </div>
 

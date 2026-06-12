@@ -54,7 +54,7 @@ export async function resolvePlaylistOwnership(
   }
  
   const isAdmin = auth.role === UserRole.ADMIN;
-  const isOwner = data.user_id === auth.user.id;
+  const isOwner = data.user_id === auth.user?.id;
 
   if (!isOwner && !isAdmin) {
     return { error: "Bạn không có quyền chỉnh sửa playlist này", status: 403 };

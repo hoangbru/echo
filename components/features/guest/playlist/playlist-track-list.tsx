@@ -19,7 +19,7 @@ export function PlaylistTrackList({
   return (
     <div className="mt-6">
       {/* Header Grid */}
-      <div className="grid grid-cols-[16px_4fr_3fr_2fr_minmax(120px,_1fr)] gap-4 px-4 py-2 border-b border-border text-[14px] text-muted-foreground font-medium mb-4">
+      <div className="grid grid-cols-[16px_4fr_3fr_2fr_minmax(120px,_1fr)] gap-4 px-4 py-2 border-b border-border text-[14px] text-muted-foreground font-medium mb-2">
         <div className="text-center">#</div>
         <div>Tiêu đề</div>
         <div>Album</div>

@@ -3,9 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { authorizeApi } from "@/lib/session";
 import { keysToCamel } from "@/lib/utils/format";
 import { UserRole } from "@/types";
-import { imageFileSchema } from "@/lib/validations/file.schema";
-import { uploadFileToSupabase } from "@/lib/utils/file";
-import { playlistFormSchema } from "@/lib/validations/playlist.schema";
+import { removeVietnameseTones } from "@/lib/utils/helpers";
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,11 +11,11 @@ export async function GET(request: NextRequest) {
 
     const auth = await authorizeApi();
     const role = auth.error ? "GUEST" : auth.role;
-    const currentUserId = auth.user.id;
+    const currentUserId = auth.user?.id;
 
     const searchParams = request.nextUrl.searchParams;
     const search = searchParams.get("search") || "";
-    const status = searchParams.get("status") || "all"; // "all" | "public" | "private"
+    const status = searchParams.get("status") || "all";
     const userId = searchParams.get("userId") || null;
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
@@ -28,7 +26,8 @@ export async function GET(request: NextRequest) {
       .order("created_at", { ascending: false });
 
     if (search) {
-      query = query.ilike("title", `%${search}%`);
+      const cleanSearch = removeVietnameseTones(search);
+      query = query.ilike("title_search", `%${cleanSearch}%`);
     }
 
     if (userId) {
@@ -91,90 +90,66 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  let uploadedCoverPath: string | null = null;
   const supabase = createClient();
 
   try {
-    const auth = await authorizeApi([
+    const { user, error, status } = await authorizeApi([
       UserRole.USER,
       UserRole.ARTIST,
       UserRole.ADMIN,
     ]);
 
-    if (auth.error) {
-      return NextResponse.json({ error: auth.error }, { status: auth.status });
+    if (error) {
+      return NextResponse.json({ error: error }, { status: status });
     }
 
-    const currentUserId = auth.user.id;
+    const currentUserId = user?.id;
 
-    const formData = await request.formData();
+    let title: string | null = null;
+    let description: string | null = null;
+    let isPublic = true;
 
-    const rawData = {
-      title: formData.get("title") as string | null,
-      description: formData.get("description") as string | null,
-      isPublic: formData.get("isPublic") === "true",
-    };
-
-    const coverFile = formData.get("coverFile") as File | null;
-
-    const validatedData = playlistFormSchema.safeParse(rawData);
-    if (!validatedData.success) {
-      const errorMessage = validatedData.error.errors[0].message;
-      console.error("[POST_PLAYLIST_VALIDATION_ERROR]:", validatedData.error.errors[0]);
-      return NextResponse.json({ error: errorMessage }, { status: 400 });
-    }
-    const safeData = validatedData.data;
-
-    let coverImageUrl: string | null = null;
-
-    if (coverFile && coverFile.size > 0) {
-      const fileValidation = imageFileSchema.safeParse(coverFile);
-      if (!fileValidation.success) {
-        return NextResponse.json(
-          { error: fileValidation.error.errors[0].message },
-          { status: 400 },
-        );
+    try {
+      const body = await request.json();
+      title = body?.title || null;
+      description = body?.description || null;
+      if (body?.isPublic !== undefined) {
+        isPublic = body.isPublic;
       }
+    } catch (e) {}
 
-      const {
-        url: imgUrl,
-        path: iPath,
-        error: imgErr,
-      } = await uploadFileToSupabase(
-        supabase,
-        fileValidation.data,
-        "covers",
-        `playlists/${currentUserId}`,
+    const { count, error: countError } = await supabase
+      .from("playlist")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", currentUserId);
+
+    if (countError) {
+      console.warn(
+        "[POST_PLAYLIST_COUNT_WARN]: Không thể đếm playlist, mặc định số 1",
+        countError,
       );
-
-      if (imgErr) {
-        console.error("[POST_PLAYLIST_COVER_UPLOAD_ERROR]:", imgErr);
-        return NextResponse.json(
-          { error: "Tải lên ảnh bìa thất bại" },
-          { status: 400 },
-        );
-      }
-
-      coverImageUrl = imgUrl;
-      uploadedCoverPath = iPath;
     }
+
+    const nextIndex = (count || 0) + 1;
+    const defaultTitle = `Danh sách phát của tôi #${nextIndex}`;
+
+    const finalTitle =
+      title && title.trim() !== "" ? title.trim() : defaultTitle;
 
     const { data: newPlaylist, error: dbError } = await supabase
       .from("playlist")
       .insert({
         user_id: currentUserId,
-        title: safeData.title,
-        description: safeData.description,
-        is_public: safeData.isPublic,
-        cover_image: coverImageUrl,
+        title: finalTitle,
+        description: description || null,
+        is_public: isPublic,
+        cover_image: null,
       })
       .select()
       .single();
 
     if (dbError) {
       console.error("[POST_PLAYLIST_DB_ERROR]:", dbError);
-      if (uploadedCoverPath)
-        await supabase.storage.from("covers").remove([uploadedCoverPath]);
       return NextResponse.json(
         { error: "Tạo playlist không thành công, vui lòng thử lại" },
         { status: 400 },
@@ -187,8 +162,6 @@ export async function POST(request: NextRequest) {
     );
   } catch (error: any) {
     console.error("[POST_PLAYLIST_FATAL_ERROR]:", error);
-    if (uploadedCoverPath)
-      await supabase.storage.from("covers").remove([uploadedCoverPath]);
     return NextResponse.json(
       { error: "Đã xảy ra lỗi hệ thống" },
       { status: 500 },

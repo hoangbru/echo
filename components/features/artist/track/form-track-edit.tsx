@@ -29,7 +29,7 @@ export function FormTrackEdit({
   const router = useRouter();
 
   const { data: albumRes, isLoading: isLoadingAlbum } = useAlbumDetail(albumId);
-  const { data: trackRes, isLoading: isLoadingTrack } = useTrackDetail(trackId);
+  const { data: track, isLoading: isLoadingTrack } = useTrackDetail(trackId);
 
   const {
     mutate: updateTrack,
@@ -39,7 +39,6 @@ export function FormTrackEdit({
     isSuccess,
   } = useUpdateTrack(trackId, albumId);
 
-  const track = trackRes?.data || null;
   const album = albumRes?.data || null;
   const featArtists = track?.artists
     ? track.artists.filter((a: FeatArtist) => !a.isMain)
@@ -70,7 +69,7 @@ export function FormTrackEdit({
         isrc: track.isrc || "",
         composer: track.composer || "",
         producer: track.producer || "",
-        featArtistIds: track.trackArtists?.map((ta: any) => ta.artist.id) || [],
+        featArtistIds: track.artists?.map((ta: any) => ta.artist.id) || [],
       });
 
       setDuration(track.duration);

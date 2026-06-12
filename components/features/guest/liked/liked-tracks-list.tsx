@@ -68,7 +68,7 @@ export function LikedTracksList({ tracks }: LikedTracksContainerProps) {
 
   return (
     <div className="mt-4">
-      <div className="grid grid-cols-[50px_minmax(0,1fr)_100px] lg:grid-cols-[50px_minmax(0,2fr)_minmax(0,1.5fr)_minmax(0,1fr)_100px] gap-4 px-4 py-2 border-b border-border text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4 sticky top-0 bg-background z-10 shadow-sm">
+      <div className="grid grid-cols-[50px_minmax(0,1fr)_100px] lg:grid-cols-[50px_minmax(0,2fr)_minmax(0,1.5fr)_minmax(0,1fr)_100px] gap-4 px-4 py-2 border-b border-border text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
         <div className="text-center">#</div>
         <div>Tiêu đề</div>
         <div className="hidden lg:block">Album</div>
@@ -104,7 +104,6 @@ export function LikedTracksList({ tracks }: LikedTracksContainerProps) {
                 key={track.id}
                 track={track}
                 index={index}
-                refetch={refetch}
                 isThisTrackPlaying={isThisTrackPlaying}
                 isActuallyPlaying={isActuallyPlaying}
                 onPlaySingleTrack={handlePlaySingleTrack}

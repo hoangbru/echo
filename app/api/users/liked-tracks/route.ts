@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const userId = auth.user.id;
+    const userId = auth.user?.id;
     const role = auth.role;
     const currentArtistId = auth.artistId;
 

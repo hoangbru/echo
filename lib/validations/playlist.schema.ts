@@ -11,6 +11,7 @@ export const playlistFormSchema = z.object({
     .string()
     .trim()
     .max(1000, { message: "Mô tả không được vượt quá 1000 ký tự." })
+    .optional()
     .nullish(),
 
   isPublic: z.boolean().default(true),

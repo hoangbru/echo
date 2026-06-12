@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     }
 
     const supabase = createClient();
-    const userId = auth.user.id;
+    const userId = auth.user?.id;
     const itemName = "Echo Pro (1 Tháng)";
     const description = `Echo - Thanh toan goi Pro`;
     const amount = 39000;

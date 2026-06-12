@@ -69,39 +69,42 @@ const AlbumContainer = ({ albumId }: AlbumContainerProps) => {
   }
 
   return (
-    <div>
+    <div className="bg-background text-foreground min-h-screen">
       {/* --- HERO SECTION --- */}
       {album && <AlbumHeroSection album={album} totalMins={totalMins} />}
 
       {/* --- CONTENT SECTION --- */}
-      <div className="px-6 bg-gradient-to-b from-neutral-900/50 to-[#121212] min-h-screen pt-4">
+      {/* Thay đổi màu nền gradient sang biến hệ thống */}
+      <div className="px-6 bg-gradient-to-b from-secondary/50 to-background min-h-screen pt-4">
         <div className="pb-8">
           {/* --- ACTION BAR --- */}
           <div className="flex items-center gap-6 py-6">
             <button
               onClick={handlePlayAlbum}
-              className="w-14 h-14 rounded-full bg-primary flex items-center justify-center hover:scale-105 transition-transform shadow-xl"
+              className="w-14 h-14 rounded-full bg-primary flex items-center justify-center hover:scale-105 transition-transform shadow-xl shadow-primary/20"
             >
               {isThisAlbumPlaying ? (
-                <Pause className="w-6 h-6 text-black fill-black" />
+                // Đổi màu icon sang primary-foreground để tương phản tốt trên nền primary
+                <Pause className="w-6 h-6 text-primary-foreground fill-primary-foreground" />
               ) : (
-                <Play className="w-6 h-6 text-black fill-black ml-1" />
+                <Play className="w-6 h-6 text-primary-foreground fill-primary-foreground ml-1" />
               )}
             </button>
 
-            <button className="text-gray-400 hover:text-white transition-colors">
+            <button className="text-muted-foreground hover:text-foreground hover:scale-110 transition-all">
               <Heart className="w-8 h-8" />
             </button>
 
-            <button className="text-gray-400 hover:text-white transition-colors">
+            <button className="text-muted-foreground hover:text-foreground hover:scale-110 transition-all">
               <MoreHorizontal className="w-8 h-8" />
             </button>
           </div>
 
           {album && <AlbumTrackList album={album} tracks={tracks} />}
         </div>
+
         {/* Copyright Information */}
-        <div className="mt-8 mb-12 flex flex-col gap-1 text-[13px] text-gray-400 font-medium">
+        <div className="mt-8 mb-12 flex flex-col gap-1 text-[13px] text-muted-foreground font-medium">
           <p>{formatDate(album?.releaseDate || "", "full")}</p>
           <p>
             © {formatDate(album?.releaseDate || "", "yearOnly")}{" "}
@@ -119,12 +122,12 @@ const AlbumContainer = ({ albumId }: AlbumContainerProps) => {
         {otherAlbums.length > 0 && (
           <div className="mt-12 pb-32">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-white">
+              <h2 className="text-2xl font-bold text-foreground">
                 Nhiều hơn từ {album?.artist.stageName}
               </h2>
               <Link
                 href={`/artist/${album?.artist.id}`}
-                className="text-sm font-bold text-gray-400 hover:text-white hover:underline uppercase tracking-wider"
+                className="text-sm font-bold text-muted-foreground hover:text-foreground hover:underline uppercase tracking-wider transition-colors"
               >
                 Xem trang nghệ sĩ
               </Link>

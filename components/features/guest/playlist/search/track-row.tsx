@@ -24,7 +24,7 @@ type Props = {
 };
 
 export function TrackRow({ track, playlistId, existingTrackIds }: Props) {
-  const { mutate: addTrack, isPending } = useAddTrackToPlaylist(playlistId);
+  const { mutate: addTrack, isPending } = useAddTrackToPlaylist();
   const alreadyAdded = existingTrackIds.has(track.id);
 
   const displayImage = track.imageUrl ?? track.album?.coverImage ?? null;
@@ -73,7 +73,7 @@ export function TrackRow({ track, playlistId, existingTrackIds }: Props) {
       {/* Add button */}
       <button
         disabled={alreadyAdded || isPending}
-        onClick={() => addTrack(track.id)}
+        onClick={() => addTrack({ playlistId, trackId: track.id })}
         aria-label={alreadyAdded ? "Đã thêm" : "Thêm vào playlist"}
         className={`w-7 h-7 rounded-full border flex items-center justify-center flex-shrink-0 transition-colors
           ${

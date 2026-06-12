@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Play } from "lucide-react";
 
-import { DropdownTrackMenu } from "./dropdown-track-menu";
+import { DropdownTrackMenu } from "@/components/shared";
 
 import { usePlayer } from "@/hooks/use-player";
 import { cn } from "@/lib/utils/helpers";
@@ -66,7 +66,7 @@ export function QueuePanel() {
               </span>
             </div>
 
-            <DropdownTrackMenu />
+            <DropdownTrackMenu trackId={currentTrack.id}/>
           </div>
         )}
       </div>
@@ -104,7 +104,7 @@ export function QueuePanel() {
                   </span>
                 </div>
 
-                <DropdownTrackMenu />
+                <DropdownTrackMenu trackId={track.id}/>
               </div>
             ))}
           </div>

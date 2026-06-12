@@ -7,6 +7,7 @@ import {
   QueryProvider,
   ThemeProvider,
 } from "@/components/providers";
+import { AuthProvider } from "@/hooks/use-auth";
 
 const geist = Geist({ subsets: ["latin"] });
 
@@ -36,8 +37,10 @@ export default function RootLayout({
             defaultTheme="dark"
             enableSystem={false}
           >
-            <ModalProvider />
-            {children}
+            <AuthProvider>
+              <ModalProvider />
+              {children}
+            </AuthProvider>
           </ThemeProvider>
         </QueryProvider>
       </body>

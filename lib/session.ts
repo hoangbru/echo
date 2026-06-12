@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { UserRole } from "@/types";
+import { UserProfile, UserRole } from "@/types";
 
 export async function authorizeApi(allowedRoles: UserRole[] = []) {
   const supabase = createClient();
@@ -24,7 +24,7 @@ export async function authorizeApi(allowedRoles: UserRole[] = []) {
   }
 
   return {
-    user: userRes.data,
+    user: userRes.data as UserProfile,
     role,
     artistId,
     error: null,

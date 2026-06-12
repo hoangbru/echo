@@ -1,4 +1,12 @@
-import { useEffect, useState } from "react";
+"use client";
+
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
 import { createClient } from "@/lib/supabase/client";
 import { UserProfile } from "@/types";
 import { useQuery } from "@tanstack/react-query";
@@ -10,7 +18,19 @@ export interface UserAuth {
   user_metadata?: Record<string, any>;
 }
 
-export function useAuth() {
+interface AuthContextType {
+  user: UserAuth | null;
+  loading: boolean;
+  error: string | null;
+}
+
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  loading: true,
+  error: null,
+});
+
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserAuth | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +55,6 @@ export function useAuth() {
         setLoading(false);
       });
 
-    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -55,7 +74,19 @@ export function useAuth() {
     };
   }, []);
 
-  return { user, loading, error };
+  return (
+    <AuthContext.Provider value={{ user, loading, error }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth phải được sử dụng bên trong AuthProvider");
+  }
+  return context;
 }
 
 export function useProfile() {
