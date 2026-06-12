@@ -28,25 +28,27 @@ export function SuccessModal({
 }: SuccessModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
-      <DialogContent className="bg-card border-white/10 text-white sm:max-w-md flex flex-col items-center justify-center py-10">
-        <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mb-4">
-          <CheckCircle className="w-10 h-10 text-green-500" />
+      <DialogContent className="bg-card border-border sm:max-w-md flex flex-col items-center justify-center py-10">
+        <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mb-4 shadow-lg shadow-emerald-500/20">
+          <CheckCircle className="w-10 h-10 text-emerald-500" />
         </div>
 
         <DialogHeader className="text-center w-full flex flex-col items-center">
-          <DialogTitle className="text-2xl font-bold mb-2">{title}</DialogTitle>
+          <DialogTitle className="text-2xl font-bold text-foreground mb-2">
+            {title}
+          </DialogTitle>
           {description && (
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-muted-foreground">
               {description}
             </DialogDescription>
           )}
         </DialogHeader>
 
         {onConfirm && (
-          <DialogFooter className="mt-6 w-full">
+          <DialogFooter className="mt-6 w-full sm:justify-center">
             <Button
               onClick={onConfirm}
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-bold"
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
             >
               Tiếp tục ngay <ArrowRight className="w-4 h-4 ml-2" />
             </Button>

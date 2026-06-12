@@ -1,39 +1,59 @@
 import Link from "next/link";
 import { ShieldAlert, Home, ArrowLeft } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
+
 export default function ForbiddenPage() {
   return (
-    <div className="min-h-screen bg-[#09090b] flex flex-col items-center justify-center p-4 text-center">
-      <div className="w-24 h-24 bg-red-500/10 rounded-full flex items-center justify-center mb-8 shadow-[0_0_40px_rgba(239,68,68,0.2)]">
-        <ShieldAlert className="w-12 h-12 text-red-500" />
-      </div>
+    <div className="min-h-[100dvh] flex flex-col items-center justify-center bg-background px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-destructive/15 rounded-full blur-[100px] pointer-events-none" />
 
-      <h1 className="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-500 mb-4 tracking-tighter">
-        403
-      </h1>
+      <div className="relative z-10 flex flex-col items-center text-center max-w-lg space-y-8">
+        <div className="relative flex items-center justify-center w-32 h-32 bg-destructive/10 rounded-full shadow-xl shadow-destructive/20">
+          <ShieldAlert className="w-16 h-16 text-destructive" />
+        </div>
 
-      <p className="text-gray-400 max-w-md mb-10 leading-relaxed text-lg">
-        Xin lỗi, tài khoản của bạn không có đủ quyền hạn để vào khu vực Quản trị
-        viên. Nếu bạn cho rằng đây là một sự nhầm lẫn, vui lòng liên hệ với
-        chúng tôi.
-      </p>
+        <div className="space-y-4">
+          <h1 className="text-7xl sm:text-9xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-foreground to-muted-foreground drop-shadow-sm">
+            403
+          </h1>
 
-      <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md justify-center">
-        <Link
-          href="/"
-          className="flex items-center justify-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-white font-medium transition-all hover:-translate-y-1"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Quay lại
-        </Link>
+          <div className="space-y-2">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+              Khu vực cấm truy cập!
+            </h2>
+            <p className="text-base text-muted-foreground leading-relaxed">
+              Xin lỗi, tài khoản của bạn không có đủ quyền hạn để vào khu vực
+              Quản trị viên. Nếu bạn cho rằng đây là một sự nhầm lẫn, vui lòng
+              liên hệ với chúng tôi.
+            </p>
+          </div>
+        </div>
 
-        <Link
-          href="/"
-          className="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-pink-600 shadow-[0_0_20px_rgba(236,72,153,0.3)] rounded-full text-white font-medium transition-all hover:-translate-y-1"
-        >
-          <Home className="w-4 h-4" />
-          Trang chủ Echo
-        </Link>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full pt-4">
+          <Button
+            asChild
+            variant="outline"
+            size="lg"
+            className="w-full sm:w-auto gap-2 rounded-full border-border hover:bg-accent hover:text-accent-foreground transition-all"
+          >
+            <Link href="/">
+              <ArrowLeft className="w-4 h-4" />
+              Quay lại
+            </Link>
+          </Button>
+
+          <Button
+            asChild
+            size="lg"
+            className="w-full sm:w-auto gap-2 rounded-full shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all"
+          >
+            <Link href="/">
+              <Home className="w-4 h-4" />
+              Trang chủ Echo
+            </Link>
+          </Button>
+        </div>
       </div>
     </div>
   );

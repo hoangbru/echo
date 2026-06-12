@@ -1,6 +1,15 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+const PROTECTED_ROUTES = [
+  "/profile",
+  "/library",
+  "/album",
+  "/playlists",
+  "/studio",
+  "/subscription",
+];
+
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request: {
@@ -38,18 +47,52 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isAuthPage = request.nextUrl.pathname.startsWith("/auth/login");
+  const currentPath = request.nextUrl.pathname;
+
+  if (currentPath.startsWith("/admin")) {
+    if (!user) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/404";
+      return NextResponse.rewrite(url);
+    }
+
+    const { data: profile } = await supabase
+      .from("user")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (profile?.role !== "ADMIN") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/404";
+      return NextResponse.rewrite(url);
+    }
+  }
+
+  const isAuthPage = currentPath.startsWith("/auth/login");
+  const isProtectedRoute = PROTECTED_ROUTES.some((route) =>
+    currentPath.startsWith(route),
+  );
 
   if (user && isAuthPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/";
-
     const redirectResponse = NextResponse.redirect(url);
-
     supabaseResponse.cookies.getAll().forEach((cookie) => {
       redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
     });
+    return redirectResponse;
+  }
 
+  if (!user && isProtectedRoute) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/login";
+    url.searchParams.set("next", currentPath);
+
+    const redirectResponse = NextResponse.redirect(url);
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+    });
     return redirectResponse;
   }
 

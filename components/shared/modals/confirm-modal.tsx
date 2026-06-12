@@ -36,14 +36,14 @@ export function ConfirmModal({
 }: ConfirmModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={(open: boolean) => !open && onClose()}>
-      <DialogContent className="bg-card border-white/10 text-white">
+      <DialogContent className="bg-card border-border sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription className="text-gray-400">
+          <DialogTitle className="text-foreground">{title}</DialogTitle>
+          <DialogDescription className="text-muted-foreground pt-2">
             {description}
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter>
+        <DialogFooter className="gap-2 sm:gap-0 mt-4">
           <Button variant="ghost" onClick={onClose} disabled={isProcessing}>
             {cancelText}
           </Button>
@@ -51,7 +51,7 @@ export function ConfirmModal({
             variant="destructive"
             onClick={onConfirm}
             disabled={isProcessing}
-            className="bg-red-600 hover:bg-red-700"
+            className="shadow-md"
           >
             {isProcessing && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
             {confirmText}

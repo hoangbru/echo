@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 
 import {
   Dialog,
@@ -12,7 +13,6 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { usePlayer } from "@/hooks/use-player";
-import Link from "next/link";
 
 export function AuthModal() {
   const { showLoginModal, setShowLoginModal, teasingTrack, setTeasingTrack } =
@@ -26,9 +26,9 @@ export function AuthModal() {
   return (
     <Dialog open={showLoginModal} onOpenChange={handleOpenChange}>
       <DialogContent className="bg-card border-border sm:max-w-md p-0 overflow-hidden shadow-2xl rounded-[0.5rem]">
-        <div className="relative w-full h-56 bg-sidebar-background flex items-center justify-center p-6 border-b border-border">
+        <div className="relative w-full h-56 bg-muted flex items-center justify-center p-6 border-b border-border">
           {teasingTrack?.imageUrl ? (
-            <div className="relative w-36 h-36 rounded-md overflow-hidden shadow-2xl ring-1 ring-white/10">
+            <div className="relative w-36 h-36 rounded-md overflow-hidden shadow-2xl ring-1 ring-border">
               <Image
                 src={teasingTrack.imageUrl}
                 alt={teasingTrack.title}
@@ -53,11 +53,11 @@ export function AuthModal() {
               {teasingTrack ? (
                 <>
                   Đăng nhập để phát trọn vẹn bài hát{" "}
-                  <strong className="text-foreground">
+                  <strong className="text-foreground font-semibold">
                     {teasingTrack.title}
                   </strong>{" "}
                   của{" "}
-                  <strong className="text-foreground">
+                  <strong className="text-foreground font-semibold">
                     {teasingTrack.artistNames}
                   </strong>{" "}
                   và tự do sáng tạo không gian âm nhạc của riêng bạn.
@@ -68,27 +68,21 @@ export function AuthModal() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="flex flex-col gap-3 mt-4">
-            <Button
-              asChild
-              className="bg-primary hover:bg-secondary text-primary-foreground font-bold rounded-full py-6 text-[15px] transition-all"
-            >
-              <Link href="/auth/login">Đăng ký miễn phí</Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="border-border text-foreground hover:bg-white/5 font-bold rounded-full py-6 text-[15px] transition-all"
-            >
-              <Link href="/auth/login">Đăng nhập</Link>
-            </Button>
-          </div>
+          <Button
+            asChild
+            className="mt-4 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-full py-6 text-[15px] shadow-md shadow-primary/20 transition-all"
+          >
+            <Link href="/auth/login">Đăng nhập</Link>
+          </Button>
 
           <p className="text-xs text-muted-foreground mt-4">
             Bằng việc tiếp tục, bạn đồng ý với{" "}
-            <a href="/terms" className="text-foreground hover:underline">
+            <Link
+              href="/terms"
+              className="text-foreground font-medium hover:underline"
+            >
               Điều khoản dịch vụ
-            </a>{" "}
+            </Link>{" "}
             của Echo.
           </p>
         </div>

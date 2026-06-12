@@ -27,9 +27,9 @@ const navItems = [
 ];
 
 const libraryItems = [
-  { label: "Bài hát đã thích", icon: Heart, href: "/liked" },
-  { label: "Playlists của bạn", icon: ListMusic, href: "/playlists" },
-  { label: "Albums đã lưu", icon: Music, href: "/albums" },
+  { label: "Bài hát đã thích", icon: Heart, href: "/library/liked" },
+  { label: "Playlists của bạn", icon: ListMusic, href: "/library/playlists" },
+  { label: "Albums đã lưu", icon: Music, href: "/library/albums" },
 ];
 
 export function GuestSidebar() {

@@ -1,6 +1,5 @@
 "use client";
 
-import { Fragment } from "react";
 import { useRouter } from "next/navigation";
 import { Music, Plus, Loader2 } from "lucide-react";
 
@@ -21,40 +20,38 @@ export const PlaylistGrid = () => {
     createPlaylist(undefined, {
       onSuccess: (response) => {
         const newPlaylistId = response.data.id;
-        router.push(`/playlists/${newPlaylistId}`);
+        router.push(`/library/playlists/${newPlaylistId}`);
       },
     });
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background p-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div
-              key={i}
-              className="p-4 bg-card border border-border rounded-[0.5rem] flex flex-col gap-4"
-            >
-              <div className="aspect-square bg-sidebar-background animate-pulse rounded-[4px]"></div>
-              <div className="h-5 w-3/4 bg-sidebar-background animate-pulse rounded-[4px]"></div>
-              <div className="h-4 w-1/2 bg-sidebar-background animate-pulse rounded-[4px]"></div>
-            </div>
-          ))}
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        {Array.from({ length: 10 }).map((_, i) => (
+          <div
+            key={i}
+            className="p-4 bg-card border border-border rounded-[0.5rem] flex flex-col gap-4"
+          >
+            <div className="aspect-square bg-muted animate-pulse rounded-md" />
+            <div className="h-5 w-3/4 bg-muted animate-pulse rounded-md" />
+            <div className="h-4 w-1/2 bg-muted animate-pulse rounded-md" />
+          </div>
+        ))}
       </div>
     );
   }
 
   if (isError) {
     return (
-      <div className="min-h-screen bg-background p-8 flex flex-col items-center justify-center text-destructive">
+      <div className="flex flex-col items-center justify-center py-20 text-destructive animate-in fade-in duration-500">
         <RefreshButton onRefresh={() => refetch()} />
       </div>
     );
   }
 
   return (
-    <Fragment>
+    <div className="animate-in fade-in duration-700 slide-in-from-bottom-4">
       {playlists.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {playlists.map((playlist) => (
@@ -63,7 +60,7 @@ export const PlaylistGrid = () => {
         </div>
       ) : (
         <div className="text-center py-24 bg-card rounded-[0.5rem] border border-border shadow-sm">
-          <div className="w-24 h-24 bg-sidebar-background rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
             <Music className="w-12 h-12 text-muted-foreground/60" />
           </div>
           <h2 className="text-2xl font-bold mb-2 text-foreground">
@@ -87,6 +84,6 @@ export const PlaylistGrid = () => {
           </Button>
         </div>
       )}
-    </Fragment>
+    </div>
   );
 };

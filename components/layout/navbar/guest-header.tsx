@@ -21,27 +21,30 @@ import { SearchInput } from "@/components/features/guest/search";
 import { ProBadge } from "@/components/shared/badge";
 import ThemeSwitcher from "../theme-switcher";
 
-import { UserProfile } from "@/types/user.type";
 import { createClient } from "@/lib/supabase/client";
 import { usePlayer } from "@/hooks/use-player";
 import { PRO_THEMES } from "@/constants/themes";
+import { useProfile } from "@/hooks/use-auth";
+import { UserRole } from "@/types";
+import { useQueryClient } from "@tanstack/react-query";
 
-interface GuestHeaderProps {
-  profile: UserProfile | null;
-  isArtist: boolean;
-  isAdmin: boolean;
-}
-
-export function GuestHeader({ profile, isArtist, isAdmin }: GuestHeaderProps) {
+export function GuestHeader() {
   const supabase = createClient();
-  const { resetPlayer, setIsAuthenticated } = usePlayer();
-  const { theme, setTheme } = useTheme();
   const router = useRouter();
+  const queryClient = useQueryClient();
+
+  const { theme, setTheme } = useTheme();
+  const { resetPlayer, setIsAuthenticated } = usePlayer();
+
+  const { data: profile, isLoading } = useProfile();
 
   const menuRef = useRef<HTMLDivElement>(null);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  const isAdmin = profile?.role === UserRole.ADMIN;
+  const isArtist = profile?.role === UserRole.ARTIST;
 
   useEffect(() => setMounted(true), []);
   useEffect(() => {
@@ -67,18 +70,24 @@ export function GuestHeader({ profile, isArtist, isAdmin }: GuestHeaderProps) {
   const handleLogout = async () => {
     try {
       const { error } = await supabase.auth.signOut();
-
       if (error) throw error;
+
+      queryClient.clear();
 
       setIsAuthenticated(false);
       setIsMenuOpen(false);
       resetPlayer();
       setTheme("dark");
+
       router.push("/");
+
       router.refresh();
+
       toast.success("Đã đăng xuất thành công!");
-    } catch (error: any) {
-      toast.error("Lỗi đăng xuất: " + error.message);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Đã xảy ra lỗi không xác định";
+      toast.error(`Lỗi đăng xuất: ${errorMessage}`);
     }
   };
 
@@ -89,11 +98,18 @@ export function GuestHeader({ profile, isArtist, isAdmin }: GuestHeaderProps) {
           <SearchInput />
         </div>
 
-        {profile ? (
+        {isLoading ? (
+          <div className="flex items-center gap-4">
+            <div className="h-10 w-10 rounded-full bg-muted animate-pulse flex items-center justify-center ring-2 ring-border overflow-hidden">
+              <UserProfileIcon className="h-5 w-5 text-muted-foreground" />
+            </div>
+          </div>
+        ) : profile ? (
           <div className="flex items-center gap-4 relative" ref={menuRef}>
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="flex items-center outline-none rounded-full transition-transform hover:scale-105 active:scale-95 relative"
+              aria-label="Toggle user menu"
             >
               <div
                 className={`relative h-10 w-10 rounded-full ring-2 overflow-hidden flex-shrink-0 transition-all ${
@@ -110,7 +126,7 @@ export function GuestHeader({ profile, isArtist, isAdmin }: GuestHeaderProps) {
                     className="object-cover"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary to-purple-600 text-primary-foreground font-bold uppercase text-lg">
+                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary to-secondary text-primary-foreground font-bold uppercase text-lg">
                     {(profile.fullName || profile.username || "U")[0]}
                   </div>
                 )}
@@ -126,7 +142,7 @@ export function GuestHeader({ profile, isArtist, isAdmin }: GuestHeaderProps) {
             {isMenuOpen && (
               <div className="absolute top-full right-0 mt-3 w-72 bg-popover border border-border rounded-2xl shadow-xl py-2 z-50 origin-top-right animate-in fade-in zoom-in-95 duration-200">
                 <div className="px-4 py-3 border-b border-border mb-2 flex items-center gap-3">
-                  <div className="relative overflow-hidden h-12 w-12 rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-primary-foreground font-bold uppercase text-xl flex-shrink-0">
+                  <div className="relative overflow-hidden h-12 w-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-foreground font-bold uppercase text-xl flex-shrink-0">
                     {profile.avatar ? (
                       <Image
                         src={profile.avatar}
@@ -150,7 +166,7 @@ export function GuestHeader({ profile, isArtist, isAdmin }: GuestHeaderProps) {
                         <Shield className="w-3 h-3" /> Quản trị viên
                       </span>
                     ) : profile.isPremium ? (
-                      <span className="text-xs font-semibold text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-400">
+                      <span className="text-xs font-semibold bg-clip-text text-primary">
                         Premium Member
                       </span>
                     ) : (

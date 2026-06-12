@@ -23,10 +23,6 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response?.status === 401) {
-      window.location.href = "/auth/login";
-    }
-
     const errorMessage = error.response?.data?.error || error.message;
     return Promise.reject(new Error(errorMessage));
   },
