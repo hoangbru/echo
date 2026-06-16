@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Heart } from "lucide-react";
-import { useProfile } from "@/hooks/use-auth";
+import { useProfile } from "@/hooks/use-profile";
 
 interface LikedTrackHeroProps {
   totalTracks: number;

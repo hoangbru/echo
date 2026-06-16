@@ -11,7 +11,7 @@ import { useCreatePlaylist, usePlaylists } from "@/hooks/use-playlists";
 
 export const PlaylistGrid = () => {
   const router = useRouter();
-  const { data: playlistsRes, isLoading, isError, refetch } = usePlaylists({});
+  const { data: playlistsRes, isLoading, isError, refetch } = usePlaylists();
   const { mutate: createPlaylist, isPending: isCreating } = useCreatePlaylist();
 
   const playlists = playlistsRes?.data || [];

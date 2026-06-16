@@ -24,7 +24,7 @@ import ThemeSwitcher from "../theme-switcher";
 import { createClient } from "@/lib/supabase/client";
 import { usePlayer } from "@/hooks/use-player";
 import { PRO_THEMES } from "@/constants/themes";
-import { useProfile } from "@/hooks/use-auth";
+import { useProfile } from "@/hooks/use-profile";
 import { UserRole } from "@/types";
 import { useQueryClient } from "@tanstack/react-query";
 

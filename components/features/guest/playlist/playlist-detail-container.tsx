@@ -30,6 +30,7 @@ export const PlaylistDetailContainer = ({
     isLoading: isLoadingDetail,
     refetch: refetchDetail,
   } = usePlaylistDetail(playlistId);
+  
   const { mutateAsync: removeTrack, isPending: isRemoving } =
     useRemoveTrackFromPlaylist(playlistId);
 

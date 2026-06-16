@@ -88,13 +88,3 @@ export function useAuth() {
   }
   return context;
 }
-
-export function useProfile() {
-  return useQuery<UserProfile>({
-    queryKey: ["profile"],
-    queryFn: async () => {
-      const res = await apiClient.get(`/users/profile`);
-      return res.data.data as UserProfile;
-    },
-  });
-}

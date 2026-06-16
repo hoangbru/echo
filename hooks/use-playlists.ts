@@ -15,7 +15,10 @@ export interface CreatePlaylistPayload {
   isPublic?: boolean;
 }
 
-export function usePlaylists(params: PlaylistQueryParams) {
+export function usePlaylists(
+  params?: PlaylistQueryParams,
+  enabled: boolean = true,
+) {
   return useQuery({
     queryKey: ["playlists", params],
     queryFn: async () => {
@@ -23,6 +26,7 @@ export function usePlaylists(params: PlaylistQueryParams) {
       return res.data as { data: Playlist[]; meta?: any };
     },
     staleTime: 60 * 1000,
+    enabled: enabled,
   });
 }
 

@@ -15,6 +15,20 @@ export async function GET(request: NextRequest) {
     }
 
     const userId = auth.user?.id || "";
+
+    const { data: checkLock } = await supabase
+      .from("user")
+      .select("is_locked")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (checkLock?.is_locked) {
+      return NextResponse.json(
+        { error: "Tài khoản của bạn đã bị vô hiệu hoá" },
+        { status: 403 },
+      );
+    }
+
     const isPremium = await checkAndRevokePremium(userId);
 
     const { data, error } = await supabase

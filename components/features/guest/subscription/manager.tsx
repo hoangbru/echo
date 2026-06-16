@@ -21,7 +21,7 @@ import {
 import { SkeletonCard } from "./skeleton-card";
 
 import { SubscriptionStatus } from "@/types";
-import { useProfile } from "@/hooks/use-auth";
+import { useProfile } from "@/hooks/use-profile";
 import { useCancelSubscription } from "@/hooks/use-subscription";
 import { formatDate } from "@/lib/utils/format";
 
@@ -236,7 +236,7 @@ export function SubscriptionManager() {
                       <button
                         onClick={handleCancelClick}
                         disabled={cancelMutation.isPending}
-                        className="w-full py-2 rounded-md border border-border text-muted-foreground text-xs font-medium hover:bg-card-hover hover:text-foreground transition-colors disabled:opacity-50 flex items-center justify-center gap-1"
+                        className="w-full py-2 rounded-md border border-border text-muted-foreground text-xs font-medium hover:bg-accent hover:text-foreground transition-colors disabled:opacity-50 flex items-center justify-center gap-1"
                       >
                         {cancelMutation.isPending ? (
                           <Loader2 className="w-3 h-3 animate-spin" />

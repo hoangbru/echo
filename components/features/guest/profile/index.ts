@@ -1,1 +1,1 @@
-export * from "./profile-client";
+export { ProfileClient } from "./profile-client";

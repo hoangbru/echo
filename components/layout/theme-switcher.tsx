@@ -5,7 +5,7 @@ import { useTheme } from "next-themes";
 import { Palette, Lock, Check } from "lucide-react";
 
 import { THEME_OPTIONS } from "@/constants/themes";
-import { useProfile } from "@/hooks/use-auth";
+import { useProfile } from "@/hooks/use-profile";
 import { useUpgradeModal } from "@/hooks/use-upgrade-modal";
 
 export default function ThemeSwitcher() {

@@ -3,241 +3,225 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Edit2, Heart, Music } from "lucide-react";
+import { MoreHorizontal, Loader2, Music, UserCheck, Edit2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { useFollowedArtists, useProfile } from "@/hooks/use-profile";
+import { usePlaylists } from "@/hooks/use-playlists";
+import { ProfileEditModal } from "./profile-edit-modal";
 
-import { User } from "@/types";
-import { createClient } from "@/lib/supabase/client";
-
-export function ProfileClient({
-  initialProfile,
-}: {
-  initialProfile: User;
-}) {
+export function ProfileClient() {
   const router = useRouter();
-  const supabase = createClient();
-  const [profile, setProfile] = useState<User>(initialProfile);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  const [editForm, setEditForm] = useState({
-    fullName: profile.fullName || "",
-    bio: profile.bio || "",
-  });
+  // Lấy thông tin Profile
+  const { data: profile, isLoading: isLoadingProfile, error } = useProfile();
 
-  const handleSaveProfile = async () => {
-    setProfile({
-      ...profile,
-      fullName: editForm.fullName,
-      bio: editForm.bio,
-    });
-    setIsEditing(false);
+  // Lấy Playlists
+  const { data: playlistsRes, isLoading: isLoadingPlaylists } = usePlaylists(
+    { status: "public", limit: 6 },
+    !!profile?.id,
+  );
+  const publicPlaylists = playlistsRes?.data || [];
 
-    const { error } = await supabase
-      .from("user")
-      .update({
-        fullName: editForm.fullName,
-        bio: editForm.bio,
-      })
-      .eq("id", profile.id);
+  const { data: followedArtists = [], isLoading: isLoadingArtists } =
+    useFollowedArtists();
 
-    if (error) {
-      console.error("Lỗi khi lưu profile:", error);
-    }
-  };
+  if (isLoadingProfile) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
+  }
 
-  const handleCancelEdit = () => {
-    setIsEditing(false);
-    setEditForm({ fullName: profile.fullName, bio: profile.bio });
-  };
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.refresh();
-    router.push("/");
-  };
+  if (error || !profile) return <div>Lỗi tải dữ liệu</div>;
 
   return (
-    <div className="space-y-8 px-6 py-8">
-      {/* Profile Header */}
-      <div className="space-y-6">
-        {/* Cover Image */}
-        <div className="h-40 rounded-lg relative overflow-hidden">
-          <Image
-            src="https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=1200"
-            alt="Cover"
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-primary/50 mix-blend-overlay" />
-        </div>
-
-        {/* Profile Info */}
-        <div className="flex gap-6 items-end -mt-16 relative z-10">
-          <div className="h-32 w-32 rounded-full border-4 border-background overflow-hidden flex-shrink-0 relative shadow-xl">
-            {profile.avatar ? (
-              <Image
-                src={profile.avatar}
-                alt={profile.fullName || ""}
-                fill
-                className="object-cover"
-              />
-            ) : (
-              <div className="flex w-full h-full items-center justify-center bg-gradient-to-br from-primary/20 to-purple-500/20 backdrop-blur-sm text-primary">
-                <span className="text-5xl font-black uppercase drop-shadow-md">
-                  {(profile.username || profile.fullName || "U")[0]}
-                </span>
-              </div>
-            )}
-          </div>
-
-          <div className="flex-1 pb-4">
-            <div className="flex items-center gap-2">
-              <h1 className="text-4xl font-bold text-foreground">
-                {profile.fullName}
-              </h1>
-              {profile.isPremium && (
-                <span className="px-3 py-1 rounded-full bg-gradient-to-r from-primary to-fuchsia-500 text-white text-xs font-semibold shadow-[0_0_12px_rgba(236,72,153,0.4)]">
-                  Premium
-                </span>
-              )}
-            </div>
-            <p className="text-muted-foreground">@{profile.username}</p>
-
-            {!isEditing && (
-              <>
-                <p className="text-foreground mt-2">{profile.bio}</p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="mt-4 border-primary/60 text-pink-400 hover:bg-primary/10 hover:border-primary"
-                  onClick={() => setIsEditing(true)}
-                >
-                  <Edit2 className="h-4 w-4 mr-2" />
-                  Edit Profile
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Edit Form */}
-        {isEditing && (
-          <div className="bg-[#111111] border border-white/5 rounded-xl p-6 space-y-4 shadow-[0_0_40px_rgba(236,72,153,0.05)]">
-            <h3 className="text-lg font-semibold text-foreground">
-              Edit Profile
-            </h3>
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-1">
-                  Display Name
-                </label>
-                <input
-                  type="text"
-                  value={editForm.fullName}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, fullName: e.target.value })
-                  }
-                  className="w-full rounded-lg bg-[#1A1A1A] border border-white/10 px-4 py-2 text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/40"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-1">
-                  Bio
-                </label>
-                <textarea
-                  value={editForm.bio}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, bio: e.target.value })
-                  }
-                  className="w-full rounded-lg bg-[#1A1A1A] border border-white/10 px-4 py-2 text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/40"
-                />
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                className="border-white/10 hover:bg-white/5 text-white"
-                onClick={handleCancelEdit}
-              >
-                Cancel
-              </Button>
-              <Button
-                className="bg-primary text-white hover:bg-pink-600 shadow-[0_0_15px_rgba(236,72,153,0.4)]"
-                onClick={handleSaveProfile}
-              >
-                Save Changes
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-card rounded-lg p-4 text-center">
-          <div className="text-3xl font-bold text-primary">
-            {profile.followers?.toLocaleString()}
-          </div>
-          <div className="text-sm text-muted-foreground mt-1">Followers</div>
-        </div>
-        <div className="bg-card rounded-lg p-4 text-center">
-          <div className="text-3xl font-bold text-primary">
-            {profile.following?.toLocaleString()}
-          </div>
-          <div className="text-sm text-muted-foreground mt-1">Following</div>
-        </div>
-        <div className="bg-card rounded-lg p-4 text-center">
-          <div className="text-3xl font-bold text-primary">
-            {profile.totalPlaylists}
-          </div>
-          <div className="text-sm text-muted-foreground mt-1">Playlists</div>
-        </div>
-      </div>
-
-      {/* Quick Links */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-bold text-foreground">Quick Access</h2>
-        <a
-          href="/library/playlists"
-          className="group relative bg-card/60 backdrop-blur-sm rounded-xl p-6 border border-white/5 transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/20 flex items-center gap-4"
+    <div className="min-h-screen bg-background text-foreground pb-32">
+      {/* HEADER SECTION */}
+      <div className="pt-20 pb-8 px-8 bg-gradient-to-b from-card to-background flex items-end gap-6 group">
+        <div
+          className="h-48 w-48 rounded-full shadow-2xl overflow-hidden relative flex-shrink-0 bg-sidebar cursor-pointer"
+          onClick={() => setIsEditModalOpen(true)}
         >
-          <div className="h-12 w-12 rounded-xl bg-primary/15 flex items-center justify-center transition-all duration-300 group-hover:bg-primary/25 group-hover:shadow-lg group-hover:shadow-primary/30">
-            <Music className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <p className="font-semibold text-foreground">Playlists</p>
-            <p className="text-sm text-muted-foreground">
-              {profile.totalPlaylists} playlists
+          {profile.avatar ? (
+            <Image
+              src={profile.avatar}
+              alt="Avatar"
+              fill
+              className="object-cover"
+            />
+          ) : (
+            <div className="flex w-full h-full items-center justify-center bg-card text-muted-foreground">
+              <span className="text-7xl font-bold uppercase">
+                {(profile.fullName || profile.username || "U")[0]}
+              </span>
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col justify-end gap-1 pb-2">
+          <span className="text-[14px] font-medium uppercase tracking-wider text-foreground">
+            Hồ sơ
+          </span>
+
+          <h1
+            className="text-5xl md:text-7xl font-black tracking-tighter cursor-pointer hover:underline text-foreground my-1"
+            onClick={() => setIsEditModalOpen(true)}
+          >
+            {profile.fullName || profile.username}
+          </h1>
+
+          {profile.fullName && profile.fullName !== profile.username && (
+            <span className="text-[16px] text-muted-foreground font-medium mb-1">
+              @{profile.username}
+            </span>
+          )}
+
+          {profile.bio && (
+            <p className="text-[14px] md:text-[16px] text-muted-foreground line-clamp-2 max-w-3xl mt-2 mb-3">
+              {profile.bio}
             </p>
+          )}
+
+          <div className="text-[14px] text-muted-foreground font-medium flex items-center gap-1.5 mt-2">
+            <span className="text-foreground font-bold">
+              {publicPlaylists.length || 0}
+            </span>{" "}
+            danh sách phát công khai
+            <span className="text-[10px] mx-1">•</span>
+            <span className="text-foreground font-bold">
+              {followedArtists.length || 0}
+            </span>{" "}
+            Đang theo dõi
           </div>
-        </a>
+        </div>
       </div>
 
-      {/* Account Settings */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-bold text-foreground">Account</h2>
-        <Button
-          variant="ghost"
-          className="w-full justify-start bg-white/5 hover:bg-primary/5 hover:text-primary hover:border-l-2 hover:border-primary transition-all"
-        >
-          Change Password
-        </Button>
-        <Button
-          variant="ghost"
-          className="w-full justify-start bg-white/5 hover:bg-primary/5 hover:text-primary hover:border-l-2 hover:border-primary transition-all"
-        >
-          Download Your Data
-        </Button>
-        <Button
-          variant="destructive"
-          className="w-full"
-          onClick={handleSignOut}
-        >
-          Log Out
-        </Button>
+      <div className="px-8 space-y-12">
+        {/* ACTION BAR */}
+        <div className="flex items-center gap-6 pt-4">
+          <button
+            onClick={() => setIsEditModalOpen(true)}
+            className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <Edit2 className="w-6 h-6" />
+          </button>
+        </div>
+
+        <section className="space-y-4">
+          <h2 className="text-[24px] font-bold text-foreground">
+            Đang theo dõi
+          </h2>
+
+          {isLoadingArtists ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="p-4 bg-card rounded-xl animate-pulse">
+                  <div className="w-full aspect-square rounded-full bg-muted/50 mb-4" />
+                  <div className="h-4 bg-muted/50 rounded w-3/4 mx-auto mb-2" />
+                  <div className="h-3 bg-muted/50 rounded w-1/2 mx-auto" />
+                </div>
+              ))}
+            </div>
+          ) : followedArtists.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+              {followedArtists.map((artist: any) => (
+                <div
+                  key={artist.id}
+                  onClick={() => router.push(`/artist/${artist.id}`)}
+                  className="p-4 bg-card hover:bg-accent rounded-xl transition-colors group cursor-pointer text-center md:text-left"
+                >
+                  <div className="w-full aspect-square rounded-full overflow-hidden relative mb-4 shadow-lg group-hover:shadow-xl bg-border">
+                    <Image
+                      src={artist.profileImage || "/default-avatar.jpg"}
+                      alt={artist.stageName}
+                      fill
+                      sizes="(max-width: 640px) 50vw, 20vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <h3 className="font-semibold text-[16px] text-foreground truncate">
+                    {artist.stageName}
+                  </h3>
+                  <p className="text-[14px] text-muted-foreground truncate mt-1">
+                    Nghệ sĩ
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-10 bg-card/50 rounded-xl border border-dashed border-border">
+              <UserCheck className="w-12 h-12 text-muted-foreground/50 mb-3" />
+              <p className="text-muted-foreground text-[14px]">
+                Bạn chưa theo dõi nghệ sĩ nào.
+              </p>
+            </div>
+          )}
+        </section>
+
+        {/* --- SECTION: PUBLIC PLAYLISTS --- */}
+        <section className="space-y-4">
+          <h2 className="text-[24px] font-bold text-foreground hover:underline cursor-pointer">
+            Playlists Công khai
+          </h2>
+
+          {isLoadingPlaylists ? (
+            // Skeleton cho Playlist
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="p-4 bg-card rounded-xl animate-pulse">
+                  <div className="w-full aspect-square rounded-md bg-muted/50 mb-4" />
+                  <div className="h-4 bg-muted/50 rounded w-3/4 mb-2" />
+                  <div className="h-3 bg-muted/50 rounded w-1/2" />
+                </div>
+              ))}
+            </div>
+          ) : publicPlaylists.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+              {publicPlaylists.map((playlist: any) => (
+                <div
+                  key={playlist.id}
+                  onClick={() =>
+                    router.push(`/library/playlists/${playlist.id}`)
+                  }
+                  className="p-4 bg-card hover:bg-accent rounded-xl transition-colors group cursor-pointer"
+                >
+                  <div className="w-full aspect-square rounded-md overflow-hidden relative mb-4 shadow-lg group-hover:shadow-xl bg-border flex items-center justify-center">
+                    {playlist.coverImage ? (
+                      <Image
+                        src={playlist.coverImage}
+                        alt={playlist.title}
+                        fill
+                        sizes="(max-width: 640px) 50vw, 20vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : (
+                      <Music className="w-12 h-12 text-muted-foreground/50" />
+                    )}
+                  </div>
+                  <h3 className="font-semibold text-[16px] text-foreground truncate">
+                    {playlist.title}
+                  </h3>
+                  <p className="text-[14px] text-muted-foreground truncate mt-1">
+                    Bởi {playlist.user?.username || profile.username}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-muted-foreground text-[14px]">
+              Người dùng này chưa có danh sách phát công khai nào.
+            </p>
+          )}
+        </section>
       </div>
+
+      <ProfileEditModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        profile={profile}
+      />
     </div>
   );
 }

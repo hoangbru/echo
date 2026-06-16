@@ -31,7 +31,7 @@ export default function SubscriptionPayment() {
             className={`w-full flex items-center p-4 rounded-md border transition-all ${
               paymentMethod === "vnpay"
                 ? "border-primary bg-primary/10"
-                : "border-border hover:bg-card-hover"
+                : "border-border hover:bg-accent"
             }`}
           >
             <QrCode
@@ -53,7 +53,7 @@ export default function SubscriptionPayment() {
             className={`w-full flex items-center p-4 rounded-md border transition-all ${
               paymentMethod === "zalopay"
                 ? "border-primary bg-primary/10"
-                : "border-border hover:bg-card-hover"
+                : "border-border hover:bg-accent"
             }`}
           >
             <Smartphone
@@ -75,7 +75,7 @@ export default function SubscriptionPayment() {
             className={`w-full flex items-center p-4 rounded-md border transition-all ${
               paymentMethod === "stripe"
                 ? "border-primary bg-primary/10"
-                : "border-border hover:bg-card-hover"
+                : "border-border hover:bg-accent"
             }`}
           >
             <CreditCard

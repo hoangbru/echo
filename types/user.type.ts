@@ -1,4 +1,3 @@
-import { Database } from "@/lib/supabase/type";
 import { UserRole } from "./enum.type";
 
 export type SubscriptionStatus =
@@ -8,41 +7,50 @@ export type SubscriptionStatus =
   | "inactive";
 
 export interface UserProfile {
+  id: string;
+  username: string;
+  email: string;
+  fullName: string | null;
+  role: UserRole;
+
   avatar: string | null;
   bio: string | null;
-  createdAt: string;
-  email: string;
-  followers: number | null;
-  following: number | null;
-  fullName: string | null;
-  id: string;
+
   isPremium: boolean;
-  lastLoginAt: string | null;
+  subscriptionStatus: SubscriptionStatus;
   premiumExpiresAt: string | null;
-  role: UserRole;
   stripeCustomerId: string | null;
   stripeSubscriptionId: string | null;
-  subscriptionStatus: SubscriptionStatus;
+
+  followers: number | null;
+  following: number | null;
   totalPlaylists: number | null;
+
+  lastLoginAt: string | null;
+  createdAt: string;
   updatedAt: string;
-  username: string;
 }
 
 export interface UserAuth {
-  email: string;
   id: string;
+  email: string;
   userMetadata: UserMetadata;
 }
 
 export interface UserMetadata {
-  avatar_url: string;
-  email: string;
-  email_verified: boolean;
-  full_name: string;
+  // Provider Information
   iss: string;
-  name: string;
-  phone_verified: boolean;
-  picture: string;
-  provider_id: string;
   sub: string;
+  provider_id: string;
+
+  // Profile Information
+  name: string;
+  full_name: string;
+  email: string;
+  picture: string;
+  avatar_url: string;
+
+  // Verification Status
+  email_verified: boolean;
+  phone_verified: boolean;
 }
