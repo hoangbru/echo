@@ -1,8 +1,7 @@
-import { Play, Heart, Pause } from "lucide-react";
+import { Play, Pause } from "lucide-react";
 
 import { cn } from "@/lib/utils/helpers";
 import { formatDuration } from "@/lib/utils/format";
-import { useLikeTrack } from "@/hooks/use-like-track";
 import { TrackDetail, AlbumDetail, FeatArtist } from "@/types";
 import { DropdownTrackMenu } from "@/components/shared";
 
@@ -11,7 +10,6 @@ interface AlbumTrackRowProps {
   index: number;
   album: AlbumDetail;
   isThisTrackPlaying: boolean;
-  isActuallyPlaying: boolean;
   onPlaySingleTrack: (track: TrackDetail, index: number) => void;
 }
 
@@ -20,20 +18,8 @@ export function AlbumTrackRow({
   index,
   album,
   isThisTrackPlaying,
-  isActuallyPlaying,
   onPlaySingleTrack,
 }: AlbumTrackRowProps) {
-  const {
-    toggleLike,
-    isLiked,
-    isLoading: isLoadingLikeTrack,
-  } = useLikeTrack(track.id);
-
-  const handleLikeClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    toggleLike();
-  };
-
   return (
     <div
       className="group grid grid-cols-[50px_minmax(0,1fr)_100px] md:grid-cols-[50px_minmax(0,2fr)_minmax(0,1fr)_100px] gap-4 px-4 py-2.5 rounded-lg hover:bg-card transition-colors items-center cursor-pointer"
@@ -47,7 +33,7 @@ export function AlbumTrackRow({
             isThisTrackPlaying ? "text-primary opacity-100" : "opacity-100",
           )}
         >
-          {isActuallyPlaying ? (
+          {isThisTrackPlaying ? (
             <div className="flex items-end gap-[2px] h-3">
               <div className="w-[3px] bg-primary rounded-full h-3 animate-now-playing-bar-1" />
               <div className="w-[3px] bg-primary rounded-full h-2 animate-now-playing-bar-2" />
@@ -64,10 +50,10 @@ export function AlbumTrackRow({
           }}
           className={cn(
             "absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity",
-            isActuallyPlaying ? "" : "opacity-100 text-primary",
+            isThisTrackPlaying ? "" : "opacity-100 text-primary",
           )}
         >
-          {isActuallyPlaying ? (
+          {isThisTrackPlaying ? (
             <Pause className="w-4 h-4 fill-primary text-primary" />
           ) : (
             <Play className="w-4 h-4 fill-foreground text-foreground" />
@@ -108,18 +94,8 @@ export function AlbumTrackRow({
 
       {/* Cột 4: Thời lượng và Nút Like */}
       <div className="text-sm text-muted-foreground flex justify-center items-center gap-4">
-        {/* <button onClick={handleLikeClick} disabled={isLoadingLikeTrack}>
-          <Heart
-            className={cn(
-              "w-4 h-4 transition-colors",
-              isLiked
-                ? "fill-primary text-primary opacity-100"
-                : "opacity-0 group-hover:opacity-100 hover:text-foreground",
-            )}
-          />
-        </button> */}
         {formatDuration(track.duration)}
-        <DropdownTrackMenu trackId={track.id} />
+        <DropdownTrackMenu track={track} />
       </div>
     </div>
   );

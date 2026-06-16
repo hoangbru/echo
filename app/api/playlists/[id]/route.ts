@@ -29,7 +29,7 @@ export async function GET(
           position,
           track(
             id, title, slug, duration, audio_url, image_url,
-            is_explicit, is_published,
+            is_explicit, is_published, created_at, total_streams, lyrics,
             album(id, title, cover_image),
             track_artists(
               is_main,

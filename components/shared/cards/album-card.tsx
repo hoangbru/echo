@@ -18,6 +18,19 @@ interface AlbumCardProps {
   album: AlbumDetail;
 }
 
+export function AlbumCardSkeleton() {
+  return (
+    <div className="bg-card rounded-xl p-4 border border-border/50 h-full flex flex-col animate-pulse">
+      <div className="relative mb-4 aspect-square rounded-lg bg-muted/50 w-full" />
+
+      <div className="flex-1 flex flex-col gap-2 mt-1">
+        <div className="h-4 bg-muted/50 rounded w-4/5" />
+        <div className="h-3 bg-muted/50 rounded w-3/5 mt-1" />
+      </div>
+    </div>
+  );
+}
+
 export function AlbumCard({ album }: AlbumCardProps) {
   const queryClient = useQueryClient();
 

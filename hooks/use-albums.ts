@@ -4,9 +4,12 @@ import { toast } from "sonner";
 import { Album, AlbumDetail, QueryParams, TrackDetail } from "@/types";
 
 type AlbumQueryParams = QueryParams & {
-  status: string;
-  type: string;
-  view: string;
+  status?: string;
+  type?: string;
+  view?: string;
+  artistId?: string;
+  sortBy?: "created_at" | "total_streams" | "title" | "release_date";
+  sortDir?: "asc" | "desc";
 };
 
 export function useAlbums(params: AlbumQueryParams) {
@@ -14,7 +17,7 @@ export function useAlbums(params: AlbumQueryParams) {
     queryKey: ["albums", params],
     queryFn: async () => {
       const res = await apiClient.get("/albums", { params });
-      return res.data as { data: Album[]; meta?: any };
+      return res.data as { data: AlbumDetail[]; meta?: any };
     },
   });
 }

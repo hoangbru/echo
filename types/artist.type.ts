@@ -24,6 +24,8 @@ export interface Artist {
   verifiedAt: string | null;
 }
 
+export interface ArtistProfile extends Artist {}
+
 export interface ArtistRequest {
   id: string;
   userId: string;

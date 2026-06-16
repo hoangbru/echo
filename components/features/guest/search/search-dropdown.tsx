@@ -98,7 +98,7 @@ export function SearchDropdown({
           "Unknown Artist",
         imageUrl: track.imageUrl || "/default-cover.jpg",
         audioUrl: track.audioUrl,
-        albumId: track.album?.id,
+        albumId: track.album?.id || track.albumId,
       };
       playTrack(playerTrack, [playerTrack], track.id);
     } else if (item.type === "album") {

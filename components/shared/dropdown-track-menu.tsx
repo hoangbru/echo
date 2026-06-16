@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import {
   MoreHorizontal,
   Plus,
@@ -19,20 +20,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { PlaylistSubmenu } from "./playlist-submenu";
+
 import { useLikeTrack } from "@/hooks/use-like-track";
 import { cn } from "@/lib/utils/helpers";
-import { useRouter } from "next/navigation";
-import { useTrackDetail } from "@/hooks/use-tracks";
+import { TrackDetail } from "@/types";
+import { useTrackPlaylists } from "@/hooks/use-playlists";
 
 interface DropdownTrackMenuProps {
-  trackId: string;
-  addedPlaylistIds?: string[];
+  track: TrackDetail;
 }
 
-export const DropdownTrackMenu = ({
-  trackId,
-  addedPlaylistIds = [],
-}: DropdownTrackMenuProps) => {
+export const DropdownTrackMenu = ({ track }: DropdownTrackMenuProps) => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [submenuOpen, setSubmenuOpen] = useState(false);
@@ -42,10 +40,13 @@ export const DropdownTrackMenu = ({
     toggleLike,
     isLiked,
     isLoading: isLoadingLikeTrack,
-  } = useLikeTrack(trackId);
+  } = useLikeTrack(track.id, open);
 
-  const { data: track, isLoading: isLoadingTrackDetail } =
-    useTrackDetail(trackId);
+  const { data: trackPlaylistsData } = useTrackPlaylists(track.id, open);
+  const addedPlaylistIds = trackPlaylistsData || [];
+  useEffect(() => {
+    console.log("addded", addedPlaylistIds)
+  }, [addedPlaylistIds])
 
   useEffect(() => {
     if (!open) setSubmenuOpen(false);
@@ -106,7 +107,7 @@ export const DropdownTrackMenu = ({
               onPointerLeave={handleSubmenuLeave}
             >
               <PlaylistSubmenu
-                trackId={trackId}
+                trackId={track.id}
                 addedPlaylistIds={addedPlaylistIds}
               />
             </div>
@@ -135,7 +136,14 @@ export const DropdownTrackMenu = ({
 
         <DropdownMenuSeparator className="bg-border" />
 
-        <DropdownMenuItem className="flex justify-start items-center gap-2 hover:bg-muted focus:bg-muted cursor-pointer p-3 text-sm font-medium transition-colors">
+        <DropdownMenuItem
+          onSelect={(e) => {
+            e.stopPropagation();
+            const mainArtistId = track.artists?.[0]?.id || track.artistId;
+            router.push(`/artist/${mainArtistId}`);
+          }}
+          className="flex justify-start items-center gap-2 hover:bg-muted focus:bg-muted cursor-pointer p-3 text-sm font-medium transition-colors"
+        >
           <User className="w-4 h-4" />
           <span>Đi tới nghệ sĩ</span>
         </DropdownMenuItem>
@@ -143,7 +151,8 @@ export const DropdownTrackMenu = ({
         <DropdownMenuItem
           onSelect={(e) => {
             e.stopPropagation();
-            router.push(`/album/${track?.albumId}`);
+            const albumId = track.album.id || track.albumId;
+            router.push(`/album/${albumId}`);
           }}
           className="flex justify-start items-center gap-2 hover:bg-muted focus:bg-muted cursor-pointer p-3 text-sm font-medium transition-colors"
         >

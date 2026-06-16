@@ -31,18 +31,17 @@ export const AlbumHeroSection = ({
             {album.title}
           </h1>
           <div className="flex items-center gap-2 text-sm font-medium mt-2 flex-wrap">
-            {album.artist.profileImage ? (
-              <div className="relative rounded-full w-6 h-6">
+            {album?.artist.profileImage ? (
+              <div className="relative w-6 h-6 rounded-full overflow-hidden border border-border">
                 <Image
-                  src={album.artist.profileImage || "/default-avatar.png"}
-                  width={24}
-                  height={24}
-                  alt="artist"
+                  src={album.artist.profileImage}
+                  alt={album.artist.stageName || "Profile"}
+                  fill
                   className="object-cover"
                 />
               </div>
             ) : (
-              <div className="w-6 h-6 rounded-full flex items-center justify-center bg-gradient-to-br from-primary to-primary/60 text-foreground font-bold uppercase text-sm">
+              <div className="w-6 h-6 rounded-full flex items-center justify-center bg-gradient-to-br from-primary to-purple-600 text-primary-foreground font-bold uppercase text-sm border border-border">
                 {(album.artist.stageName || "U")[0]}
               </div>
             )}

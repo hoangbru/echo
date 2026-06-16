@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { User as UserProfileIcon } from "lucide-react";
 
 import { VerifiedBadge } from "../badge/verified-badge";
 
@@ -26,7 +27,9 @@ export function ArtistCard({ artist }: ArtistCardProps) {
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-secondary to-background flex items-center justify-center">
-              <div className="text-4xl">👤</div>
+              <div className="text-4xl">
+                <UserProfileIcon className="h-5 w-5 text-muted-foreground" />
+              </div>
             </div>
           )}
         </div>

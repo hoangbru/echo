@@ -39,7 +39,7 @@ const LikedTracksContainer = () => {
         "Unknown Artist",
       imageUrl: t.imageUrl || "/default-cover.jpg",
       audioUrl: t.audioUrl,
-      albumId: t.albumId || "",
+      albumId: t.album?.id || t.albumId || "",
     }));
 
     playTrack(queue[0], queue, "liked_songs");

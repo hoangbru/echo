@@ -44,7 +44,7 @@ export function LikedTracksList({ tracks }: LikedTracksContainerProps) {
         "Unknown Artist",
       imageUrl: t.imageUrl || "/default-cover.jpg",
       audioUrl: t.audioUrl,
-      albumId: t.albumId || "",
+      albumId: t.album?.id || t.albumId || "",
     }));
 
     playTrack(queue[index], queue);

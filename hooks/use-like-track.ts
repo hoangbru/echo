@@ -5,7 +5,7 @@ import { apiClient } from "@/lib/axios";
 import { toast } from "sonner";
 import { useAuth } from "./use-auth";
 
-export function useLikeTrack(trackId: string) {
+export function useLikeTrack(trackId: string, enabled: boolean = true) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -18,7 +18,7 @@ export function useLikeTrack(trackId: string) {
       const res = await apiClient.get(`/tracks/${trackId}/like`);
       return res.data as { isLiked: boolean };
     },
-    enabled: !!trackId && !!user,
+    enabled: !!trackId && !!user && enabled,
     staleTime: 5 * 60 * 1000,
   });
 

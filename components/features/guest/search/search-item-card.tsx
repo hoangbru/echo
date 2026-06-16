@@ -176,7 +176,7 @@ export function SearchItemCard({
               onClick={(e) => e.stopPropagation()}
               className="p-2 hover:text-foreground text-muted-foreground transition-colors"
             >
-              <DropdownTrackMenu trackId={item.id} />
+              <DropdownTrackMenu track={item} />
             </div>
           )
         )}

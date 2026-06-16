@@ -6,7 +6,15 @@ import {
 } from "@tanstack/react-query";
 import { apiClient } from "@/lib/axios";
 import { toast } from "sonner";
-import { TrackDetail } from "@/types";
+import { QueryParams, Track, TrackDetail } from "@/types";
+
+type TrackQueryParams = QueryParams & {
+  status?: string;
+  view?: string;
+  artistId?: string;
+  sortBy?: "created_at" | "total_streams" | "title" | "duration";
+  sortDir?: "asc" | "desc";
+};
 
 interface LikedTracksQueryParams {
   limit?: number;
@@ -21,6 +29,16 @@ interface LikedTracksResponse {
     totalPages: number;
     hasNextPage: boolean;
   };
+}
+
+export function useTracks(params: TrackQueryParams) {
+  return useQuery({
+    queryKey: ["tracks", params],
+    queryFn: async () => {
+      const res = await apiClient.get("/tracks", { params });
+      return res.data as { data: TrackDetail[]; meta?: any };
+    },
+  });
 }
 
 export function useTrackDetail(trackId: string) {

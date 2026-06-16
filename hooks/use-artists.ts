@@ -1,5 +1,12 @@
 import { apiClient } from "@/lib/axios";
-import { Album, QueryParams } from "@/types";
+import {
+  Album,
+  AlbumDetail,
+  Artist,
+  ArtistProfile,
+  QueryParams,
+  Track,
+} from "@/types";
 import type { TrackResult, AlbumResult } from "@/types/search";
 import { useQuery } from "@tanstack/react-query";
 
@@ -39,12 +46,13 @@ export function useAlbumsArtist(artistId: string, currentAlbumId: string) {
 
 export function useArtistDetail(artistId: string) {
   return useQuery({
-    queryKey: ["artist", artistId],
+    queryKey: ["artist-detail", artistId],
     queryFn: async () => {
-      const res = await apiClient.get(`/studios/${artistId}`);
-      return res.data as { data: any };
+      const res = await apiClient.get(`/artists/${artistId}`);
+      return res.data.data as ArtistProfile;
     },
     enabled: !!artistId,
+    staleTime: 5 * 60 * 1000,
   });
 }
 

@@ -102,6 +102,18 @@ interface AddTrackToPlaylistInput {
   trackId: string;
 }
 
+export function useTrackPlaylists(trackId: string, enabled: boolean = false) {
+  return useQuery({
+    queryKey: ["track-playlists", trackId],
+    queryFn: async () => {
+      const res = await apiClient.get(`/playlists/${trackId}/tracks`);
+      return res.data.data as string[];
+    },
+    enabled: !!trackId && enabled,
+    staleTime: 10 * 1000,
+  });
+}
+
 export function useAddTrackToPlaylist() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -116,6 +128,9 @@ export function useAddTrackToPlaylist() {
         queryKey: ["playlist", variables.playlistId],
       });
       queryClient.invalidateQueries({ queryKey: ["playlists"] });
+      queryClient.invalidateQueries({
+        queryKey: ["track-playlists", variables.trackId],
+      });
       toast.success("Đã thêm bài hát vào playlist!");
     },
     onError: (error: any) => {
@@ -133,8 +148,11 @@ export function useRemoveTrackFromPlaylist(playlistId: string) {
       });
       return res.data as { message: string };
     },
-    onSuccess: () => {
+    onSuccess: (_data, trackId) => {
       queryClient.invalidateQueries({ queryKey: ["playlist", playlistId] });
+      queryClient.invalidateQueries({
+        queryKey: ["track-playlists", trackId],
+      });
       toast.success("Đã xóa bài hát khỏi playlist!");
     },
     onError: (error: any) => {

@@ -4,14 +4,14 @@ import { authorizeApi } from "@/lib/session";
 import { UserRole } from "@/types";
 import { resolvePlaylistOwnership } from "@/lib/utils/helpers";
 
-export async function POST(
+export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id: playlistId } = await params;
     const supabase = createClient();
- 
+    const { id: trackId } = await params;
+
     const auth = await authorizeApi([
       UserRole.USER,
       UserRole.ARTIST,
@@ -20,7 +20,41 @@ export async function POST(
     if (auth.error) {
       return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
- 
+
+    const { data, error } = await supabase
+      .from("playlist_track")
+      .select("playlist_id, playlist!inner(user_id)")
+      .eq("track_id", trackId)
+      .eq("playlist.user_id", auth.user?.id);
+
+    if (error) throw error;
+
+    const addedPlaylistIds = data?.map((item: any) => item.playlist_id) || [];
+
+    return NextResponse.json({ data: addedPlaylistIds }, { status: 200 });
+  } catch (error: any) {
+    console.error("[GET_TRACK_PLAYLISTS_ERROR]:", error);
+    return NextResponse.json({ error: "Lỗi hệ thống" }, { status: 500 });
+  }
+}
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const { id: playlistId } = await params;
+    const supabase = createClient();
+
+    const auth = await authorizeApi([
+      UserRole.USER,
+      UserRole.ARTIST,
+      UserRole.ADMIN,
+    ]);
+    if (auth.error) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
+
     const ownershipError = await resolvePlaylistOwnership(
       supabase,
       playlistId,
@@ -32,31 +66,31 @@ export async function POST(
         { status: ownershipError.status },
       );
     }
- 
+
     const body = await request.json().catch(() => null);
     const trackId = body?.trackId as string | undefined;
- 
+
     if (!trackId) {
       return NextResponse.json(
         { error: "Thiếu thông tin bài hát cần thêm" },
         { status: 400 },
       );
     }
- 
+
     // Check track exists and is published (non-owners cannot add private tracks)
     const { data: track, error: trackErr } = await supabase
       .from("track")
       .select("id, is_published")
       .eq("id", trackId)
       .single();
- 
+
     if (trackErr || !track) {
       return NextResponse.json(
         { error: "Bài hát không tồn tại" },
         { status: 404 },
       );
     }
- 
+
     // Prevent duplicate entries
     const { data: existing } = await supabase
       .from("playlist_track")
@@ -64,14 +98,14 @@ export async function POST(
       .eq("playlist_id", playlistId)
       .eq("track_id", trackId)
       .maybeSingle();
- 
+
     if (existing) {
       return NextResponse.json(
         { error: "Bài hát đã có trong playlist này" },
         { status: 409 },
       );
     }
- 
+
     // Determine next position
     const { data: lastRow } = await supabase
       .from("playlist_track")
@@ -80,15 +114,15 @@ export async function POST(
       .order("position", { ascending: false })
       .limit(1)
       .maybeSingle();
- 
+
     const nextPosition = (lastRow?.position ?? 0) + 1;
- 
+
     const { error: insertErr } = await supabase.from("playlist_track").insert({
       playlist_id: playlistId,
       track_id: trackId,
       position: nextPosition,
     });
- 
+
     if (insertErr) {
       console.error("[POST_PLAYLIST_TRACK_DB_ERROR]:", insertErr);
       return NextResponse.json(
@@ -96,7 +130,7 @@ export async function POST(
         { status: 500 },
       );
     }
- 
+
     return NextResponse.json(
       { message: "Thêm bài hát vào playlist thành công" },
       { status: 201 },
@@ -117,7 +151,7 @@ export async function DELETE(
   try {
     const { id: playlistId } = await params;
     const supabase = createClient();
- 
+
     const auth = await authorizeApi([
       UserRole.USER,
       UserRole.ARTIST,
@@ -126,7 +160,7 @@ export async function DELETE(
     if (auth.error) {
       return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
- 
+
     const ownershipError = await resolvePlaylistOwnership(
       supabase,
       playlistId,
@@ -138,23 +172,23 @@ export async function DELETE(
         { status: ownershipError.status },
       );
     }
- 
+
     const body = await request.json().catch(() => null);
     const trackId = body?.trackId as string | undefined;
- 
+
     if (!trackId) {
       return NextResponse.json(
         { error: "Thiếu thông tin bài hát cần xóa" },
         { status: 400 },
       );
     }
- 
+
     const { error: deleteErr } = await supabase
       .from("playlist_track")
       .delete()
       .eq("playlist_id", playlistId)
       .eq("track_id", trackId);
- 
+
     if (deleteErr) {
       console.error("[DELETE_PLAYLIST_TRACK_DB_ERROR]:", deleteErr);
       return NextResponse.json(
@@ -162,7 +196,7 @@ export async function DELETE(
         { status: 500 },
       );
     }
- 
+
     return NextResponse.json(
       { message: "Đã xóa bài hát khỏi playlist" },
       { status: 200 },
@@ -175,9 +209,7 @@ export async function DELETE(
     );
   }
 }
- 
-// ─── PATCH /api/playlists/[id]/tracks ─────────────────────────────────────────
-// Body (JSON): { tracks: Array<{ trackId: string; position: number }> }
+
 // Batch-reorders tracks by updating positions.
 export async function PATCH(
   request: NextRequest,
@@ -186,7 +218,7 @@ export async function PATCH(
   try {
     const { id: playlistId } = await params;
     const supabase = createClient();
- 
+
     const auth = await authorizeApi([
       UserRole.USER,
       UserRole.ARTIST,
@@ -195,7 +227,7 @@ export async function PATCH(
     if (auth.error) {
       return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
- 
+
     const ownershipError = await resolvePlaylistOwnership(
       supabase,
       playlistId,
@@ -207,18 +239,18 @@ export async function PATCH(
         { status: ownershipError.status },
       );
     }
- 
+
     const body = await request.json().catch(() => null);
     const tracks: Array<{ trackId: string; position: number }> =
       body?.tracks ?? [];
- 
+
     if (!Array.isArray(tracks) || tracks.length === 0) {
       return NextResponse.json(
         { error: "Danh sách vị trí bài hát không hợp lệ" },
         { status: 400 },
       );
     }
- 
+
     // Upsert all position updates in parallel
     const updates = tracks.map(({ trackId, position }) =>
       supabase
@@ -227,10 +259,10 @@ export async function PATCH(
         .eq("playlist_id", playlistId)
         .eq("track_id", trackId),
     );
- 
+
     const results = await Promise.all(updates);
     const failed = results.find((r) => r.error);
- 
+
     if (failed?.error) {
       console.error("[PATCH_PLAYLIST_TRACK_REORDER_ERROR]:", failed.error);
       return NextResponse.json(
@@ -238,7 +270,7 @@ export async function PATCH(
         { status: 500 },
       );
     }
- 
+
     return NextResponse.json(
       { message: "Cập nhật thứ tự playlist thành công" },
       { status: 200 },

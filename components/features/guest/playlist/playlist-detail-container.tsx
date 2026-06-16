@@ -56,7 +56,7 @@ export const PlaylistDetailContainer = ({
         "Unknown Artist",
       imageUrl: t.imageUrl || playlist?.coverImage || "/default-cover.jpg",
       audioUrl: t.audioUrl,
-      albumId: t.albumId || "",
+      albumId: t.album?.id || t.albumId || "",
       playlistId: playlistId,
     }));
 

@@ -21,33 +21,6 @@ export function AlbumHeroSkeleton() {
   );
 }
 
-export function TrackRowSkeleton() {
-  return (
-    <div className="grid grid-cols-[50px_minmax(0,1fr)_100px] md:grid-cols-[50px_minmax(0,2fr)_minmax(0,1fr)_100px] gap-4 px-4 py-3 items-center animate-pulse border-b border-border/10 rounded-md bg-transparent">
-      {/* Cột 1: STT */}
-      <div className="flex justify-center">
-        <div className="h-4 w-4 bg-muted rounded" />
-      </div>
-
-      {/* Cột 2: Tiêu đề & Ca sĩ */}
-      <div className="flex flex-col gap-2 min-w-0 pr-4">
-        <div className="h-4 bg-muted rounded w-2/3" />
-        <div className="h-3 bg-muted rounded w-1/3 mt-1" />
-      </div>
-
-      {/* Cột 3: Lượt nghe */}
-      <div className="hidden md:block">
-        <div className="h-4 bg-muted rounded w-20" />
-      </div>
-
-      {/* Cột 4: Thời lượng */}
-      <div className="flex justify-center">
-        <div className="h-4 bg-muted rounded w-10" />
-      </div>
-    </div>
-  );
-}
-
 export function AlbumCardSkeleton() {
   return (
     <div className="flex flex-col gap-3 animate-pulse bg-card p-3 rounded-md border border-border/10 shadow-sm">

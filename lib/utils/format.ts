@@ -104,6 +104,10 @@ export function mapTrackRow(row: any, similarity?: number): any {
     image_url: row.image_url ?? albumRaw?.cover_image ?? null,
     duration: row.duration,
     is_explicit: row.is_explicit,
+    total_streams: row.total_streams,
+    slug: row.slug,
+    lyrics: row.lyrics,
+    created_at: row.created_at,
     artists,
     album: albumRaw
       ? {

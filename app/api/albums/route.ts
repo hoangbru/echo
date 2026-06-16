@@ -28,9 +28,23 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
 
+    const sortBy = searchParams.get("sortBy") || "created_at";
+    const sortDir = searchParams.get("sortDir") || "desc";
+
+    const ALLOWED_SORT_COLUMNS = [
+      "created_at",
+      "total_streams",
+      "title",
+      "release_date",
+    ];
+    const validSortBy = ALLOWED_SORT_COLUMNS.includes(sortBy)
+      ? sortBy
+      : "created_at";
+    const isAscending = sortDir === "asc";
+
     let query = supabase
       .from("album")
-      .select("*", { count: "exact" })
+      .select("*, genre(id, name), artist(id, stage_name, profile_image)")
       .order("created_at", { ascending: false });
 
     if (search) {
@@ -43,7 +57,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (
-      type !== "all" &&
+      type !== "ALL" &&
       Object.values(AlbumType).includes(type as AlbumType)
     ) {
       query = query.eq("album_type", type);
@@ -62,6 +76,8 @@ export async function GET(request: NextRequest) {
     } else {
       query = query.eq("is_published", true);
     }
+
+    query = query.order(validSortBy, { ascending: isAscending });
 
     const from = (page - 1) * limit;
     const to = from + limit - 1;
@@ -89,6 +105,8 @@ export async function GET(request: NextRequest) {
           page,
           limit,
           totalPages: count ? Math.ceil(count / limit) : 0,
+          sortBy: validSortBy,
+          sortDir: isAscending ? "asc" : "desc",
         },
       },
       { status: 200 },
