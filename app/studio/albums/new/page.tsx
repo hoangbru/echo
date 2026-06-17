@@ -1,4 +1,4 @@
-import { FormAlbumAdd } from "@/components/features/artist/album";
+import { FormAlbumAdd } from "@/components/features/studio/album";
 import { PrevButton } from "@/components/shared/buttons";
 import { PageHeading } from "@/components/ui/page-heading";
 

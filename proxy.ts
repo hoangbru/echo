@@ -49,7 +49,11 @@ export async function proxy(request: NextRequest) {
 
   const currentPath = request.nextUrl.pathname;
 
-  if (currentPath.startsWith("/admin")) {
+  const isAdminLoginRoute = currentPath.startsWith("/admin-login");
+  const isAdminRoute = currentPath.startsWith("/admin") && !isAdminLoginRoute;
+
+  // BẢO VỆ ROUTE ADMIN
+  if (isAdminRoute) {
     if (!user) {
       const url = request.nextUrl.clone();
       url.pathname = "/404";
@@ -69,14 +73,19 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  const isAuthPage = currentPath.startsWith("/auth/login");
+  const isAuthPage = currentPath.startsWith("/auth/login") || isAdminLoginRoute;
+
   const isProtectedRoute = PROTECTED_ROUTES.some((route) =>
     currentPath.startsWith(route),
   );
 
+  // NẾU ĐÃ ĐĂNG NHẬP MÀ VÀO TRANG LOGIN -> ĐẨY VỀ TRANG PHÙ HỢP
   if (user && isAuthPage) {
     const url = request.nextUrl.clone();
-    url.pathname = "/";
+
+    // Nếu đang ở trang admin-login mà đã có user, đẩy về /admin. Ngược lại đẩy về /
+    url.pathname = isAdminLoginRoute ? "/admin" : "/";
+
     const redirectResponse = NextResponse.redirect(url);
     supabaseResponse.cookies.getAll().forEach((cookie) => {
       redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
@@ -84,6 +93,7 @@ export async function proxy(request: NextRequest) {
     return redirectResponse;
   }
 
+  // NẾU CHƯA ĐĂNG NHẬP MÀ VÀO TRANG BẢO VỆ -> ĐẨY RA LOGIN
   if (!user && isProtectedRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";

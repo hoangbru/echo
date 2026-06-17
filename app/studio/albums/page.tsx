@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 
 import { PageHeading } from "@/components/ui/page-heading";
 import { Button } from "@/components/ui/button";
-import { AlbumGrid } from "@/components/features/artist/album";
+import { AlbumGrid } from "@/components/features/studio/album";
 
 import { SearchParams } from "@/types";
 

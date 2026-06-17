@@ -1,4 +1,4 @@
-import { TrackGrid } from "@/components/features/artist/track";
+import { TrackGrid } from "@/components/features/studio/track";
 import { PrevButton } from "@/components/shared/buttons";
 
 export default async function AlbumTracksPage({

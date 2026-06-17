@@ -1,13 +1,13 @@
 import { ReactNode } from "react";
 import { redirect } from "next/navigation";
 
-import { ArtistShell } from "@/components/features/artist";
+import { StudioShell } from "@/components/features/studio";
 
 import { ArtistService, UserService } from "@/lib/services";
 import { createClient } from "@/lib/supabase/server";
 import { UserRole } from "@/types";
 
-export default async function ArtistLayout({
+export default async function StudioLayout({
   children,
 }: {
   children: ReactNode;
@@ -38,5 +38,5 @@ export default async function ArtistLayout({
     redirect("/403");
   }
 
-  return <ArtistShell profile={artistProfile}>{children}</ArtistShell>;
+  return <StudioShell profile={artistProfile}>{children}</StudioShell>;
 }

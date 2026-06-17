@@ -1,3 +1,5 @@
+"use client";
+
 interface MobileOverlayProps {
   isOpen: boolean;
   onClose: () => void;
@@ -8,7 +10,7 @@ export function MobileOverlay({ isOpen, onClose }: MobileOverlayProps) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden transition-opacity"
+      className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200 lg:hidden"
       onClick={onClose}
       aria-hidden="true"
     />

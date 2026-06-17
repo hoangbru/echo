@@ -1,3 +1,3 @@
-export * from "./admin-header";
-export * from "./artist-header";
-export * from "./guest-header";
+export { AdminHeader } from "./admin-header";
+export { StudioHeader } from "./studio-header";
+export { ListenerHeader } from "./listener-header";

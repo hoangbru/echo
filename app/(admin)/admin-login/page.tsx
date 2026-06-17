@@ -62,7 +62,7 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="flex min-h-svh w-full items-center justify-center bg-[#09090b] p-6 md:p-10">
+    <div className="flex min-h-svh w-full items-center justify-center bg-background p-6 md:p-10">
       <div className="w-full max-w-sm">
         <Card className="border-zinc-800 bg-zinc-950/50 shadow-2xl backdrop-blur-xl">
           <CardHeader className="space-y-2 text-center">
@@ -110,7 +110,11 @@ export default function AdminLoginPage() {
                     className="w-full bg-zinc-100 text-white hover:bg-zinc-300"
                     disabled={loading}
                   >
-                    {loading ? <Loader2 /> : "Đăng nhập Hệ thống"}
+                    {loading ? (
+                      <Loader2 className="animate-pulse" />
+                    ) : (
+                      "Đăng nhập Hệ thống"
+                    )}
                   </Button>
                 </div>
               </form>

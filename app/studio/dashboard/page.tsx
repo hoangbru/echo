@@ -130,7 +130,7 @@ export default function ArtistDashboardPage() {
             <h2 className="text-lg font-bold text-white">
               Lượt Nghe Theo Thời Gian
             </h2>
-            <select className="bg-[#09090b] border border-white/10 rounded-lg px-3 py-1.5 text-sm text-gray-300 focus:outline-none focus:border-primary">
+            <select className="bg-background border border-white/10 rounded-lg px-3 py-1.5 text-sm text-gray-300 focus:outline-none focus:border-primary">
               <option>30 ngày qua</option>
               <option>7 ngày qua</option>
               <option>Năm nay</option>
@@ -138,7 +138,7 @@ export default function ArtistDashboardPage() {
           </div>
 
           {/* Box mô phỏng Biểu đồ (Do chưa cài thư viện Recharts) */}
-          <div className="flex-1 w-full min-h-[300px] bg-[#09090b] rounded-xl border border-white/5 flex items-center justify-center relative overflow-hidden">
+          <div className="flex-1 w-full min-h-[300px] bg-background rounded-xl border border-white/5 flex items-center justify-center relative overflow-hidden">
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
             <div className="text-center z-10">
               <PlayCircle className="w-12 h-12 text-primary/20 mx-auto mb-3" />

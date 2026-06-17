@@ -1,9 +1,14 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ShieldAlert, Home, ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
 export default function ForbiddenPage() {
+  const router = useRouter();
+
   return (
     <div className="min-h-[100dvh] flex flex-col items-center justify-center bg-background px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-destructive/15 rounded-full blur-[100px] pointer-events-none" />
@@ -24,23 +29,21 @@ export default function ForbiddenPage() {
             </h2>
             <p className="text-base text-muted-foreground leading-relaxed">
               Xin lỗi, tài khoản của bạn không có đủ quyền hạn để vào khu vực
-              Quản trị viên. Nếu bạn cho rằng đây là một sự nhầm lẫn, vui lòng
-              liên hệ với chúng tôi.
+              này. Nếu bạn cho rằng đây là một sự nhầm lẫn, vui lòng liên hệ với
+              bộ phận hỗ trợ.
             </p>
           </div>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full pt-4">
           <Button
-            asChild
+            onClick={() => router.back()}
             variant="outline"
             size="lg"
             className="w-full sm:w-auto gap-2 rounded-full border-border hover:bg-accent hover:text-accent-foreground transition-all"
           >
-            <Link href="/">
-              <ArrowLeft className="w-4 h-4" />
-              Quay lại
-            </Link>
+            <ArrowLeft className="w-4 h-4" />
+            Quay lại trang trước
           </Button>
 
           <Button

@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { Menu, LogOut, ChevronDown, Settings } from "lucide-react";
 
 import { AdminProfileType } from "@/components/features/admin";
-
 import { createClient } from "@/lib/supabase/client";
 
 interface AdminHeaderProps {
@@ -37,26 +36,28 @@ export function AdminHeader({ onOpenSidebar, adminProfile }: AdminHeaderProps) {
   };
 
   return (
-    <header className="bg-card border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-20">
+    <header className="bg-card border-b border-border px-6 py-4 flex items-center justify-between sticky top-0 z-20">
       <div className="flex items-center gap-4">
         <button
           onClick={onOpenSidebar}
-          className="lg:hidden text-gray-400 hover:text-white transition"
+          className="lg:hidden text-muted-foreground hover:text-foreground transition"
           aria-label="Open sidebar"
         >
           <Menu className="h-6 w-6" />
         </button>
-        <h1 className="text-xl font-bold text-white hidden sm:block">
+        <h1 className="text-xl font-bold text-foreground hidden sm:block">
           Admin Panel
         </h1>
       </div>
 
       <div className="relative flex items-center gap-4" ref={menuRef}>
         <div className="hidden md:flex flex-col items-end">
-          <span className="text-sm font-medium text-white">
+          <span className="text-sm font-medium text-foreground">
             {adminProfile.fullName}
           </span>
-          <span className="text-xs text-gray-500">{adminProfile.email}</span>
+          <span className="text-xs text-muted-foreground">
+            {adminProfile.email}
+          </span>
         </div>
 
         <button
@@ -72,36 +73,36 @@ export function AdminHeader({ onOpenSidebar, adminProfile }: AdminHeaderProps) {
                 className="object-cover"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary to-purple-600 text-white font-bold uppercase">
+              <div className="flex h-full w-full items-center justify-center bg-primary text-primary-foreground font-bold uppercase">
                 {adminProfile.fullName[0]}
               </div>
             )}
           </div>
 
           <ChevronDown
-            className={`h-4 w-4 text-gray-400 transition-all duration-300 group-hover:text-white ${isMenuOpen ? "rotate-180 text-white" : ""}`}
+            className={`h-4 w-4 text-muted-foreground transition-all duration-300 group-hover:text-foreground ${isMenuOpen ? "rotate-180 text-foreground" : ""}`}
           />
         </button>
 
         {isMenuOpen && (
-          <div className="absolute top-full right-0 mt-3 w-56 bg-[#09090b] border border-white/10 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] py-2 z-50 origin-top-right animate-in fade-in zoom-in-95 duration-200">
-            <div className="px-4 py-2 border-b border-white/5 mb-2 md:hidden">
-              <p className="text-sm font-medium text-white truncate">
+          <div className="absolute top-full right-0 mt-3 w-56 bg-popover border border-border rounded-xl shadow-2xl py-2 z-50 origin-top-right animate-in fade-in zoom-in-95 duration-200">
+            <div className="px-4 py-2 border-b border-border mb-2 md:hidden">
+              <p className="text-sm font-medium text-foreground truncate">
                 {adminProfile.fullName}
               </p>
-              <p className="text-xs text-gray-500 truncate">
+              <p className="text-xs text-muted-foreground truncate">
                 {adminProfile.email}
               </p>
             </div>
 
-            <button className="w-full px-4 py-2.5 text-left flex items-center gap-3 text-gray-300 hover:bg-white/5 hover:text-white transition-colors">
+            <button className="w-full px-4 py-2.5 text-left flex items-center gap-3 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
               <Settings className="h-4 w-4" />
               <span className="text-sm font-medium">Cài đặt tài khoản</span>
             </button>
 
             <button
               onClick={handleLogout}
-              className="w-full px-4 py-2.5 text-left flex items-center gap-3 text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors mt-1"
+              className="w-full px-4 py-2.5 text-left flex items-center gap-3 text-destructive hover:bg-destructive/10 hover:text-destructive transition-colors mt-1"
             >
               <LogOut className="h-4 w-4" />
               <span className="text-sm font-medium">Đăng xuất</span>

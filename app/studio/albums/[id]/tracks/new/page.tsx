@@ -1,4 +1,4 @@
-import { FormTrackAdd } from "@/components/features/artist/track";
+import { FormTrackAdd } from "@/components/features/studio/track";
 import { PrevButton } from "@/components/shared/buttons";
 
 export default async function NewTrackPage({

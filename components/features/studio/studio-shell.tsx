@@ -1,45 +1,39 @@
 "use client";
 
 import { ReactNode, useState } from "react";
-import { LayoutDashboard } from "lucide-react";
+import { Mic2 } from "lucide-react";
 
-import { AdminHeader } from "@/components/layout/navbar";
 import { DashboardSidebar } from "@/components/layout/sidebar";
+import { StudioHeader } from "@/components/layout/navbar";
 import { MobileOverlay } from "@/components/layout";
 
-import { adminMenuItems } from "@/constants/sidebar";
+import { Artist } from "@/types/artist.type";
+import { artistMenuItems } from "@/constants/sidebar";
 
-export interface AdminProfileType {
-  fullName: string;
-  avatar: string | null;
-  email: string | undefined;
-}
-
-export function AdminShell({
-  children,
-  adminProfile,
-}: {
+type StudioShellProps = {
   children: ReactNode;
-  adminProfile: AdminProfileType;
-}) {
+  profile: Artist;
+};
+
+export function StudioShell({ children, profile }: StudioShellProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
       <DashboardSidebar
-        title="Echo Admin"
-        logoIcon={LayoutDashboard}
-        navItems={adminMenuItems}
+        title="Echo Artist"
+        logoIcon={Mic2}
+        navItems={artistMenuItems}
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
       />
 
       <div className="flex-1 flex flex-col min-w-0">
-        <AdminHeader
+        <StudioHeader
+          profile={profile}
           onOpenSidebar={() => setIsSidebarOpen(true)}
-          adminProfile={adminProfile}
         />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto p-6">{children}</main>
       </div>
 
       <MobileOverlay

@@ -1,9 +1,14 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Disc3, Home, Music } from "lucide-react";
+import { Disc3, ArrowLeft, Music } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
 export default function NotFoundPage() {
+  const router = useRouter();
+
   return (
     <div className="min-h-[100dvh] flex flex-col items-center justify-center bg-background px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-primary/20 rounded-full blur-[100px] pointer-events-none" />
@@ -18,7 +23,7 @@ export default function NotFoundPage() {
         </div>
 
         <div className="space-y-4">
-          <h1 className="text-7xl sm:text-9xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-primary to-purple-600 drop-shadow-sm">
+          <h1 className="text-7xl sm:text-9xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-primary to-secondary drop-shadow-sm">
             404
           </h1>
 
@@ -35,14 +40,12 @@ export default function NotFoundPage() {
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full pt-4">
           <Button
-            asChild
+            onClick={() => router.back()}
             size="lg"
             className="w-full sm:w-auto gap-2 rounded-full shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all"
           >
-            <Link href="/">
-              <Home className="w-4 h-4" />
-              Quay lại Trang chủ
-            </Link>
+            <ArrowLeft className="w-4 h-4" />
+            Quay lại trang trước
           </Button>
 
           <Button

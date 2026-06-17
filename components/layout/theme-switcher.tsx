@@ -73,7 +73,6 @@ export default function ThemeSwitcher() {
                 {t.name}
               </span>
 
-              {/* Icon Ổ khóa cho tài khoản thường */}
               {t.pro && !profile?.isPremium && (
                 <div className="absolute -top-1 -right-1 bg-popover rounded-full p-[2px] shadow-sm z-10 border border-border">
                   <Lock className="w-2.5 h-2.5 text-yellow-500" />

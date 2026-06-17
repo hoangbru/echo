@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 export default function AuthErrorPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#09090b] p-4 text-center">
+    <div className="flex min-h-screen items-center justify-center bg-background p-4 text-center">
       <div className="max-w-md space-y-6">
         <div className="flex justify-center">
           <AlertCircle className="h-16 w-16 text-red-500" />
