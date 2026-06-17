@@ -6,11 +6,13 @@ export interface Artist {
   userId: string;
 
   stageName: string | null;
+  stageNameSearch: string | null;
   bio: string | null;
 
   profileImage: string | null;
   bannerImage: string | null;
   socialLinks: Json | null;
+  contactEmail: string | null;
 
   totalTracks: number;
   totalAlbums: number;

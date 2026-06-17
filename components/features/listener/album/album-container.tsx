@@ -8,8 +8,7 @@ import { AlbumHeroSection } from "./album-hero-section";
 import { AlbumCard } from "@/components/shared/cards";
 import { AlbumPageSkeleton } from "./album-skeleton";
 
-import { useAlbumDetail, useTracksAlbum } from "@/hooks/use-albums";
-import { useAlbumsArtist } from "@/hooks/use-artists";
+import { useAlbumDetail, useAlbums, useTracksAlbum } from "@/hooks/use-albums";
 import { formatDate } from "@/lib/utils/format";
 import { PlayerTrack, usePlayer } from "@/hooks/use-player";
 
@@ -25,10 +24,10 @@ const AlbumContainer = ({ albumId }: AlbumContainerProps) => {
   const tracks = tracksRes?.data || [];
   const album = albumRes?.data || null;
 
-  const { data: otherAlbumsRes } = useAlbumsArtist(
-    album ? album.artist.id : "",
-    albumId,
-  );
+  const { data: otherAlbumsRes } = useAlbums({
+    artistId: album ? album.artist.id : "",
+    exclude: albumId,
+  });
   const otherAlbums = otherAlbumsRes?.data || [];
   const { playTrack, togglePlay, activeContextId, isPlaying } = usePlayer();
 

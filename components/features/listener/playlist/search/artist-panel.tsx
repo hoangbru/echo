@@ -7,8 +7,10 @@ import { ChevronLeft, ChevronRight, Disc3, User } from "lucide-react";
 import { AlbumTrackList } from "./album-track-list";
 import { TrackRow } from "./track-row";
 
-import { useTracksByArtist, useAlbumsByArtist } from "@/hooks/use-artists";
 import type { AlbumResult, ArtistResult } from "@/types/search";
+import type { AlbumDetail } from "@/types";
+import { useAlbums } from "@/hooks/use-albums";
+import { useTracks } from "@/hooks/use-tracks";
 
 function ArtistAvatar({ artist }: { artist: ArtistResult }) {
   return (
@@ -62,15 +64,27 @@ function ArtistDetail({
   const [subTab, setSubTab] = useState<"songs" | "albums">("songs");
   const [drillAlbum, setDrillAlbum] = useState<AlbumResult | null>(null);
 
-  const { data: tracksData, isLoading: isLoadingTracks } = useTracksByArtist(
-    artist.id,
-  );
-  const { data: albumsData, isLoading: isLoadingAlbums } = useAlbumsByArtist(
-    artist.id,
-  );
+  const { data: tracksData, isLoading: isLoadingTracks } = useTracks({
+    artistId: artist.id,
+  });
+
+  const { data: albumsData, isLoading: isLoadingAlbums } = useAlbums({
+    artistId: artist.id,
+  });
 
   const tracks = tracksData?.data ?? [];
-  const albums = albumsData?.data ?? [];
+
+  const rawAlbums: AlbumDetail[] = albumsData?.data ?? [];
+  const albums: AlbumResult[] = rawAlbums.map((al) => ({
+    id: al.id,
+    title: al.title,
+    coverImage: al.coverImage,
+    albumType: al.albumType ?? "ALBUM",
+    isExplicit: !!al.isExplicit,
+    artist: al.artist
+      ? { id: al.artist.id, stageName: al.artist.stageName }
+      : null,
+  }));
 
   if (drillAlbum) {
     return (
@@ -86,7 +100,6 @@ function ArtistDetail({
 
   return (
     <div>
-      {/* Breadcrumb */}
       <button
         onClick={onBack}
         className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground mb-3 transition-colors"
@@ -95,7 +108,6 @@ function ArtistDetail({
         Kết quả
       </button>
 
-      {/* Artist header */}
       <div className="flex items-center gap-2 mb-3 pb-3 border-b border-border">
         <ArtistAvatar artist={artist} />
         <div className="min-w-0">
@@ -106,7 +118,6 @@ function ArtistDetail({
         </div>
       </div>
 
-      {/* Sub-tabs */}
       <div className="flex gap-2 mb-3">
         {(["songs", "albums"] as const).map((tab) => (
           <button
@@ -126,7 +137,6 @@ function ArtistDetail({
         ))}
       </div>
 
-      {/* Songs */}
       {subTab === "songs" && (
         <div className="flex flex-col gap-0.5">
           {isLoadingTracks && (
@@ -150,7 +160,6 @@ function ArtistDetail({
         </div>
       )}
 
-      {/* Albums → drill-in */}
       {subTab === "albums" && (
         <div className="flex flex-col gap-0.5">
           {isLoadingAlbums && (

@@ -8,9 +8,6 @@ import {
   ReactNode,
 } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { UserProfile } from "@/types";
-import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "@/lib/axios";
 
 export interface UserAuth {
   id: string;

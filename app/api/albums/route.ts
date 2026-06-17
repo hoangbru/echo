@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
     const view = searchParams.get("view");
     const type = searchParams.get("type") || "all";
     const artistId = searchParams.get("artistId") || null;
+    const exclude = searchParams.get("exclude") || null;
 
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
@@ -64,6 +65,10 @@ export async function GET(request: NextRequest) {
     }
 
     if (artistId) query = query.eq("artist_id", artistId);
+    
+    if (exclude) {
+      query = query.neq("id", exclude);
+    }
 
     if (role === UserRole.ADMIN) {
       if (status === "public") query = query.eq("is_published", true);

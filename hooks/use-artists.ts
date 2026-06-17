@@ -1,14 +1,6 @@
 import { apiClient } from "@/lib/axios";
-import {
-  Album,
-  AlbumDetail,
-  Artist,
-  ArtistProfile,
-  QueryParams,
-  Track,
-} from "@/types";
-import type { TrackResult, AlbumResult } from "@/types/search";
-import { useQuery } from "@tanstack/react-query";
+import { ArtistProfile, QueryParams } from "@/types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 type ArtistQueryParams = QueryParams & {
   isVerified?: boolean;
@@ -26,60 +18,35 @@ export const useArtists = (params?: ArtistQueryParams) => {
   });
 };
 
-export function useAlbumsArtist(artistId: string, currentAlbumId: string) {
+export function useArtistDetail(id: string, by: "id" | "userId" = "id") {
   return useQuery({
-    queryKey: ["albums", "artist", artistId, "exclude", currentAlbumId],
-
+    queryKey: ["artist-detail", id, by],
     queryFn: async () => {
-      const res = await apiClient.get(`/artists/${artistId}/albums`, {
-        params: { exclude: currentAlbumId },
+      const res = await apiClient.get(`/artists/${id}`, {
+        params: { by }, 
       });
-
-      return res.data as { data: Album[] };
-    },
-
-    enabled: !!artistId && !!currentAlbumId,
-
-    placeholderData: (previousData) => previousData,
-  });
-}
-
-export function useArtistDetail(artistId: string) {
-  return useQuery({
-    queryKey: ["artist-detail", artistId],
-    queryFn: async () => {
-      const res = await apiClient.get(`/artists/${artistId}`);
       return res.data.data as ArtistProfile;
     },
-    enabled: !!artistId,
+    enabled: !!id,
     staleTime: 5 * 60 * 1000,
   });
 }
 
-export function useTracksByArtist(artistId: string) {
-  return useQuery({
-    queryKey: ["tracks", "by-artist", artistId],
-    queryFn: async () => {
-      const res = await apiClient.get("/tracks", {
-        params: { artistId, limit: 20, isPublished: true },
-      });
-      return res.data as { data: TrackResult[]; meta?: any };
-    },
-    enabled: !!artistId,
-    staleTime: 2 * 60 * 1000,
-  });
-}
+export function useUpdateArtist(artistId: string) {
+  const queryClient = useQueryClient();
 
-export function useAlbumsByArtist(artistId: string) {
-  return useQuery({
-    queryKey: ["albums", "by-artist", artistId],
-    queryFn: async () => {
-      const res = await apiClient.get("/albums", {
-        params: { artistId, limit: 20, status: "public" },
+  return useMutation({
+    mutationFn: async (formData: FormData) => {
+      const res = await apiClient.patch(`/artists/${artistId}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
-      return res.data as { data: AlbumResult[]; meta?: any };
+      return res.data;
     },
-    enabled: !!artistId,
-    staleTime: 2 * 60 * 1000,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["artist-detail", artistId] });
+      queryClient.invalidateQueries({ queryKey: ["artists"] });
+    },
   });
 }

@@ -15,18 +15,24 @@ import {
 import { VerifiedBadge } from "@/components/shared/badge";
 
 import { createClient } from "@/lib/supabase/client";
-import { Artist } from "@/types/artist.type";
+import { useArtistDetail } from "@/hooks/use-artists";
+import { useAuth } from "@/hooks/use-auth";
 
 interface StudioHeaderProps {
   onOpenSidebar: () => void;
-  profile: Artist;
 }
 
-export function StudioHeader({ onOpenSidebar, profile }: StudioHeaderProps) {
+export function StudioHeader({ onOpenSidebar }: StudioHeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const supabase = createClient();
+
+  const { user } = useAuth();
+  const { data: artistProfile, isLoading: isLoadingArtist } = useArtistDetail(
+    user?.id as string,
+    "userId",
+  );
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -71,7 +77,7 @@ export function StudioHeader({ onOpenSidebar, profile }: StudioHeaderProps) {
 
         <div className="hidden md:flex flex-col items-end">
           <span className="text-sm font-bold text-foreground flex items-center gap-1">
-            {profile.stageName}
+            {artistProfile?.stageName}
             <VerifiedBadge />
           </span>
           <span className="text-xs text-primary/80">Verified Artist</span>
@@ -82,16 +88,18 @@ export function StudioHeader({ onOpenSidebar, profile }: StudioHeaderProps) {
           className="flex items-center gap-2 group outline-none"
         >
           <div className="relative h-10 w-10 rounded-full ring-2 ring-primary/50 overflow-hidden flex-shrink-0 transition-all group-hover:ring-primary shadow-lg shadow-primary/20">
-            {profile.profileImage ? (
+            {artistProfile?.profileImage ? (
               <Image
-                src={profile.profileImage}
-                alt={profile.stageName || "Artist Avatar"}
+                src={artistProfile?.profileImage}
+                alt={artistProfile?.stageName || "Artist Avatar"}
                 fill
                 className="object-cover"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-primary text-primary-foreground font-bold uppercase">
-                {profile.stageName ? profile.stageName.charAt(0) : "A"}
+                {artistProfile?.stageName
+                  ? artistProfile?.stageName.charAt(0)
+                  : "A"}
               </div>
             )}
           </div>
@@ -104,7 +112,7 @@ export function StudioHeader({ onOpenSidebar, profile }: StudioHeaderProps) {
           <div className="absolute top-full right-0 mt-3 w-56 bg-popover border border-border rounded-xl shadow-2xl py-2 z-50 origin-top-right animate-in fade-in zoom-in-95 duration-200">
             <div className="px-4 py-3 border-b border-border mb-2 md:hidden">
               <p className="text-sm font-bold text-foreground truncate flex items-center gap-1">
-                {profile.stageName}
+                {artistProfile?.stageName}
               </p>
               <p className="text-xs text-primary">Verified Artist</p>
             </div>
@@ -119,7 +127,7 @@ export function StudioHeader({ onOpenSidebar, profile }: StudioHeaderProps) {
             </Link>
 
             <Link
-              href="/settings"
+              href="/studio/settings"
               onClick={() => setIsMenuOpen(false)}
               className="w-full px-4 py-2.5 text-left flex items-center gap-3 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
             >

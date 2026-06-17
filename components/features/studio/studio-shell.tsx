@@ -7,15 +7,13 @@ import { DashboardSidebar } from "@/components/layout/sidebar";
 import { StudioHeader } from "@/components/layout/navbar";
 import { MobileOverlay } from "@/components/layout";
 
-import { Artist } from "@/types/artist.type";
 import { artistMenuItems } from "@/constants/sidebar";
 
 type StudioShellProps = {
   children: ReactNode;
-  profile: Artist;
 };
 
-export function StudioShell({ children, profile }: StudioShellProps) {
+export function StudioShell({ children }: StudioShellProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
@@ -29,10 +27,7 @@ export function StudioShell({ children, profile }: StudioShellProps) {
       />
 
       <div className="flex-1 flex flex-col min-w-0">
-        <StudioHeader
-          profile={profile}
-          onOpenSidebar={() => setIsSidebarOpen(true)}
-        />
+        <StudioHeader onOpenSidebar={() => setIsSidebarOpen(true)} />
         <main className="flex-1 overflow-y-auto p-6">{children}</main>
       </div>
 

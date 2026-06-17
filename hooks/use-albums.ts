@@ -1,13 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/axios";
 import { toast } from "sonner";
-import { Album, AlbumDetail, QueryParams, TrackDetail } from "@/types";
+import { AlbumDetail, QueryParams, TrackDetail } from "@/types";
 
 type AlbumQueryParams = QueryParams & {
   status?: string;
   type?: string;
   view?: string;
   artistId?: string;
+  exclude?: string;
   sortBy?: "created_at" | "total_streams" | "title" | "release_date";
   sortDir?: "asc" | "desc";
 };
