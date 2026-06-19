@@ -42,35 +42,6 @@ export function useUpdateProfile(id: string) {
   });
 }
 
-export function useDeactivateAccount(id: string) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (isLocked: boolean) => {
-      const res = await apiClient.post(`/users/profile/${id}/lock`, {
-        isLocked,
-      });
-      return res.data;
-    },
-    onSuccess: (data, isLocked) => {
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
-
-      toast.success(
-        isLocked
-          ? "Tài khoản của bạn đã được vô hiệu hóa"
-          : "Tài khoản đã được mở khóa thành công",
-      );
-    },
-    onError: (error: any) => {
-      const errorMsg =
-        error.response?.data?.error ||
-        error.message ||
-        "Có lỗi xảy ra khi thay đổi trạng thái tài khoản";
-      toast.error(errorMsg);
-    },
-  });
-}
-
 export function useFollowedArtists() {
   return useQuery({
     queryKey: ["followed-artists"],
