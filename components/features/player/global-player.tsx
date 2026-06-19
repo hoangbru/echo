@@ -35,7 +35,6 @@ export function GlobalPlayer() {
     isPlaying,
     volume,
     repeatMode,
-    isQueueVisible,
     playNext,
     toggleQueue,
   } = usePlayer();
@@ -93,12 +92,15 @@ export function GlobalPlayer() {
 
   if (!currentTrack) return null;
 
-  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const time = Number(e.target.value);
+  const handleSeekToTime = (time: number) => {
     setCurrentTime(time);
     if (audioRef.current) {
       audioRef.current.currentTime = time;
     }
+  };
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleSeekToTime(Number(e.target.value));
   };
 
   const handleTimeUpdate = () => {
@@ -115,11 +117,11 @@ export function GlobalPlayer() {
     durationRef.current = dur;
   };
 
-  const mobileProgressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
+  const mobileProgressPercent =
+    duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
     <TooltipProvider delayDuration={300}>
-      {/* 1. THẺ AUDIO LUÔN LUÔN TỒN TẠI (Không bị unmount) */}
       <audio
         ref={audioRef}
         src={currentTrack.audioUrl}
@@ -128,16 +130,13 @@ export function GlobalPlayer() {
         onEnded={handleEnded}
       />
 
-      {/* ------------------------------------------------------------- */}
-      {/* 2. GIAO DIỆN TRÌNH PHÁT TOÀN MÀN HÌNH (Sử dụng translate-y để ẩn/hiện) */}
-      {/* Set z-[90] để nó nằm dưới Lyrics (z-[100]) và Queue (z-[120]) */}
-      <div 
+      <div
         className={cn(
           "fixed inset-0 z-[90] bg-background flex flex-col p-6 transition-transform duration-500 ease-in-out md:hidden",
-          isExpanded ? "translate-y-0" : "translate-y-full"
+          isExpanded ? "translate-y-0" : "translate-y-full",
         )}
       >
-        <button 
+        <button
           onClick={() => setIsExpanded(false)}
           className="absolute top-6 left-6 p-2 text-muted-foreground hover:text-foreground"
         >
@@ -146,18 +145,30 @@ export function GlobalPlayer() {
 
         <div className="flex-1 flex flex-col items-center justify-center gap-8 mt-12">
           <div className="w-64 h-64 relative rounded-lg overflow-hidden shadow-2xl">
-            <img src={currentTrack.imageUrl} alt="cover" className="w-full h-full object-cover" />
+            <img
+              src={currentTrack.imageUrl}
+              alt="cover"
+              className="w-full h-full object-cover"
+            />
           </div>
 
           <div className="w-full flex justify-between items-center">
             <div className="flex flex-col">
-              <h2 className="text-2xl font-bold text-foreground">{currentTrack.title}</h2>
-              <p className="text-lg text-muted-foreground">{currentTrack.artistNames}</p>
+              <h2 className="text-2xl font-bold text-foreground">
+                {currentTrack.title}
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                {currentTrack.artistNames}
+              </p>
             </div>
             <LikeButton />
           </div>
 
-          <ProgressBar currentTime={currentTime} duration={duration} onSeek={handleSeek} />
+          <ProgressBar
+            currentTime={currentTime}
+            duration={duration}
+            onSeek={handleSeek}
+          />
 
           <div className="w-full flex items-center justify-between">
             <ShuffleButton />
@@ -168,36 +179,45 @@ export function GlobalPlayer() {
           </div>
 
           <div className="w-full flex items-center justify-between mt-4 px-4">
-            {/* Lyrics và Queue của Mobile */}
-            <LyricsPlayer currentTime={currentTime} />
+            <LyricsPlayer
+              currentTime={currentTime}
+              onSeekToTime={handleSeekToTime}
+            />
             <Tooltip>
               <TooltipTrigger asChild>
-                <button onClick={toggleQueue} className="text-muted-foreground p-2">
+                <button
+                  onClick={toggleQueue}
+                  className="text-muted-foreground p-2"
+                >
                   <ListMusic className="w-6 h-6" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent><p>Danh sách chờ</p></TooltipContent>
+              <TooltipContent>
+                <p>Danh sách chờ</p>
+              </TooltipContent>
             </Tooltip>
           </div>
         </div>
       </div>
 
-      {/* ------------------------------------------------------------- */}
-      {/* 3. GIAO DIỆN TRÌNH PHÁT GỐC (Mini Player) */}
-      <div 
+      <div
         className={cn(
           "fixed bottom-0 left-0 right-0 h-16 md:h-24 bg-background border-t border-border px-2 md:px-4 flex items-center justify-between z-[110]",
-          isExpanded && "hidden md:flex" // Tạm ẩn Mini player khi mở Full screen
+          isExpanded && "hidden md:flex",
         )}
       >
-        {/* Progress Bar dạng sợi cho Mobile */}
         <div className="absolute top-0 left-0 right-0 h-[2px] md:hidden bg-muted">
-          <div className="h-full bg-primary transition-all duration-150 ease-linear" style={{ width: `${mobileProgressPercent}%` }} />
+          <div
+            className="h-full bg-primary transition-all duration-150 ease-linear"
+            style={{ width: `${mobileProgressPercent}%` }}
+          />
         </div>
 
-        <div 
+        <div
           className="flex items-center gap-2 md:gap-4 min-w-0 flex-1 cursor-pointer md:cursor-default"
-          onClick={() => { if (window.innerWidth < 768) setIsExpanded(true); }}
+          onClick={() => {
+            if (window.innerWidth < 768) setIsExpanded(true);
+          }}
         >
           <TrackInfo />
           <div className="hidden md:block" onClick={(e) => e.stopPropagation()}>
@@ -219,13 +239,23 @@ export function GlobalPlayer() {
             <NextButton />
             <RepeatButton />
           </div>
-          <ProgressBar currentTime={currentTime} duration={duration} onSeek={handleSeek} />
+          <ProgressBar
+            currentTime={currentTime}
+            duration={duration}
+            onSeek={handleSeek}
+          />
         </div>
 
         <div className="hidden md:flex items-center justify-end gap-4 w-[30%] min-w-[150px]">
-          <LyricsPlayer currentTime={currentTime} />
-          <button onClick={toggleQueue} className="text-muted-foreground hover:text-foreground transition-colors p-2">
-             <ListMusic className="w-5 h-5" />
+          <LyricsPlayer
+            currentTime={currentTime}
+            onSeekToTime={handleSeekToTime}
+          />
+          <button
+            onClick={toggleQueue}
+            className="text-muted-foreground hover:text-foreground transition-colors p-2"
+          >
+            <ListMusic className="w-5 h-5" />
           </button>
           <VolumeControl />
         </div>

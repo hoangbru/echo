@@ -21,9 +21,10 @@ import { usePlayer } from "@/hooks/use-player";
 
 interface LyricsPlayerProps {
   currentTime: number;
+  onSeekToTime: (time: number) => void;
 }
 
-export function LyricsPlayer({ currentTime }: LyricsPlayerProps) {
+export function LyricsPlayer({ currentTime, onSeekToTime }: LyricsPlayerProps) {
   const { currentTrack, isQueueVisible } = usePlayer();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -81,7 +82,6 @@ export function LyricsPlayer({ currentTime }: LyricsPlayerProps) {
       <Sheet open={isOpen} onOpenChange={setIsOpen} modal={false}>
         <SheetContent
           side="bottom"
-          // FIX: Chặn Radix đóng sheet khi click/focus ra ngoài
           onInteractOutside={(e) => e.preventDefault()}
           onFocusOutside={(e) => e.preventDefault()}
           className={cn(
@@ -116,13 +116,14 @@ export function LyricsPlayer({ currentTime }: LyricsPlayerProps) {
                     <div
                       key={index}
                       ref={isActive ? activeLineRef : null}
+                      onClick={() => onSeekToTime(line.time)}
                       className={cn(
-                        "text-3xl font-bold transition-all duration-500 transform origin-left",
+                        "text-3xl font-bold transition-all duration-500 transform origin-left cursor-pointer",
                         isActive
                           ? "text-primary scale-105"
                           : isPassed
-                            ? "text-foreground opacity-60"
-                            : "text-muted-foreground opacity-40 hover:opacity-80",
+                            ? "text-foreground opacity-60 hover:text-primary hover:opacity-100"
+                            : "text-muted-foreground opacity-40 hover:text-primary hover:opacity-80",
                       )}
                     >
                       {line.text}
