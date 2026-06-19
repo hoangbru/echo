@@ -24,11 +24,11 @@ export default async function ArtistAlbumsPage({
     typeof resolvedParams.type === "string" ? resolvedParams.type : "all";
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <PageHeading>Album của tôi</PageHeading>
-          <p className="text-gray-400 mt-1">
+          <p className="text-muted-foreground mt-1 text-[14px]">
             Quản lý album và trạng thái phát hành.
           </p>
         </div>

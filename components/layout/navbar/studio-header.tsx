@@ -80,7 +80,6 @@ export function StudioHeader({ onOpenSidebar }: StudioHeaderProps) {
             {artistProfile?.stageName}
             <VerifiedBadge />
           </span>
-          <span className="text-xs text-primary/80">Verified Artist</span>
         </div>
 
         <button
@@ -114,7 +113,6 @@ export function StudioHeader({ onOpenSidebar }: StudioHeaderProps) {
               <p className="text-sm font-bold text-foreground truncate flex items-center gap-1">
                 {artistProfile?.stageName}
               </p>
-              <p className="text-xs text-primary">Verified Artist</p>
             </div>
 
             <Link

@@ -1,6 +1,6 @@
 "use client";
 
-export function ArtistDashboardSkeleton() {
+export function StudioDashboardSkeleton() {
   return (
     <div className="space-y-[32px] max-w-7xl mx-auto p-[32px] animate-pulse">
       <div>

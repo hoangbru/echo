@@ -12,6 +12,9 @@ export async function GET(
     const searchParams = request.nextUrl.searchParams;
     const by = searchParams.get("by") || "id";
 
+    const timeRange = searchParams.get("timeRange") || "30";
+    const p_days = parseInt(timeRange, 10);
+
     const supabase = createClient();
     const auth = await authorizeApi();
 
@@ -37,7 +40,6 @@ export async function GET(
     }
 
     const [artistRes, tracksRes, chartRes] = await Promise.all([
-      // Dữ liệu tổng quan
       supabase
         .from("artist")
         .select("total_streams, total_followers, total_tracks, total_albums")
@@ -47,7 +49,7 @@ export async function GET(
       // Top 4 bài hát phổ biến nhất
       supabase
         .from("track")
-        .select("id, title, total_streams, image_url")
+        .select("id, title, total_streams, image_url, album(cover_image)")
         .eq("artist_id", targetArtistId)
         .eq("is_published", true)
         .order("total_streams", { ascending: false })
@@ -56,11 +58,23 @@ export async function GET(
       // Dữ liệu biểu đồ & Tỷ lệ từ RPC
       supabase.rpc("get_artist_chart_and_listeners", {
         p_artist_id: targetArtistId,
-        p_days: 30,
+        p_days: p_days
       }),
     ]);
 
     if (artistRes.error) throw artistRes.error;
+
+    const formattedTopTracks = (tracksRes.data || []).map((t: any) => {
+      const albumCover =
+        t.album && !Array.isArray(t.album) ? t.album.cover_image : null;
+
+      return {
+        id: t.id,
+        title: t.title,
+        totalStreams: t.total_streams,
+        imageUrl: t.image_url || albumCover || null,
+      };
+    });
 
     const responsePayload = keysToCamel({
       overview: {
@@ -72,7 +86,7 @@ export async function GET(
         completionRate: chartRes.data?.completionRate || 0,
       },
       chartData: chartRes.data?.chartData || [],
-      topTracks: tracksRes.data || [],
+      topTracks: formattedTopTracks,
     });
 
     return NextResponse.json({ data: responsePayload }, { status: 200 });

@@ -19,11 +19,13 @@ export interface ArtistStatsResponse {
   }>;
 }
 
-export function useArtistStats(userId: string | undefined) {
+export function useArtistStats(userId: string | undefined, days: number = 30) {
   return useQuery({
-    queryKey: ["artist-stats", userId],
+    queryKey: ["artist-stats", userId, days],
     queryFn: async () => {
-      const res = await apiClient.get(`/artists/${userId}/stats?by=userId`);
+      const res = await apiClient.get(
+        `/artists/${userId}/stats?by=userId&timeRange=${days}`,
+      );
       return res.data.data as ArtistStatsResponse;
     },
     enabled: !!userId,
