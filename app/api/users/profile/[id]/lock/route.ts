@@ -1,7 +1,8 @@
+import { NextRequest, NextResponse } from "next/server";
 import { authorizeApi } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 import { UserRole } from "@/types";
-import { NextRequest, NextResponse } from "next/server";
+import { createServiceClient } from "@/lib/supabase/service";
 
 interface RouteParams {
   params: Promise<{
@@ -78,6 +79,30 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         },
         { status: 500 },
       );
+    }
+
+    if (isAdmin && currentUserId) {
+      const supabaseAdmin = createServiceClient();
+
+      const actionType = isLocked ? "BAN_USER" : "UNBAN_USER";
+      const actionDesc = isLocked
+        ? `Quản trị viên đã khóa tài khoản [${updatedUser.username}]`
+        : `Quản trị viên đã mở khóa tài khoản [${updatedUser.username}]`;
+
+      const { error: logError } = await supabaseAdmin
+        .from("admin_audit_log")
+        .insert({
+          admin_id: currentUserId,
+          action: actionType,
+          target_id: updatedUser.id,
+          target_name: updatedUser.username,
+          target_type: "USER",
+          changes: actionDesc,
+        });
+
+      if (logError) {
+        console.error("[INSERT_AUDIT_LOG_ERROR]", logError);
+      }
     }
 
     return NextResponse.json(
