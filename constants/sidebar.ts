@@ -7,6 +7,11 @@ import {
   BarChart3,
   Library,
   LucideIcon,
+  UserCog,
+  Disc,
+  ListMusic,
+  Flag,
+  ShieldAlert,
 } from "lucide-react";
 
 export type SidebarItem = {
@@ -16,19 +21,23 @@ export type SidebarItem = {
   badge?: number;
 };
 
-export const adminMenuItems: SidebarItem[] = [
+export const adminMenuItems = [
   { label: "Tổng quan", href: "/admin", icon: LayoutDashboard },
-  { label: "Quản lý bài hát", href: "/admin/content/tracks", icon: Music },
-  { label: "Quản lý nghệ sĩ", href: "/admin/content/artists", icon: Users },
-  { label: "Quản lý Album", href: "/admin/content/albums", icon: Music },
+  { label: "Thống kê hệ thống", href: "/admin/analytics", icon: BarChart3 },
+
+  { label: "Người dùng", href: "/admin/users", icon: Users },
+  { label: "Hồ sơ Nghệ sĩ", href: "/admin/artists", icon: UserCog },
   {
-    label: "Yêu cầu nghệ sĩ",
+    label: "Yêu cầu duyệt Nghệ sĩ",
     href: "/admin/artist-requests",
     icon: CheckCircle,
     badge: 3,
   },
-  { label: "Tải lên hệ thống", href: "/admin/upload", icon: FileUp },
-  { label: "Thống kê", href: "/admin/analytics", icon: BarChart3 },
+
+  { label: "Thể loại nhạc (Genres)", href: "/admin/genres", icon: ListMusic },
+
+  { label: "Báo cáo vi phạm", href: "/admin/reports", icon: Flag, badge: 5 },
+  { label: "Nhật ký hệ thống", href: "/admin/audit-logs", icon: ShieldAlert },
 ];
 
 export const artistMenuItems: SidebarItem[] = [

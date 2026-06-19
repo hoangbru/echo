@@ -73,7 +73,6 @@ const AlbumContainer = ({ albumId }: AlbumContainerProps) => {
       {album && <AlbumHeroSection album={album} totalMins={totalMins} />}
 
       {/* --- CONTENT SECTION --- */}
-      {/* Thay đổi màu nền gradient sang biến hệ thống */}
       <div className="px-6 bg-gradient-to-b from-secondary/50 to-background min-h-screen pt-4">
         <div className="pb-8">
           {/* --- ACTION BAR --- */}
@@ -83,19 +82,10 @@ const AlbumContainer = ({ albumId }: AlbumContainerProps) => {
               className="w-14 h-14 rounded-full bg-primary flex items-center justify-center hover:scale-105 transition-transform shadow-xl shadow-primary/20"
             >
               {isThisAlbumPlaying ? (
-                // Đổi màu icon sang primary-foreground để tương phản tốt trên nền primary
                 <Pause className="w-6 h-6 text-primary-foreground fill-primary-foreground" />
               ) : (
                 <Play className="w-6 h-6 text-primary-foreground fill-primary-foreground ml-1" />
               )}
-            </button>
-
-            <button className="text-muted-foreground hover:text-foreground hover:scale-110 transition-all">
-              <Heart className="w-8 h-8" />
-            </button>
-
-            <button className="text-muted-foreground hover:text-foreground hover:scale-110 transition-all">
-              <MoreHorizontal className="w-8 h-8" />
             </button>
           </div>
 
