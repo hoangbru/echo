@@ -20,37 +20,41 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
 
+    const targetUserId = userId || currentUserId;
+
+    if (!targetUserId) {
+      return NextResponse.json(
+        {
+          error:
+            "Vui lòng đăng nhập hoặc cung cấp userId để xem danh sách phát",
+        },
+        { status: 401 },
+      );
+    }
+
     let query = supabase
       .from("playlist")
       .select("*, user:user_id(id, username, avatar)", { count: "exact" })
       .order("created_at", { ascending: false });
+
+    query = query.eq("user_id", targetUserId);
 
     if (search) {
       const cleanSearch = removeVietnameseTones(search);
       query = query.ilike("title_search", `%${cleanSearch}%`);
     }
 
-    if (userId) {
-      query = query.eq("user_id", userId);
-    }
-
+    // 3. Xử lý quyền xem (Public / Private)
     if (role === UserRole.ADMIN) {
-      // Admin sees all — apply optional status filter only
+      // Admin xem được tất cả của user này — chỉ áp dụng bộ lọc status
       if (status === "public") query = query.eq("is_public", true);
       if (status === "private") query = query.eq("is_public", false);
-    } else if (role !== "GUEST" && currentUserId) {
-      // Authenticated user: public playlists OR their own private ones
-      if (status === "public") {
-        query = query.eq("is_public", true);
-      } else if (status === "private") {
-        query = query.eq("is_public", false).eq("user_id", currentUserId);
-      } else {
-        query = query.or(
-          `is_public.eq.true,and(is_public.eq.false,user_id.eq.${currentUserId})`,
-        );
-      }
+    } else if (targetUserId === currentUserId) {
+      // Người dùng đang đăng nhập tự xem danh sách của chính mình
+      if (status === "public") query = query.eq("is_public", true);
+      if (status === "private") query = query.eq("is_public", false);
     } else {
-      // Guest: public only
+      // Người khác (hoặc Guest) xem danh sách của targetUserId -> Bắt buộc chỉ lấy public
       query = query.eq("is_public", true);
     }
 

@@ -8,10 +8,19 @@ import { Button } from "@/components/ui/button";
 import { RefreshButton } from "@/components/shared/buttons";
 
 import { useCreatePlaylist, usePlaylists } from "@/hooks/use-playlists";
+import { useAuth } from "@/hooks/use-auth";
 
 export const PlaylistGrid = () => {
   const router = useRouter();
-  const { data: playlistsRes, isLoading, isError, refetch } = usePlaylists();
+  const { user } = useAuth();
+  const {
+    data: playlistsRes,
+    isLoading,
+    isError,
+    refetch,
+  } = usePlaylists({
+    userId: user?.id,
+  });
   const { mutate: createPlaylist, isPending: isCreating } = useCreatePlaylist();
 
   const playlists = playlistsRes?.data || [];
