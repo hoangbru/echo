@@ -153,7 +153,7 @@ export function ListenerHeader({ onOpenSidebar }: ListenerHeaderProps) {
             </button>
 
             {isMenuOpen && (
-              <div className="absolute top-full right-0 mt-3 w-72 bg-popover border border-border rounded-2xl shadow-xl py-2 z-50 origin-top-right animate-in fade-in zoom-in-95 duration-200">
+              <div className="absolute top-full right-0 mt-3 w-72 max-h-[calc(100vh-100px)] overflow-y-auto overscroll-contain bg-popover border border-border rounded-2xl shadow-xl py-2 z-50 origin-top-right animate-in fade-in zoom-in-95 duration-200 custom-scrollbar">
                 <div className="px-4 py-3 border-b border-border mb-2 flex items-center gap-3">
                   <div className="relative overflow-hidden h-12 w-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-foreground font-bold uppercase text-xl flex-shrink-0">
                     {profile.avatar ? (

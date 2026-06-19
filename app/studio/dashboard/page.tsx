@@ -1,120 +1,105 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import {
   PlayCircle,
   Users,
   Heart,
   DollarSign,
   TrendingUp,
-  TrendingDown,
   ArrowRight,
+  Loader2,
+  Music,
 } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
 
-// Mock Data (Sau này sẽ fetch từ Supabase)
-const STATS = [
-  {
-    title: "Tổng Lượt Nghe",
-    value: "1.2M",
-    change: "+12.5%",
-    isUp: true,
-    icon: PlayCircle,
-  },
-  {
-    title: "Người Nghe Hàng Tháng",
-    value: "45.2K",
-    change: "+8.2%",
-    isUp: true,
-    icon: Users,
-  },
-  {
-    title: "Người Theo Dõi",
-    value: "12.4K",
-    change: "+5.1%",
-    isUp: true,
-    icon: Heart,
-  },
-  {
-    title: "Doanh Thu Ước Tính",
-    value: "$1,240",
-    change: "-2.4%",
-    isUp: false,
-    icon: DollarSign,
-  },
-];
+import {
+  ArtistDashboardSkeleton,
+  StreamChart,
+} from "@/components/features/studio/stats";
 
-const TOP_TRACKS = [
-  {
-    id: 1,
-    title: "Midnight Dreams",
-    streams: "452,120",
-    cover:
-      "https://images.unsplash.com/photo-1614613535308-eb51bd3d2c17?w=100&h=100&fit=crop",
-  },
-  {
-    id: 2,
-    title: "Electric Pulse",
-    streams: "321,400",
-    cover:
-      "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=100&h=100&fit=crop",
-  },
-  {
-    id: 3,
-    title: "Ethereal Wave",
-    streams: "189,050",
-    cover:
-      "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=100&h=100&fit=crop",
-  },
-  {
-    id: 4,
-    title: "Neon Highway",
-    streams: "95,300",
-    cover:
-      "https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=100&h=100&fit=crop",
-  },
-];
+import { useAuth } from "@/hooks/use-auth";
+import { useArtistStats } from "@/hooks/use-stats";
 
 export default function ArtistDashboardPage() {
+  const { user, loading: authLoading } = useAuth();
+  const { data: stats, isLoading: statsLoading } = useArtistStats(user?.id);
+
+  if (authLoading || statsLoading) {
+    return <ArtistDashboardSkeleton />;
+  }
+
+  if (!stats) {
+    return (
+      <div className="text-foreground">Không tải được dữ liệu thống kê.</div>
+    );
+  }
+
+  // Tính toán doanh thu (0.003 USD / 1 stream)
+  const estimatedRevenue = (stats.overview.totalStreams * 0.003).toLocaleString(
+    "en-US",
+    {
+      style: "currency",
+      currency: "USD",
+    },
+  );
+
+  const STATS_CARDS = [
+    {
+      title: "Tổng Lượt Nghe",
+      value: stats.overview.totalStreams.toLocaleString("vi-VN"),
+      icon: PlayCircle,
+    },
+    {
+      title: "Người Nghe Hàng Tháng",
+      value: stats.overview.monthlyListeners.toLocaleString("vi-VN"),
+      icon: Users,
+    },
+    {
+      title: "Người Theo Dõi",
+      value: stats.overview.totalFollowers.toLocaleString("vi-VN"),
+      icon: Heart,
+    },
+    {
+      title: "Doanh Thu Ước Tính",
+      value: estimatedRevenue,
+      icon: DollarSign,
+    },
+  ];
+
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
+    <div className="space-y-[32px] max-w-7xl mx-auto p-[32px]">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-black text-white tracking-tight">
+        <h1 className="text-[32px] font-black text-foreground tracking-tight">
           Tổng Quan
         </h1>
-        <p className="text-gray-400 mt-2">
+        <p className="text-muted-foreground mt-2 text-[16px]">
           Theo dõi lượt nghe và sự phát triển của bạn trong 30 ngày qua.
         </p>
       </div>
 
       {/* 4 Thẻ Thống Kê Chính */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {STATS.map((stat, index) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[24px]">
+        {STATS_CARDS.map((stat, index) => (
           <div
             key={index}
-            className="bg-card border border-white/10 rounded-2xl p-6 shadow-lg hover:border-primary/30 transition-all group"
+            className="bg-card border border-border rounded-[var(--radius)] p-[24px] shadow-sm hover:border-primary/50 transition-all group"
           >
             <div className="flex justify-between items-start mb-4">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+              <div className="w-12 h-12 rounded-[var(--radius)] bg-background flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                 <stat.icon className="w-6 h-6 text-primary" />
               </div>
-              <div
-                className={`flex items-center gap-1 text-sm font-medium px-2.5 py-1 rounded-full ${stat.isUp ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"}`}
-              >
-                {stat.isUp ? (
-                  <TrendingUp className="w-3 h-3" />
-                ) : (
-                  <TrendingDown className="w-3 h-3" />
-                )}
-                {stat.change}
+              <div className="flex items-center gap-1 text-[12px] font-medium px-2 py-1 rounded-[4px] bg-primary/10 text-primary">
+                <TrendingUp className="w-3 h-3" />
+                Cập nhật
               </div>
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-400 mb-1">
+              <p className="text-[14px] font-medium text-muted-foreground mb-1">
                 {stat.title}
               </p>
-              <h3 className="text-3xl font-black text-white tracking-tight">
+              <h3 className="text-[24px] font-black text-foreground tracking-tight">
                 {stat.value}
               </h3>
             </div>
@@ -123,99 +108,75 @@ export default function ArtistDashboardPage() {
       </div>
 
       {/* Khu vực Biểu đồ & Top Tracks */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-[24px]">
         {/* Biểu đồ (Cột lớn chiếm 2/3) */}
-        <div className="lg:col-span-2 bg-card border border-white/10 rounded-2xl p-6 shadow-lg flex flex-col">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-bold text-white">
+        <div className="lg:col-span-2 bg-card border border-border rounded-[var(--radius)] p-[24px] flex flex-col">
+          <div className="flex justify-between items-center mb-[24px]">
+            <h2 className="text-[18px] font-bold text-foreground">
               Lượt Nghe Theo Thời Gian
             </h2>
-            <select className="bg-background border border-white/10 rounded-lg px-3 py-1.5 text-sm text-gray-300 focus:outline-none focus:border-primary">
-              <option>30 ngày qua</option>
-              <option>7 ngày qua</option>
-              <option>Năm nay</option>
-            </select>
           </div>
 
-          {/* Box mô phỏng Biểu đồ (Do chưa cài thư viện Recharts) */}
-          <div className="flex-1 w-full min-h-[300px] bg-background rounded-xl border border-white/5 flex items-center justify-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
-            <div className="text-center z-10">
-              <PlayCircle className="w-12 h-12 text-primary/20 mx-auto mb-3" />
-              <p className="text-gray-500 text-sm font-medium">
-                Biểu đồ đang được cập nhật dữ liệu...
-              </p>
-            </div>
-
-            {/* Giả lập các đường line neon */}
-            <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-primary/10 to-transparent"></div>
-            <svg
-              className="absolute inset-0 w-full h-full"
-              preserveAspectRatio="none"
-              viewBox="0 0 100 100"
-            >
-              <path
-                d="M0,80 Q25,60 50,70 T100,30"
-                fill="none"
-                stroke="rgba(236,72,153,0.5)"
-                strokeWidth="0.5"
-                className="drop-shadow-[0_0_8px_rgba(236,72,153,0.8)]"
-              />
-              <path
-                d="M0,90 Q30,85 60,95 T100,75"
-                fill="none"
-                stroke="rgba(168,85,247,0.5)"
-                strokeWidth="0.5"
-              />
-            </svg>
+          <div className="flex-1 w-full min-h-[300px] bg-background rounded-[var(--radius)] border border-border flex items-center justify-center relative overflow-hidden">
+            <StreamChart data={stats.chartData} />
           </div>
         </div>
 
-        {/* Danh sách Bài Hát Hàng Đầu (Cột nhỏ chiếm 1/3) */}
-        <div className="bg-card border border-white/10 rounded-2xl p-6 shadow-lg">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-bold text-white">
+        {/* Danh sách Bài Hát Hàng Đầu */}
+        <div className="bg-card border border-border rounded-[var(--radius)] p-[24px]">
+          <div className="flex justify-between items-center mb-[24px]">
+            <h2 className="text-[18px] font-bold text-foreground">
               Bài Hát Phổ Biến Nhất
             </h2>
           </div>
 
-          <div className="space-y-4">
-            {TOP_TRACKS.map((track, idx) => (
+          <div className="space-y-[16px]">
+            {stats.topTracks.map((track, idx) => (
               <div
                 key={track.id}
-                className="flex items-center gap-4 group p-2 hover:bg-white/5 rounded-xl transition-colors"
+                className="flex items-center gap-[16px] group p-2 hover:bg-background rounded-[var(--radius)] transition-colors"
               >
-                <div className="relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
-                  <Image
-                    src={track.cover}
-                    alt={track.title}
-                    fill
-                    className="object-cover"
-                  />
+                <div className="relative w-12 h-12 rounded-[4px] overflow-hidden flex-shrink-0 bg-background flex items-center justify-center">
+                  {track.imageUrl ? (
+                    <Image
+                      src={track.imageUrl}
+                      alt={track.title}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <Music className="w-5 h-5 text-muted-foreground" />
+                  )}
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                    <PlayCircle className="w-6 h-6 text-white" />
+                    <PlayCircle className="w-6 h-6 text-foreground" />
                   </div>
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-white font-medium truncate group-hover:text-pink-400 transition-colors">
+                  <h3 className="text-foreground text-[15px] font-medium truncate group-hover:text-primary transition-colors">
                     {track.title}
                   </h3>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    {track.streams} lượt nghe
+                  <p className="text-[13px] text-muted-foreground mt-0.5">
+                    {track.totalStreams.toLocaleString("vi-VN")} lượt nghe
                   </p>
                 </div>
 
-                <div className="text-primary font-black text-lg opacity-30">
+                <div className="text-primary font-black text-[16px] opacity-30">
                   #{idx + 1}
                 </div>
               </div>
             ))}
+
+            {stats.topTracks.length === 0 && (
+              <p className="text-muted-foreground text-[14px] text-center py-4">
+                Chưa có bài hát nào.
+              </p>
+            )}
           </div>
 
           <Link
             href="/studio/tracks"
-            className="w-full mt-6 py-2.5 rounded-xl border border-white/10 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-colors flex items-center justify-center gap-2"
+            className="w-full mt-[24px] py-[10px] rounded-[var(--radius)] border border-border text-[14px] font-medium text-muted-foreground hover:text-foreground hover:bg-background transition-colors flex items-center justify-center gap-2"
           >
             Xem tất cả <ArrowRight className="w-4 h-4" />
           </Link>

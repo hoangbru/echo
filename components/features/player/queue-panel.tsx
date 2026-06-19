@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Play } from "lucide-react";
+import { Play, X } from "lucide-react";
 
 import { DropdownTrackMenu } from "@/components/shared";
 import { usePlayer } from "@/hooks/use-player";
@@ -15,6 +15,7 @@ export function QueuePanel() {
     currentTrack,
     isPlaying,
     playTrack,
+    toggleQueue,
   } = usePlayer();
 
   if (!isQueueVisible || queue.length === 0) return null;
@@ -24,10 +25,21 @@ export function QueuePanel() {
   return (
     <div
       className={cn(
-        "fixed top-0 right-0 bottom-24 w-[350px] bg-sidebar border-l border-border z-50 overflow-y-auto p-4 shadow-2xl transition-transform duration-300 ease-in-out",
+        "fixed top-0 right-0 bottom-0 md:bottom-24 w-full md:w-[350px] bg-sidebar border-l border-border z-[120] overflow-y-auto p-4 shadow-2xl transition-transform duration-300 ease-in-out",
         isQueueVisible ? "translate-x-0" : "translate-x-full",
       )}
     >
+      <div className="flex items-center justify-between mb-6 pt-2">
+        <h2 className="text-foreground font-bold text-[20px]">Danh sách chờ</h2>
+        <button
+          onClick={toggleQueue}
+          className="p-2 rounded-full hover:bg-accent text-muted-foreground hover:text-foreground transition-colors group"
+          aria-label="Đóng danh sách chờ"
+        >
+          <X className="w-5 h-5 group-hover:scale-110 transition-transform" />
+        </button>
+      </div>
+
       <div className="flex items-center justify-between mb-6 pt-2">
         <h2 className="text-foreground font-bold text-[20px]">Danh sách chờ</h2>
       </div>
