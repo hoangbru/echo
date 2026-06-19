@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useMemo } from "react";
 import { LayoutDashboard } from "lucide-react";
 
 import { AdminHeader } from "@/components/layout/navbar";
@@ -8,6 +8,7 @@ import { DashboardSidebar } from "@/components/layout/sidebar";
 import { MobileOverlay } from "@/components/layout";
 
 import { adminMenuItems } from "@/constants/sidebar";
+import { useAdminBadges } from "@/hooks/use-admin";
 
 export interface AdminProfileType {
   fullName: string;
@@ -24,12 +25,33 @@ export function AdminShell({
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  const { data: badges } = useAdminBadges();
+
+  const dynamicNavItems = useMemo(() => {
+    return adminMenuItems.map((item) => {
+      if (item.href === "/admin/artist-requests") {
+        return {
+          ...item,
+          badge:
+            badges?.pendingRequests > 0 ? badges.pendingRequests : undefined,
+        };
+      }
+      if (item.href === "/admin/reports") {
+        return {
+          ...item,
+          badge: badges?.pendingReports > 0 ? badges.pendingReports : undefined,
+        };
+      }
+      return { ...item, badge: undefined };
+    });
+  }, [badges]);
+
   return (
     <div className="flex h-screen bg-background overflow-hidden">
       <DashboardSidebar
         title="Echo Admin"
         logoIcon={LayoutDashboard}
-        navItems={adminMenuItems}
+        navItems={dynamicNavItems}
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
       />

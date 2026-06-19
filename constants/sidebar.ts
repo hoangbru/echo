@@ -23,7 +23,6 @@ export type SidebarItem = {
 
 export const adminMenuItems = [
   { label: "Tổng quan", href: "/admin", icon: LayoutDashboard },
-  { label: "Thống kê hệ thống", href: "/admin/analytics", icon: BarChart3 },
 
   { label: "Người dùng (Listeners)", href: "/admin/users", icon: Users },
   { label: "Hồ sơ Nghệ sĩ", href: "/admin/artists", icon: UserCog },
